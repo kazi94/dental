@@ -71,7 +71,8 @@ Vue.component('prescriptions-component', require('./components/PrescriptionsComp
  */
 
 
-const app = new Vue({
+const app = new Vue(
+{
     el: '#app',
     data : {
     	pathologies : {},
@@ -84,10 +85,11 @@ const app = new Vue({
     },
     methods : {
     	newModal()
-            {
+        {
                 $("#patient_add_modal").modal('show');               
-            },
-        generatePatient($event) {
+        },
+        generatePatient($event) 
+        {
             //Afficher les informations perso/medic                 
             //Afficher le bouton modifier
             this.patient = $event; // event = patient
@@ -97,8 +99,8 @@ const app = new Vue({
             this.showInfos = true;
             this.showRadios = true;
             this.showPrescriptions = true;
-            
-        generateSelectedPatient($patient);
+        },    
+        generateSelectedPatient($patient)
         {
             this.patient = $patient;
             //Afficher les boutons ajouter : radio, prescription,schema
@@ -108,8 +110,8 @@ const app = new Vue({
                 thumbnail:true
             });
             this.showPrescriptions = true;
-        }
-        regeneratePatient($patient);{ // function to change the infos about patient in all components
+        },
+        regeneratePatient($patient){ // function to change the infos about patient in all components
             this.patient = $patient;
             $.each(this.patients, function(k, e) {
                 if (e.id === this.patient.id)
