@@ -57,6 +57,21 @@ class PatientController extends Controller
 
         return view('patient.show',compact('pathologies', 'antecedents', 'patients'));
     }
+    public function index()
+    {
+
+        // if (Auth::user()->cant('patients.view')) return redirect()->back();
+        
+        $patients = Patient::all();
+        $patients = $patients->map(function($item){
+            $item->date_naissance = intval(date('Y/m/d' ,strtotime("now")))- intval(date('Y/m/d',strtotime($item->date_naissance)));
+            return $item;
+        });
+        $pathologies = $this->getPathologies();
+        $antecedents = $this->getAntecedents();
+
+        return view('patient.show',compact('pathologies', 'antecedents', 'patients'));
+    }    
     public function getPatients()
     {
 
@@ -93,19 +108,57 @@ class PatientController extends Controller
      **/
     public function store(Request $request)
    {
-
+        
         $patient                      = new Patient;
         $patient->nom                 = ucfirst($request->nom);
         $patient->prenom              = ucfirst($request->prenom);
         $patient->date_naissance      = $request->date_naissance;
         $patient->age                 = $request->date_naissance ? intval(date('Y/m/d' ,strtotime("now")))- intval(date('Y/m/d',strtotime($patient->date_naissance))) : '0';
         $patient->profession          = $request->profession;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         $patient->adresse             = $request->adresse;
         $patient->sexe                = $request->sexe;
         $patient->fumeur              = $request->fumeur ;
         $patient->medecin_externe     = $request->medecin_externe;
         $patient->created_by          = $request->user()->id;
         $patient->save();
+
 
         $pathologies = collect($request->pathologies)->map(function($pathologie){
             return $pathologie['id'];

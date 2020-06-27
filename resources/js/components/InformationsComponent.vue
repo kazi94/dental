@@ -30,8 +30,7 @@
 					<p><strong>Antécédents Stomatologiques :</strong> <span v-for="ant in patient.antecedents">{{ ant.nom }},</span> </p>
 					<p><strong>Fumeur :</strong> {{ patient.fumeur }}</p>
 				</div>
-	    	</div>
-
+	    	</div>fdsfdsfdsfdsfdsdsdfdsfdsfsdfsdfds
 	    </div>
         <div class="modal fade patient_update_modal"  tabindex="-1" id="patient_update_modal"  role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
