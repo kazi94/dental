@@ -10,8 +10,10 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "axios": "^0.19",
+        "axios": "^0.19.2",
         "bootstrap": "^4.1.0",
+        "browser-sync": "^2.26.7",
+        "browser-sync-webpack-plugin": "^2.0.1",
         "cross-env": "^5.1",
         "jquery": "^3.2",
         "laravel-mix": "^4.0.7",
@@ -25,6 +27,17 @@
     },
     "dependencies": {
         "gentelella": "^1.4.0",
-        "package.json": "^2.0.1"
+        "jshint": "^2.11.1",
+        "lightgallery.js": "^1.1.3",
+        "package.json": "^2.0.1",
+        "select2": "^4.0.13",
+        "v-toaster": "^1.0.3",
+        "vform": "^1.0.1",
+        "vue-datatables-net": "git+https://github.com/niiknow/vue-datatables-net.git",
+        "vue-form-generator": "^2.3.4",
+        "vue-form-wizard": "^0.8.4",
+        "vue-multiselect": "^2.1.6",
+        "vue-select": "^3.9.4",
+        "vue-select2": "^0.2.6"
     }
 }

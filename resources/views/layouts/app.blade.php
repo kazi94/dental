@@ -1,25 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    @include('layouts.head')    
-    <body class="nav-md" @if (strpos(url()->current(),"/appointement") != false) onload="init();" @endif>
+    @include('layouts.head') 
+    <body @if (strpos(url()->current(),"/appointement") != false) onload="init();" @endif>
+        
+        <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header closed-sidebar">
+            @include('layouts.header')   
+            <div class="app-main">
 
-        <div class="container body">
-            
-          <div class="main_container">
-            @include('layouts.aside')
-            
-            @include('layouts.header')
-            
-            <div class="right_col" role="main" style="min-height:500px ">
-                @yield('content')
+                @include('layouts.aside')
+
+                <div class="app-main__outer">
+
+                    @yield('content') 
+
+                    @include('layouts.footer')
+                    
+                </div>                
             </div>
-            
-            @include('layouts.footer')
-
-          </div>
         </div>
 
-        @include('layouts.js_scripts')
-
+        {{-- <script src="http://maps.google.com/maps/api/js?sensor=true"></script> --}}
+        <script type="text/javascript" src="{{ asset('architect/assets/scripts/main.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery-3.4.1.min.js') }}"></script>
+        <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
+        <script>
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip()
+            })
+        </script>
     </body>
 </html>

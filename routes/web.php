@@ -10,6 +10,7 @@ Route::get('/', function () {
 });
 
 Route::resource('/home' , 'HomeController');
+Route::get('test' , 'HomeController@index')->name('name');
 
 /*:::::::::::::::::::::ADMINISTRATION MODULE:::::::::::::::::::::::*/
 Route::prefix('/admin')->group(function()
@@ -23,6 +24,10 @@ Route::prefix('/admin')->group(function()
 
 /*:::::::::::::::::::::PATIENT MANAGEMENT MODULE:::::::::::::::::::::::*/
  Route::resource('/patient','User\PatientController')->middleware('auth');
+ Route::post('/patient/radiographie','User\PatientController@postFile')->name('upload')->middleware('auth');
+ Route::get('/patients','User\PatientController@getPatients')->middleware('auth');
+ Route::get('pathologies','User\PatientController@getPathologies')->middleware('auth');
+ Route::get('antecedents','User\PatientController@getAntecedents')->middleware('auth');
  
 // Route::resource('/patient/prescription','User\PrescriptionController')->middleware('auth');
 // Route::post('/medicament','User\MedicamentController@getMedicament')->middleware('auth');

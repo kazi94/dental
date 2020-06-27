@@ -1,48 +1,82 @@
-        <div class="col-md-3 left_col">
-          <div class="left_col scroll-view">
-            <div class="navbar nav_title" style="border: 0;">
-              <a href="{{ route('home.index') }}" class="site_title"><i class="fa fa-paw"></i> <span>Dental Office Management!</span></a>
+<div class="app-sidebar sidebar-shadow">
+    <div class="app-header__logo">
+        <div class="logo-src"></div>
+        <div class="header__pane ml-auto">
+            <div>
+                <button type="button" class="hamburger close-sidebar-btn hamburger--elastic" data-class="closed-sidebar">
+                    <span class="hamburger-box">
+                        <span class="hamburger-inner"></span>
+                    </span>
+                </button>
             </div>
-
-            <div class="clearfix"></div>
-
-            <!-- menu profile quick info -->
-            <div class="profile clearfix">
-              <div class="profile_pic">
-                <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}+{{ Auth::user()->prenom }}  " alt="..." class="img-circle profile_img">
-              </div>
-              <div class="profile_info">
-                <span>Bienvenue,</span>
-                <h2> {{ Auth::user()->name }} {{ Auth::user()->prenom }} </h2>
-              </div>
-            </div>
-            <!-- /menu profile quick info -->
-
-            <br />
-
-            <!-- sidebar menu -->
-            <div id="sidebar-menu" class="main_menu_side  main_menu">
-              <div class="menu_section">
-                <h3>General</h3>
-                <ul class="nav side-menu">
-                  <li><a><i class="fa fa-home"></i> Configuration <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="{{ route('user.index') }}">Utilisateurs</a></li>
-                      <li><a href="{{ route('user.index') }}">Profils</a></li>
-                      <li><a href="{{ route('acte.index') }}">Actes</a></li>
-                    </ul>
-                  </li>
-                  <li><a><i class="fa fa-edit"></i> Patients <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="{{ route('patient.create') }}">Ajouter Patient</a></li>
-                      <li><a href="{{ route('patient.index') }}">Liste des patients</a></li>
-                      <li><a href="form_validation.html">Payments</a></li>
-                      <li><a href="{{ route('appointement.index') }}">Calendrier</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <!-- /sidebar menu -->
-          </div>
         </div>
+    </div>
+    <div class="app-header__mobile-menu">
+        <div>
+            <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                <span class="hamburger-box">
+                    <span class="hamburger-inner"></span>
+                </span>
+            </button>
+        </div>
+    </div>
+    <div class="app-header__menu">
+        <span>
+            <button type="button" class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                <span class="btn-icon-wrapper">
+                    <i class="fa fa-ellipsis-v fa-w-6"></i>
+                </span>
+            </button>
+        </span>
+    </div>    
+    <div class="scrollbar-sidebar">
+        <div class="app-sidebar__inner">
+            <ul class="vertical-nav-menu">
+                <li class="app-sidebar__heading">Configuration</li>
+                <li>
+                    <a href="{{ route('user.index') }}" {{-- class="mm-active" --}}>
+                        <i class="metismenu-icon pe-7s-rocket"></i>
+                        Utilisateurs
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('user.index') }}" class="">
+                        <i class="metismenu-icon pe-7s-rocket"></i>
+                        Profils
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('acte.index') }}" class="">
+                        <i class="metismenu-icon pe-7s-rocket"></i>
+                        Actes
+                    </a>
+                </li>                                                                
+                <li class="app-sidebar__heading">Patients</li>
+                <li>
+                    <a href="{{ route('patient.create') }}" class="">
+                        <i class="metismenu-icon pe-7s-rocket"></i>
+                        Ajouter Patient
+                    </a>
+                </li>    
+                <li>
+                    <a href="{{ route('patient.index') }}" class="">
+                        <i class="metismenu-icon pe-7s-rocket"></i>
+                        Liste des patients
+                    </a>
+                </li>    
+                <li>
+                    <a href="{{ route('acte.index') }}" class="">
+                        <i class="metismenu-icon pe-7s-rocket"></i>
+                        Payements
+                    </a>
+                </li>  
+                <li>
+                    <a href="{{ route('appointement.index') }}" class="">
+                        <i class="metismenu-icon pe-7s-rocket"></i>
+                        Calendrier
+                    </a>
+                </li>  
+            </ul>                                                                                                  
+        </div>
+    </div>
+</div>           
