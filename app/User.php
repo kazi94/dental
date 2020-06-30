@@ -42,4 +42,14 @@ class User extends Authenticatable
     //     return $this->BelongsTo('App\Models\Role');
 
     // }
+
+    public function cabinet()
+    {
+        return $this->belongsTo('App\Models\Cabinet');
+    }
+
+    public function role()
+    {
+        return $this->belongsTo('App\Models\Role');
+    }
 }

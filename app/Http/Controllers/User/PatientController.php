@@ -7,8 +7,12 @@ use App\Http\Controllers\Controller;
 //use App\Http\Requests\StorePatient;
 use Illuminate\Database\Query\Builder;
 use App\Models\Patient;
+use App\Models\Radio;
+use App\Models\Pathologie;
+use App\Models\Antecedent;
 use DB;
 use Auth;
+use Storage;
 
 
 class PatientController extends Controller
@@ -16,6 +20,8 @@ class PatientController extends Controller
 
     public function __construct() {
         $this->middleware('auth');
+
+        
     }
     /**
      * Display a listing of the resource.
@@ -43,11 +49,29 @@ class PatientController extends Controller
 
         // if (Auth::user()->cant('patients.view')) return redirect()->back();
         
-        // $patients = Patient::all();
+        $patients = Patient::all();
+        $patients = $patients->map(function($item){
+            $item->date_naissance = intval(date('Y/m/d' ,strtotime("now")))- intval(date('Y/m/d',strtotime($item->date_naissance)));
+            return $item;
+        });
+        $pathologies = $this->getPathologies();
+        $antecedents = $this->getAntecedents();
 
-        return view('patient.show'/*,compact('patients')*/);
+        return view('patient.show',compact('pathologies', 'antecedents', 'patients'));
     }
+    public function getPatients()
+    {
 
+        // if (Auth::user()->cant('patients.view')) return redirect()->back();
+        
+        $patients = Patient::all();
+        $patients = $patients->map(function($item){
+            $item->date_naissance = intval(date('Y/m/d' ,strtotime("now")))- intval(date('Y/m/d',strtotime($item->date_naissance)));
+            return $item;
+        });
+
+        return response()->json($patients);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -64,85 +88,55 @@ class PatientController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    // public function store(StorePatient $request)
-    // {
-
-        // $patient                      = new Patient;
-        // if($request->hasFile('photo')){
-        //     $photo = $request->file('photo');
-        //     $filename = time().'.'.$photo->getClientOriginalExtension();
-        //     Image::make($photo)->resize(300,300)->save(public_path('/avatar/'.$filename));
-        //     $patient->photo = $filename;
-            
-        // }
-        // $patient->num_securite_sociale= $request->num_securite_sociale;
-        // $patient->code_national       = $request->code_nationale;
-        // $patient->owned_by            = $request->owned_by;
-        // $patient->groupe_sanguin      = $request->groupe_sanguin;
-        // $patient->nom                 = ucfirst($request->nom);
-        // $patient->prenom              = ucfirst($request->prenom);
-        // $patient->date_naissance      = $request->date_naissance;
-        // $patient->num_dossier         = $request->num_dossier;
-        // $patient->taille              = $request->taille;
-        // $patient->adresse             = $request->adresse;
-        // $patient->ville               = $request->ville;
-        // $patient->commune             = $request->commune;
-        // $patient->situation_familliale= $request->situation_familliale;
-        // $patient->nbre_enfants        = $request->nbre_enfants;
-        // $patient->travaille           = $request->travaille;
-        // $patient->sexe                = $request->sexe;
-        // if($request->sexe == "F"){
-        //     $patient->etat                = $request->etat;
-        // }
-        // $patient->tabagiste           = $request->tabagiste;
-        // $patient->tabagiste_depuis    = $request->tabagiste_depuis;
-        // $patient->alcoolique          = $request->alcoolique;
-        // $patient->alcoolique_depuis   = $request->alcoolique_depuis;
-        // $patient->drogue              = $request->drogué;
-        // $patient->drogue_depuis       = $request->drogué_depuis;
-        // $patient->num_tel_1           = $request->num_tel_1;
-        // $patient->num_tel_2           = $request->num_tel_2;
-        // $patient->created_by          = $request->user()->id;
-        // $patient->details             = $request->détails;
-        // $patient->p_tierce            = $request->p_tierce;
-        // $patient->famille_antecedants = $request->famille_antecedants;
-        // $patient->save();
-
-
-        // //associate patient with pathologies
-        // $patient->pathologies()->sync($request->pathologies);
-
-        // //associate patient with allergie
-        // $patient->allergies()->sync($request->allergies);
-
-        // $patient->operations()->sync($request->operations);
-        // // for ($i=0; $i < count($request->pathologies); $i++) { // attach patient_id to pathologie_id in intermediate table
-        // //     $patient->pathologies()->attach($request->pathologies[$i]);
-        // // }
-        // // for ($i=0; $i < count($request->allergies); $i++) { // attach patient_id to allergie_id in intermediate table
-        // //     $patient->allergies()->attach($request->allergies[$i]);
-        // // }
-
-
-        // //$hospitalisation->hospitalisations()->associate($patient);
-
-        // return redirect(route('patient.edit',$patient->id)); //or to back back()->withInput();
-    // }
-    /**
      * store request fields
      *
      * @return view
      * @author 
      **/
     public function store(Request $request)
-    {
-        return redirect(route('patient.edit' , '1'));
+   {
+
+        $patient                      = new Patient;
+        $patient->nom                 = ucfirst($request->nom);
+        $patient->prenom              = ucfirst($request->prenom);
+        $patient->date_naissance      = $request->date_naissance;
+        $patient->age                 = $request->date_naissance ? intval(date('Y/m/d' ,strtotime("now")))- intval(date('Y/m/d',strtotime($patient->date_naissance))) : '0';
+        $patient->profession          = $request->profession;
+        $patient->adresse             = $request->adresse;
+        $patient->sexe                = $request->sexe;
+        $patient->fumeur              = $request->fumeur ;
+        $patient->medecin_externe     = $request->medecin_externe;
+        $patient->created_by          = $request->user()->id;
+        $patient->save();
+
+        $pathologies = collect($request->pathologies)->map(function($pathologie){
+            return $pathologie['id'];
+        });
+        //associate patient with pathologies
+        $patient->pathologies()->sync($pathologies);
+
+        $antecedents = collect($request->antecedents)->map(function($antecedent){
+            return $antecedent['id'];
+        });
+        //associate patient with allergie
+        $patient->antecedents()->sync($antecedents);
+
+        $patient = $this->getPatient($patient->id); 
+
+        return response()->json([
+            'patient' => $patient,
+            'success' => 'Patient ajouté avec succés!'
+        ]); 
     }
+
+    public function getPathologies()
+    {
+        return DB::table('pathologies')->get();
+    } 
+    public function getAntecedents()
+    {
+        return DB::table('antecedents')->get();
+    }          
     /**
      * Display the specified resource.
      *
@@ -151,7 +145,14 @@ class PatientController extends Controller
      */
     public function show($id)
     {
+        $patient = Patient::with('radios','prescriptions')->find($id);
+        $pathologies = DB::table('pathologie_patient')->join('pathologies','pathologies.id','pathologie_patient.pathologie_id')->where('patient_id',$id)->get();
+        $antecedents = DB::table('antecedent_patient')->join('antecedents','antecedents.id','antecedent_patient.antecedent_id')->where('patient_id',$id)->get();
 
+        $patient->pathologies = $pathologies;
+        $patient->antecedents = $antecedents;
+
+        return response()->json($patient , 200);
     }
 
     /**
@@ -163,26 +164,7 @@ class PatientController extends Controller
      */
     public function edit($id)
     {
-        // if (Auth::user()->cant('patients.update')) return redirect()->back();
-    
-        // $patient = Patient::with('interventions','interventionsValide','pathologies','allergies','hospi','bilans'
-        //     ,'consultations','questionnaires','traitements.lignes','autos.lignes','tmp_traitements','tmp_autos','phytos','educations','prescriptions.lignes','prescriptionsRetroInvalide.lignes','prescriptionsRisque.lignes','operations')->find($id);
-        // $elements = Element::all();
 
-                                      
-        // $bilans = DB::table('elements')->select('bilan')->distinct()->get();
-        // $Hospitalisation = Hospitalisation::all();
-        // //get all traitement patient
-        // $traitement  = Traitement::where('patient_id',$patient->id)->get();
-        // //récupérer formule de calcule sc
-        // $formule = FormuleSC::where('confirmed',1)->pluck('formule')->first();
-
-        // $annotations = DB::table('users')->join('annotations','users.id','=','annotations.user_id')
-        //                                  ->where('pat_id',$id)
-        //                                  ->get();
-        // $questionnaires = Questionnaire::all();
-        // return view('patient.edit1',compact('patient','elements','bilans','Hospitalisation','traitement','annotations','formule','questionnaires'));
-        return view('patient.edit');
     }
 
     /**
@@ -193,62 +175,82 @@ class PatientController extends Controller
      * @return \Illuminate\Http\Response
      * @author __KaziWhite**__SALAF4_WebDev**.
      */
-    // public function update(StorePatient $request, $id)
+    public function update(Request $request, $id)
 
-    // {
-        // $patient =Patient::find($id);
-        // $compte = DB::table('comptes')->where('patient_id','=',$id)->first();        
-        // if($request->hasFile('photo')){
-        //     $photo = $request->file('photo');
-        //     $filename = time().'.'.$photo->getClientOriginalExtension();
-        //     Image::make($photo)->resize(300,300)->save(public_path('/avatar/'.$filename));
-        //     $patient->photo = $filename;
-            
-        // }
-        // $patient->num_securite_sociale= $request->num_securite_sociale;
-        // $patient->code_national       = $request->code_nationale;
-        // $patient->owned_by            = $request->owned_by;
-        // $patient->groupe_sanguin      = $request->groupe_sanguin;
-        // $patient->nom                 = $request->nom;
-        // $patient->prenom              = $request->prenom;
-        // $patient->date_naissance      = $request->date_naissance;
-        // $patient->num_dossier         = $request->num_dossier;
-        // $patient->taille              = $request->taille;
-        // $patient->adresse             = $request->adresse;
-        // $patient->ville               = $request->ville;
-        // $patient->commune             = $request->commune;
-        // $patient->situation_familliale= $request->situation_familliale;
-        // $patient->nbre_enfants        = $request->nbre_enfants;
-        // $patient->travaille           = $request->travaille;
-        // $patient->sexe                = $request->sexe;
-        // if($request->sexe == "F"){
-        // $patient->etat                = $request->etat;
-        // }
-        // $patient->tabagiste           = $request->tabagiste;
-        // $patient->tabagiste_depuis    = $request->tabagiste_depuis;
-        // $patient->alcoolique          = $request->alcoolique;
-        // $patient->alcoolique_depuis   = $request->alcoolique_depuis;
-        // $patient->drogue              = $request->drogué;
-        // $patient->drogue_depuis       = $request->drogué_depuis;
-        // if($compte != null){
-        //     DB::table('comptes')->where('patient_id','=',$id)->update(['tel' => $request->num_tel_1]);
-        // }
-        // $patient->num_tel_1           = $request->num_tel_1;
-        // $patient->num_tel_2           = $request->num_tel_2;
-        // $patient->updated_by          = $request->user()->id;
-        // $patient->updated_at          = now();
-        // $patient->details             = $request->détails;
-        // $patient->p_tierce            = $request->p_tierce;
-        // $patient->poids               = $request->poids;
-        // $patient->famille_antecedants = $request->famille_antecedants;
-        // $patient->save();
+    {
+        $patient =Patient::find($id);
+        $patient->nom                 = ucfirst($request->nom);
+        $patient->prenom              = ucfirst($request->prenom);
+        $patient->date_naissance      = $request->date_naissance;
+        $patient->age                 = $request->date_naissance ? intval(date('Y/m/d' ,strtotime("now")))- intval(date('Y/m/d',strtotime($patient->date_naissance))) : '0';
+        $patient->profession          = $request->profession;
+        $patient->adresse             = $request->adresse;
+        $patient->sexe                = $request->sexe;
+        $patient->fumeur              = $request->fumeur ? 'Oui' : 'Non';
+        $patient->medecin_externe     = $request->medecin_externe;
+        $patient->updated_by          = $request->user()->id;
+        $patient->updated_at          = now();
+        $patient->save();
+
+        $pathologies =collect($request->pathologies)->map(function($e){
+            return $e['id'];
+        });
+        $antecedents =collect($request->antecedents)->map(function($e){
+            return $e['id'];
+        });
+
+        $patient->pathologies()->sync($pathologies);
+        $patient->antecedents()->sync($antecedents);
+
+        $patient = $this->getPatient($patient->id);
+
+        return response()->json([
+            'patient' => $patient,
+            'success' => 'Patient modifier avec succés!'
+        ]); 
+    }
+
+    /**
+     * post Radiographie file
+     *
+     * @return void
+     * @author 
+     */
+    public function postFile(Request $request)
+    {
+        $uploadedFile = $request->file('file');
+        $patient_id = $request->id;
+
+        $path = $uploadedFile->store('public');//store file in public storage folder
+        if (Storage::mimeType($path) == 'image/png' || Storage::mimeType($path) == 'image/jpeg')// Stocker tout les format des images à une seul et unique extension
+            $uploadedFile->move(public_path().'/img/radios', time().'.jpeg');    
+
+        $upload = new Radio;
+        $upload->img_url    = '/img/radios/'.time().'.jpeg';
+        $upload->patient_id = $patient_id;
+        $upload->created_by = $request->user()->id;
+        $upload->save();
+
+      return response()->json($upload , 200); 
+    }
+
+    /**
+     * undocumented function
+     *
+     * @return void
+     * @author 
+     **/
+    public function destroy($id)
+    {
+        $deleted =  Patient::where('id',$id)->delete();
+
+        return $deleted ?  response()->json(['success' => 'Patient supprimé avec succés!'] , 200) : 'Erreur dans la suppression';
+    }
 
 
-        // //$hospitalisation->hospitalisations()->associate($patient);
-        // $patient->pathologies()->sync($request->pathologies);
-        // $patient->allergies()->sync($request->allergies);
-        // $patient->operations()->sync($request->operations);
+    private function getPatient($id) {
+        return response()->json(Patient::with('antecedents','pathologies')->find($id) , 200);
+    }
 
-        // return redirect(route('patient.edit',$patient->id))->with('message' , 'Profile patient modifié avec succés !'); //or to back back()->withInput();
-    // }
+
 }

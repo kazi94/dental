@@ -1,8 +1,13 @@
-        <!-- footer content -->
-        <footer>
-          <div class="pull-right">
-            Dental Office Management - by <a href="https://www.hic-events.com">HIC Events</a>
-          </div>
-          <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
+<div class="app-wrapper-footer">
+    <div class="app-footer">
+        <div class="app-footer__inner">
+            <div class="app-footer-left">
+                <ul class="nav">
+                    <li class="nav-item">
+						Dental Office Management - by <a href="https://www.hic-sante.com">HIC Santé</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div> 

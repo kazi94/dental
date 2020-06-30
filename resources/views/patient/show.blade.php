@@ -1,326 +1,314 @@
-@extends('layouts.app')
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-@section('css_scripts')
-    <!-- bootstrap-daterangepicker -->
-    <link href="{{ asset('gentelella/vendors/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
-    <!-- bootstrap-datetimepicker -->
-    <link href="{{ asset('gentelella/vendors/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css') }}" rel="stylesheet">
-    <!-- Ion.RangeSlider -->
-    <link href="{{ asset('gentelella/vendors/normalize-css/normalize.css') }}" rel="stylesheet">
-    <link href="{{ asset('gentelella/vendors/ion.rangeSlider/css/ion.rangeSlider.css') }}" rel="stylesheet">
-    <link href="{{ asset('gentelella/vendors/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css') }}" rel="stylesheet">
-    <!-- Bootstrap Colorpicker -->
-    <link href="{{ asset('gentelella/vendors/mjolnic-bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css') }}" rel="stylesheet">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Language" content="en">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <!-- CSRF Token -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link href="{{ asset('gentelella/vendors/cropper/dist/cropper.min.css') }}" rel="stylesheet">
-@endsection
+        <title>@yield('title')</title>
+        <!-- Fonts -->
+        <link rel="dns-prefetch" href="//fonts.gstatic.com">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;1,300&family=Rubik:ital,wght@0,400;1,300&display=swap" rel="stylesheet">
+        <meta name="msapplication-tap-highlight" content="no">
+        {{-- <link href="{{ asset('plugins/bootstrap-4.4.1-dist/css/bootstrap.min.css') }}" rel="stylesheet"> --}}
+        {{-- <link href="{{ asset('plugins/DataTables-1.10.20/css/dataTables.min.css') }}" rel="stylesheet"> --}}
+        <link rel="stylesheet" href="{{ asset('architect/main.css') }}" >
+        <link rel="stylesheet" href="{{ asset('plugins/select2/dist/css/select2.min.css') }}" >
+        <link rel="stylesheet" href="{{ asset('plugins/DataTables-1.10.20/css/dataTables.bootstrap4.min.css') }}" >
+        <link rel="stylesheet" href="{{ asset('plugins/lightgallery.js-master/src/css/lightgallery.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-@section('title')
-    Liste des Patients
-@endsection
 
-
-@section('content')
-
-<div class="">
-            <div class="page-title">
-              <div class="title_left">
-                <h3>Liste des patients</h3>
-              </div>
-
-              <div class="title_right">
-                <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                  <a href="{{ route('patient.create') }}" class="btn btn-primary">Ajouter</a>
-                  
-                </div>
-              </div>
-            </div>
-
-            <div class="clearfix"></div>
-
-            <div class="row">
-              <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_content">
-                    <div class="table-responsive">
-                      <table class="table table-striped jambo_table bulk_action" id="patients">
-                        <thead>
-                          <tr class="headings">
-                            <th>
-                              <input type="checkbox" id="check-all" class="flat">
-                            </th>
-                            <th class="column-title"># </th>
-                            <th class="column-title">Patient </th>
-                            <th class="column-title">Age </th>
-                            <th class="column-title">Sexe </th>
-                            <th class="column-title">Status </th>
-                            <th class="column-title">Montant </th>
-                            <th class="column-title no-link last"><span class="nobr">Action</span>
-                            </th>
-                            <th class="bulk-actions" colspan="7">
-                              <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
-                            </th>
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          <tr class="even pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000040</td>
-                            <td class=" ">May 23, 2014 11:47:56 PM </td>
-                            <td class=" ">121000210 <i class="success fa fa-long-arrow-up"></i></td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$7.45</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                            </td>
-                          </tr>
-                          <tr class="odd pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000039</td>
-                            <td class=" ">May 23, 2014 11:30:12 PM</td>
-                            <td class=" ">121000208 <i class="success fa fa-long-arrow-up"></i>
-                            </td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$741.20</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                          </tr>
-                          <tr class="even pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000040</td>
-                            <td class=" ">May 23, 2014 11:47:56 PM </td>
-                            <td class=" ">121000210 <i class="success fa fa-long-arrow-up"></i></td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$7.45</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                            </td>
-                          </tr>
-                          <tr class="odd pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000039</td>
-                            <td class=" ">May 23, 2014 11:30:12 PM</td>
-                            <td class=" ">121000208 <i class="success fa fa-long-arrow-up"></i>
-                            </td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$741.20</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                          </tr>                          
-                          <tr class="even pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000040</td>
-                            <td class=" ">May 23, 2014 11:47:56 PM </td>
-                            <td class=" ">121000210 <i class="success fa fa-long-arrow-up"></i></td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$7.45</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                            </td>
-                          </tr>
-                          <tr class="odd pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000039</td>
-                            <td class=" ">May 23, 2014 11:30:12 PM</td>
-                            <td class=" ">121000208 <i class="success fa fa-long-arrow-up"></i>
-                            </td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$741.20</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                          </tr>                          
-                          <tr class="even pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000040</td>
-                            <td class=" ">May 23, 2014 11:47:56 PM </td>
-                            <td class=" ">121000210 <i class="success fa fa-long-arrow-up"></i></td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$7.45</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                            </td>
-                          </tr>
-                          <tr class="odd pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000039</td>
-                            <td class=" ">May 23, 2014 11:30:12 PM</td>
-                            <td class=" ">121000208 <i class="success fa fa-long-arrow-up"></i>
-                            </td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$741.20</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                          </tr>                          
-                          <tr class="even pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000040</td>
-                            <td class=" ">May 23, 2014 11:47:56 PM </td>
-                            <td class=" ">121000210 <i class="success fa fa-long-arrow-up"></i></td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$7.45</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                            </td>
-                          </tr>
-                          <tr class="odd pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000039</td>
-                            <td class=" ">May 23, 2014 11:30:12 PM</td>
-                            <td class=" ">121000208 <i class="success fa fa-long-arrow-up"></i>
-                            </td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$741.20</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                          </tr>                          
-                          <tr class="even pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000040</td>
-                            <td class=" ">May 23, 2014 11:47:56 PM </td>
-                            <td class=" ">121000210 <i class="success fa fa-long-arrow-up"></i></td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$7.45</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                            </td>
-                          </tr>
-                          <tr class="odd pointer">
-                            <td class="a-center ">
-                              <input type="checkbox" class="flat" name="table_records">
-                            </td>
-                            <td class=" ">121000039</td>
-                            <td class=" ">May 23, 2014 11:30:12 PM</td>
-                            <td class=" ">121000208 <i class="success fa fa-long-arrow-up"></i>
-                            </td>
-                            <td class=" ">John Blank L</td>
-                            <td class=" ">Paid</td>
-                            <td class="a-right a-right ">$741.20</td>
-                            <td class=" last">
-                              <a href="{{ route('patient.edit' ,'1') }}"><i class="fa fa-edit fa-2x"></i></a>
-                              <a href=""><i class="fa fa-trash fa-2x"></i></a>
-                            </td>
-                          </tr>                          
-                        </tbody>
-                      </table>
-                    </div>
+    </head>
+    <body>
+        <div id="app" class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header closed-sidebar">
+          <div class="app-header header-shadow">
+              <div class="app-header__logo">
+                  <div class="logo-src"></div>
+                  <div class="header__pane ml-auto">
+                      <div>
+                          <button type="button" class="hamburger close-sidebar-btn hamburger--elastic is-active" data-class="closed-sidebar">
+                              <span class="hamburger-box">
+                                  <span class="hamburger-inner"></span>
+                              </span>
+                          </button>
+                      </div>
                   </div>
+              </div>
+              <div class="app-header__mobile-menu">
+                  <div>
+                      <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                          <span class="hamburger-box">
+                              <span class="hamburger-inner"></span>
+                          </span>
+                      </button>
+                  </div>
+              </div>
+              <div class="app-header__menu">
+                  <span>
+                      <button type="button" class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                          <span class="btn-icon-wrapper">
+                              <i class="fa fa-ellipsis-v fa-w-6"></i>
+                          </span>
+                      </button>
+                  </span>
+              </div>    
+              <div class="app-header__content">
+                  <div class="app-header-left">
+                      <div class="search-wrapper">
+                          <div class="input-holder">
+                              <input type="text" class="search-input" placeholder="Type to search">
+                              <button class="search-icon"><span></span></button>
+                          </div>
+                          <button class="close"></button>
+                      </div>
+                      <ul class="header-menu nav">
+                          <li class="nav-item">
+                              <a href="javascript:void(0);" class="nav-link" v-on:click="newModal()" {{-- data-toggle="modal" data-target=".patient_add_modal" --}} data-toggle="tooltip" data-placement="bottom" title="Ajouter un nouveau patient">
+                                  <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"> </i>
+                                  Patient
+                              </a>
+                          </li>
+                          <li class="btn-group nav-item" v-show="showPrescriptions">
+                              <a href="javascript:void(0);" class="nav-link" {{-- data-toggle="tooltip" data-placement="bottom" --}} title="Ajouter une nouvelle ordonnance">
+                                  <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"></i>
+                                  Ordonnance
+                              </a>
+                          </li>
+                          <li class="btn-group nav-item" v-show="showRadios">
+                              <a href="javascript:void(0);" class="nav-link" {{-- data-toggle="tooltip" data-placement="bottom" --}} title="Ajouter une nouvelle ordonnance">
+                                  <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"></i>
+                                  Radiographie
+                              </a>
+                          </li>
+                          <li class="btn-group nav-item" v-show="showRdv">
+                              <a href="javascript:void(0);" class="nav-link" {{-- data-toggle="tooltip" data-placement="bottom" --}} title="Ajouter une nouvelle ordonnance">
+                                  <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"></i>
+                                   Rendez-vous
+                              </a>
+                          </li>                                                    
+                      </ul>        
+                    </div>
+                  <div class="app-header-right">
+                      <div class="header-btn-lg pr-0">
+                          <div class="widget-content p-0">
+                              <div class="widget-content-wrapper">
+                                  <div class="widget-content-left">
+                                      <div class="btn-group">
+                                          <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
+                                              <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}+{{ Auth::user()->prenom }}" alt="..." width="42" class="rounded-circle">
+                                              <i class="fa fa-angle-down ml-2 opacity-8"></i>
+                                          </a>
+                                          <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+                                              {{-- <button type="button" tabindex="0" class="dropdown-item">User Account</button> --}}
+                                              <button type="button" tabindex="0" class="dropdown-item">Paramètres</button>
+                                              <div tabindex="-1" class="dropdown-divider"></div>
+                                              <button type="button" tabindex="0" class="dropdown-item">Déconnexion</button>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="widget-content-left  ml-3 header-user-info">
+                                      <div class="widget-heading">
+                                          Dr. {{ strtoupper(Auth::user()->name) }} {{ strtoupper(Auth::user()->prenom)  }}
+
+                                      </div>
+                                      <div class="widget-subheading">
+                                          {{ Auth::user()->profession }}
+                                      </div>
+                                  </div>
+                                  <div class="widget-content-right header-user-info ml-3">
+                                      <button type="button" class="btn-shadow p-1 btn btn-primary btn-sm show-toastr-example">
+                                          <i class="fa text-white fa-calendar pr-1 pl-1"></i>
+                                      </button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>        
+                    </div>
+              </div>
+          </div>  
+          <div class="app-main">
+            <div class="app-sidebar sidebar-shadow">
+                <div class="app-header__logo">
+                    <div class="logo-src"></div>
+                    <div class="header__pane ml-auto">
+                        <div>
+                            <button type="button" class="hamburger close-sidebar-btn hamburger--elastic" data-class="closed-sidebar">
+                                <span class="hamburger-box">
+                                    <span class="hamburger-inner"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
+                <div class="app-header__mobile-menu">
+                    <div>
+                        <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="app-header__menu">
+                    <span>
+                        <button type="button" class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                            <span class="btn-icon-wrapper">
+                                <i class="fa fa-ellipsis-v fa-w-6"></i>
+                            </span>
+                        </button>
+                    </span>
+                </div>    
+                <div class="scrollbar-sidebar">
+                    <div class="app-sidebar__inner">
+                        <ul class="vertical-nav-menu">
+                            <li class="app-sidebar__heading">APPLICATIONS</li>
+                            <li>
+                                <a href="{{ route('user.index') }}" {{-- class="mm-active" --}}>
+                                    <i class="metismenu-icon pe-7s-rocket"></i>
+                                    Mon cabinet
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('user.index') }}" class="">
+                                    <i class="metismenu-icon pe-7s-rocket"></i>
+                                    Mes patients
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('act.index') }}" class="">
+                                    <i class="metismenu-icon pe-7s-rocket"></i>
+                                    Mes honoraires
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('act.index') }}" class="">
+                                    <i class="metismenu-icon pe-7s-rocket"></i>
+                                    Mon agenda
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('act.index') }}" class="">
+                                    <i class="metismenu-icon pe-7s-rocket"></i>
+                                    Réglages
+                                </a>
+                            </li>                                                                                                                        
+                            <li class="app-sidebar__heading">MEDIAS</li>
+                            <li>
+                                <a href="{{ route('patient.create') }}" class="">
+                                    <i class="metismenu-icon pe-7s-rocket"></i>
+                                    Mes videos
+                                </a>
+                            </li>    
+                            <li>
+                                <a href="{{ route('patient.index') }}" class="">
+                                    <i class="metismenu-icon pe-7s-rocket"></i>
+                                    Mes photos
+                                </a>
+                            </li>    
+                        </ul>                                                                                                  
+                    </div>
+                </div>
+            </div>    
+            <div class="app-main__outer">
+              <div class="app-main__inner">
+
+                  {{-- <div class="app-page-title">
+                      <div class="page-title-wrapper">
+                          <div class="page-title-heading">
+                              <div class="page-title-icon">
+                                  <i class="pe-7s-folder icon-gradient bg-happy-itmeo">
+                                  </i>
+                              </div>
+                              <div>MES PATIENTS
+                                  <div class="page-title-subheading">Liste des patients et ses informations médicales
+                                  </div>
+                              </div>
+                          </div> 
+                        </div>
+                  </div>   --}}          
+                  <div class="row">
+                      <div class="col-md-3">
+                        <liste-patient-component 
+                        :patients="patients"
+                        v-on:patient-folder="generateSelectedPatient"
+                        ></liste-patient-component>
+                        <tabs-component 
+                          :showradios="showRadios"
+                          :showprescriptions="showPrescriptions"
+                          :patient="patient">
+                        </tabs-component>
+                      </div>
+
+                      <div class="col-md-9">
+                        
+                        {{-- <informations-component 
+                         :patient="patient"
+                         :showinfos="showInfos"
+                         v-on:updated-patient="regeneratePatient"
+                         :pathologies="{{ $pathologies->toJson() }}"
+                         :antecedents="{{ $antecedents->toJson() }}"
+                        ></informations-component> --}}
+                        <schema-dental-component :patient="patient"></schema-dental-component>
+                      </div>
+                  </div>
+              </div>
+              <div class="app-wrapper-footer">
+                  <div class="app-footer">
+                      <div class="app-footer__inner">
+                          <div class="app-footer-left">
+                              <ul class="nav">
+                                  <li class="nav-item">
+                          dCare & Health - developed by <a href="https://www.hic-sante.com">HIC Santé</a>
+                                  </li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+              </div> 
+            </div>                 
+          </div>
+          <!-- --------------------------MODALS-------------------------- -->
+          <div class="modal fade patient_add_modal"  tabindex="-1" id="patient_add_modal"  role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Nouveau Patient</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                    <patient-component 
+                    v-bind:pathologies="{{ $pathologies->toJson() }}"
+                    v-bind:antecedents="{{ $antecedents->toJson() }}"
+                    v-on:generated-patient="generatePatient"  
+                    >
+                    </patient-component>
+
               </div>
             </div>
           </div>
 
-@endsection
+        </div>
 
-@section('js_scripts')
-    <!-- bootstrap-wysiwyg -->
-    <script src="{{ asset('gentelella/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/jquery.hotkeys/jquery.hotkeys.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/google-code-prettify/src/prettify.js') }}"></script>
-    <!-- jQuery Tags Input -->
-    <script src="{{ asset('gentelella/vendors/jquery.tagsinput/src/jquery.tagsinput.js') }}"></script>
-    <!-- Switchery -->
-    <script src="{{ asset('gentelella/vendors/switchery/dist/switchery.min.js') }}"></script>
-    <!-- Select2 -->
-    <script src="{{ asset('gentelella/vendors/select2/dist/js/select2.full.min.js') }}"></script>
-    <!-- Parsley -->
-    <script src="{{ asset('gentelella/vendors/parsleyjs/dist/parsley.min.js') }}"></script>
-    <!-- Autosize -->
-    <script src="{{ asset('gentelella/vendors/autosize/dist/autosize.min.js') }}"></script>
-    <!-- jQuery autocomplete -->
-    <script src="{{ asset('gentelella/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
-    <!-- starrr -->
-    <script src="{{ asset('gentelella/vendors/starrr/dist/starrr.js') }}"></script>
 
-    <script>
-      $(document).ready( function () {
 
-          if ($("#patients").length) {
-          $("#patients").DataTable({
-            dom: "Bfrtip",
-            buttons: [
-            {
-              extend: "copy",
-              className: "btn-sm"
-            },
-            {
-              extend: "csv",
-              className: "btn-sm"
-            },
-            {
-              extend: "excel",
-              className: "btn-sm"
-            },
-            {
-              extend: "pdfHtml5",
-              className: "btn-sm"
-            },
-            {
-              extend: "print",
-              className: "btn-sm"
-            },
-            ],
-            responsive: true
-          });
-          }
+        <script type="text/javascript" src="{{ asset('js/jquery-3.4.1.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('architect/assets/scripts/main.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('plugins/bootstrap-4.4.1-dist/js/bootstrap.min.js') }}"></script>
+        {{-- <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script> --}}
+        {{-- <script type="text/javascript" src="{{ asset('plugins/DataTables-1.10.20/js/jquery.datatables.min.js') }}"></script> --}}
+        {{-- <script type="text/javascript" src="{{ asset('plugins/DataTables-1.10.20/js/datatables.bootstrap4.min.js') }}"></script> --}}
+        <!-- lightgallery plugins -->
+        <script src="{{ asset('plugins/lightgallery.js-master/dist/js/lightgallery.min.js') }}"></script>
+        <script src="{{ asset('plugins/lightgallery.js-master/demo/js/lg-fullscreen.min.js') }}"></script>
+        <script src="{{ asset('plugins/lightgallery.js-master/demo/js/lg-thumbnail.min.js') }}"></script>
+        <script src="{{ asset('js/app.js') }}" type="text/javascript"></script>
 
-        
-      } );
-    </script>
-@endsection
-
+    </body>
+</html>

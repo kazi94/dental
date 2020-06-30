@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Models\Role;
+use App\Models\Cabinet;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\StoreUser;
 
 class UserController extends Controller
 {
@@ -18,11 +18,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::where()->all();
+        return response()->json( User::with('role')->get() , 200 );
 
-        $roles = Role::all();
-
-        return view ('admin.user.show' , compact('users','roles'));
 
     }
 
@@ -43,26 +40,20 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreUser $request)
+    public function store(Request $request)
     {
 
         $user = new User;
-        $user->matricule= $request->matricule;
-        $user->name= ucfirst($request->name);//Upper the first char
-        $user->prenom= ucfirst($request->prenom);
-        $user->service= $request->service;
-        $user->hopital= $request->hopital;
-        $user->grade= ucfirst($request->grade);
-        $user->email= $request->email;
-        $user->date_naissance= $request->date_naissance;
-        $user->specialite= $request->specialite;
-        $user->is_admin= $request->admin;
-        $user->role_id= $request->role_id;
-        $user->password= bcrypt($request->password);
+        $user->name       = ucfirst($request->name);
+        $user->prenom     = ucfirst($request->prenom);
+        $user->email      = $request->email;
+        $user->profession = $request->profession;
+        $user->role_id    = $request->role;
+        $user->cabinet_id = Auth::user()->cabinet_id;
+        $user->password   = bcrypt($request->password);
         $user->save();
 
-        //redirect into users list view
-        return redirect(route('user.index'))->with('message' , 'Utilisateur créer avec succées !');
+        return response()->json($user , 200);
     }
 
     /**
@@ -92,23 +83,15 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        $user->matricule      = $request->matricule;
-        $user->name           = $request->name;
-        $user->prenom         = $request->prenom;
-        $user->date_naissance = $request->date_naissance;
-        $user->grade          = $request->grade;
-        $user->specialite     = $request->specialite;
-        $user->is_admin       = $request->admin;
-        $user->email          = $request->email;
-        $user->role_id        = $request->role_id;
-        $user->password       = bcrypt($request->password);
-
+        $user->name       = ucfirst($request->name);
+        $user->prenom     = ucfirst($request->prenom);
+        $user->email      = $request->email;
+        $user->profession = $request->profession;
+        $user->role_id    = $request->role;
         $user->save();
 
-        //associate and persist id user to id roles in table 'user_role'
-        //$user->roles->sync($request->role_id);
+        return response()->json($user , 200);
 
-        //redirect into users list view
         return redirect(route('user.index'))->with('message' , 'Utilisateur Modifier avec succées !');
     }
 
@@ -122,7 +105,7 @@ class UserController extends Controller
     {
         User::where('id',$id)->delete();
 
-        return redirect()->back();
+        return response()->json( [] , 200);
     }
 
     /**

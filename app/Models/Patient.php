@@ -9,11 +9,17 @@ class Patient extends Model
 {
 
 	//associate patient to pathologies
- //    public function pathologies () {
- //    	return $this->BelongsToMany('App\Models\Pathologie');
-	// }
+    public function pathologies () {
+    	return $this->BelongsToMany('App\Models\Pathologie');
+	}
 
-	
+		//associate patient to antecedents
+    public function antecedents () {
+    	return $this->BelongsToMany('App\Models\Antecedent');
+	}
+    public function radios () {
+    	return $this->hasMany('App\Models\Radio');
+	}
 	// public function created_by_user(){
 	// 	return $this->belongsTo('App\Models\User','created_by'); // the second argument is used to determine the foreign key of user in patients tables
 	// }
@@ -23,8 +29,8 @@ class Patient extends Model
 	// }	
 	
 
-	// public function prescriptions() {
-	// 	return $this->hasMany('App\Models\Prescription')->where('etats','prescription');
-	// }
+	public function prescriptions() {
+		return $this->hasMany('App\Models\Prescription')->where('type','prescription');
+	}
 	
 }
