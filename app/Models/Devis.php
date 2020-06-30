@@ -10,7 +10,7 @@ class Devis extends Model
 
 	protected $fillable = ['schema_id','total','discount','total_accept' ,'state'];
 
-	public function lignes()
+	public function lines()
 	{
 	    return $this->hasMany('App\Models\LigneDevis', 'devis_id');
 	}

@@ -254,7 +254,7 @@
                          :pathologies="{{ $pathologies->toJson() }}"
                          :antecedents="{{ $antecedents->toJson() }}"
                         ></informations-component> --}}
-                        <schema-dental-component :patient="patient"></schema-dental-component>
+                        <schema-dental-component :patient="patient" :showschema="showSchema"></schema-dental-component>
                       </div>
                   </div>
               </div>

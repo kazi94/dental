@@ -30,7 +30,7 @@
       v-show="isToothVisible">
 		  {{ sectionsBtn[1].caption }}
 		</b-button>   
-		<div style="position : relative">
+		<div style="position : relative" :class="p_class">
 		  <canvas id="plan_schema_canvas"  style="position: absolute; left: 0px; top: 0px; padding: 0px; border: 0px; width :100%;height:100%; z-index : 9999"></canvas>
 		  <img src="/img/schema.png" id="schema-map" usemap="#image-map" width="100%">
 
@@ -49,7 +49,7 @@
 		</b-button>
 		<b-button
 		  v-for="(btm_btn, btm_idx) in num_tooth"
-		  :keys="btm_idx"
+		  :key="btm_idx"
 		  v-if="btm_idx > 15"
 		  :pressed.sync="btm_btn.state"
 		  variant="outline-success"
@@ -82,6 +82,7 @@
     props : [
     	'selectedTooth',
       'isToothVisible',
+      'p_class',
     ],
     data () {
       return {

@@ -11,10 +11,10 @@
         <div class="card-body">
           <div class="tab-content">
             <div class="tab-pane show" id="tab-eg1-1" role="tabpanel">
-              <initial-schema-component :patient="patient" ></initial-schema-component>
+              <initial-schema-component :patient="patient" v-show="showschema"></initial-schema-component>
             </div>
             <div class="tab-pane active show" id="tab-eg1-0" role="tabpanel">
-              <plan-schema-component :patient="patient" ></plan-schema-component>
+              <plan-schema-component :patient="patient" v-show="showschema"></plan-schema-component>
             </div>
           </div>
       </div>
@@ -34,7 +34,8 @@ import PlanSchemaComponent from './PlanSchemaComponent'
     },
     props : [
       'patient',
-        
+      'showschema',
+
     ],
     data () {
       return {

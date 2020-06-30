@@ -90,6 +90,7 @@ const app = new Vue({
         showRadios: false,
         showPrescriptions: false,
         showRdv: false,
+        showSchema : false,
         patients : [],
     },
     methods : {
@@ -112,6 +113,7 @@ const app = new Vue({
             this.showRadios = true;
             this.showPrescriptions = true;
             this.showRdv = true;
+            this.showSchema = true;
 
         },
 
@@ -119,13 +121,15 @@ const app = new Vue({
         {
             this.patient = $patient;
             //Afficher les boutons ajouter : radio, prescription,schema
-            this.showInfos = true;
-            this.showRadios = true;
+
             lightGallery(document.getElementById('lightgallery'), {
                 thumbnail:true
-            }); 
+            });
+            this.showInfos = true;
+            this.showRadios = true;             
             this.showPrescriptions = true;            
-            this.showRdv = true;            
+            this.showRdv = true;  
+            this.showSchema = true;          
         },
 
         regeneratePatient(patient) 

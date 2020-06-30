@@ -41,7 +41,7 @@ class DevisController extends Controller
     public function store(Request $request)
     {
         $quotState  = (($request->total_accept-$request->total_paid) == 0 ) ? 'payer&&fait' : 'devis';
-        $ligneState = ($request->rhythmTraitement == 'onDay' ) ? 'fait' : 'en cours'; // Traitment in one day
+        $ligneState = ($request->rhythmTraitement == 'onDay' ) ? 'Fait' : 'En cours'; // * Traitement d'un patient qui vient en une seule journée
         
         //Create New Schema
         $schema = Schema::create([
@@ -66,20 +66,22 @@ class DevisController extends Controller
         $selectedLignes = json_decode($request->selectedLignes, true);
         //Store lignes quotation
         foreach ($selectedLignes  as $ligne) {
-            LigneDevis::create([
+            $ids[] = LigneDevis::create([
                 'devis_id'  => $quotation->id,
                 'num_dent'  => $ligne['num_dent'],
                 'acte_id'   => $ligne['act_id'],
                 'price'     => $ligne['prix'],
                 'state'     => $ligneState,
-            ]);
+            ])->id;
         }
 
         // Make payement if exist !
         if ($request->total_paid != 0)
             $this->createPayment($request->total_paid , $quotation->id);
 
-        return response()->json([],201);
+
+        
+        return response()->json(LigneDevis::whereIn('id' , $ids)->with('act:id,nom')->get() ,201);
     }
 
     /**

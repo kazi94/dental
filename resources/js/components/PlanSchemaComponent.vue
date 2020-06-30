@@ -1,59 +1,70 @@
 <template>
-  <div > 
-    <div class="row  border-bottom border-alternate mb-2">
-
-      <schema-component :selectedTooth="selectedTooth" :isToothVisible="isToothVisible"></schema-component>
+  <div>
+    <div class="row border-bottom border-alternate mb-2">
+      <schema-component
+        :selectedTooth="selectedTooth"
+        :isToothVisible="isToothVisible"
+        ref="schema"
+        :p_class="!isAcceptable ? 'mb-2' : ''"
+      ></schema-component>
 
       <div class="col-md-4" v-show="isActVisible">
-        <div role="tablist">
-          <b-card no-body class="mb-1" v-for="(categ , index) in categories">
-            <b-card-header header-tag="header" class="p-1" role="tab">
-              <b-button block v-b-toggle="'collapse-' +index" variant="info">{{ categ.name }}</b-button>
-            </b-card-header>
-            <b-collapse :id="'collapse-' +index"  accordion="my-accordion" role="tabpanel">
-              <b-card-body>
-                <b-form-group>
-                  <b-form-checkbox
-                    v-for="option in categ.acts"
-                    v-model="selectedActs"
-                    :key="option.id"
-                    :value="option"
-                  >
-                    {{ option.nom }}
-                  </b-form-checkbox>
-                </b-form-group>
-              </b-card-body>
-            </b-collapse>
-          </b-card>
+        <category ref="categories"></category>
 
-        </div>
-
-        <b-button size="sm" variant="success"  class="btn-block" squared @click="save">Ajouter</b-button>
-      </div>  
-      <!-- <category-component></category-component> -->
+        <b-button size="sm" variant="success" class="btn-block" squared @click="save">Ajouter</b-button>
+      </div>
     </div>
 
     <div>
-
       <div class="row">
-
         <div class="col-sm-12">
-
-          <div class="btn-group btn-breadcrumb mb-2 d-sm-flex" v-if="this.quotation.length > 0 || !isAcceptable">
-            <span v-for=" quotState in quotStates" class="btn rounded-0" :class="[ quotState.state ? 'btn-success' : 'btn-info' ]">
-              {{ quotState.name }}
-            </span>
+          <div
+            class="btn-group btn-breadcrumb mb-2 d-sm-flex"
+            v-if="this.quotation.length > 0 || !isAcceptable"
+          >
+            <span
+              v-for="(quotState, index) in quotStates"
+              :key="index"
+              class="btn rounded-0"
+              :class="[
+                                quotState.state ? 'btn-success' : 'btn-info'
+                            ]"
+            >{{ quotState.name }}</span>
           </div>
+
           <div v-if="this.quotation.length > 0">
-            <b-table ref="selectableTable"selectable select-mode="multi"@row-selected="onRowSelected":items="quotation":fields="fields" bordered responsive="sm"small head-variant="light" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
+            <b-table
+              ref="selectableTable"
+              selectable
+              select-mode="multi"
+              @row-selected="onRowSelected"
+              :items="quotation"
+              :fields="fields"
+              bordered
+              responsive="sm"
+              small
+              head-variant="light"
+              :sort-by.sync="sortBy"
+              :sort-desc.sync="sortDesc"
+            >
               <template v-slot:cell(prix)="data">
-                <input type="text"
-                   v-if="edit"
-                   v-model="data.item.prix"
-                   @keyup.enter="data.item.prix = parseInt($event.target.value); edit = false;"
-                     />
-                <p v-else="" @click="edit = true;">
-                   <b class="text-info">{{ data.item.prix }}</b>
+                <input
+                  type="text"
+                  v-if="edit"
+                  v-model="data.item.prix"
+                  @keyup.enter="
+                                        data.item.prix = parseInt(
+                                            $event.target.value
+                                        );
+                                        edit = false;
+                                    "
+                />
+                <p v-else @click="edit = true">
+                  <b class="text-info">
+                    {{
+                    data.item.prix
+                    }}
+                  </b>
                 </p>
               </template>
 
@@ -66,51 +77,123 @@
                   <span aria-hidden="true">&nbsp;</span>
                   <span class="sr-only">Not selected</span>
                 </template>
-              </template>        
+              </template>
             </b-table>
-            
           </div>
+
           <div v-if="!isAcceptable">
-            <b-table bordered responsive="sm" small head-variant="light"   :items="acceptedQuotation" :fields="acceptedQuotationFields"  >
-              <template v-slot:cell(index)="data"> <!-- data = acceptedQuotation -->
+            <b-table
+              bordered
+              responsive="sm"
+              small
+              head-variant="light"
+              :items="acceptedQuotation"
+              :fields="acceptedQuotationFields"
+            >
+              <template v-slot:cell(index)="data">
+                <!-- data = acceptedQuotation -->
                 {{ data.index + 1 }}
               </template>
-              <template v-slot:cell(status)="data"> <!-- data = acceptedQuotation -->
-                <b-badge pill href="#" variant="secondary" @click="handleState(data.item)" >{{ data.item.status }}</b-badge>          
+              <template v-slot:cell(act)="data">
+                {{
+                data.value.nom
+                }}
+              </template>
+              <template v-slot:cell(state)="data">
+                <!-- data = acceptedQuotation -->
+                <b-badge
+                  pill
+                  v-if="data.item.state == 'En cours'"
+                  variant="secondary"
+                  @click="handleState(data.item)"
+                  style="cursor:pointer"
+                >{{ data.item.state }}</b-badge>
+                <b-badge
+                  pill
+                  v-else
+                  variant="success"
+                  @click="handleState(data.item)"
+                  style="cursor:pointer"
+                >{{ data.item.state }}</b-badge>
               </template>
             </b-table>
-            
           </div>
         </div>
-
       </div>
-      
-      <b-row >
-        <b-col sm="9" v-if="this.quotation.length > 0">    
+
+      <b-row>
+        <b-col sm="9" v-if="this.quotation.length > 0">
           <p>
-            <b-button size="sm" squared @click="selectAllRows">Tout selectionner</b-button>
-            <b-button size="sm" squared @click="clearSelected">Vider la selection</b-button>
+            <b-button
+              size="sm"
+              squared
+              @click="this.$refs.quotationTable.selectAllRows"
+            >Tout selectionner</b-button>
+            <b-button
+              size="sm"
+              squared
+              @click="this.$refs.quotationTable.clearSelected"
+            >Vider la selection</b-button>
           </p>
         </b-col>
-        <b-col sm="3" v-if="this.quotation.length > 0 || !isAcceptable">
-          <p class="text-center font-weight-bold alert-success">Remise : <span >{{ remise }} DA</span></p>
-          <p class="text-center font-weight-bold alert-dark" >Total : <span>{{ total }} DA</span></p>
-          <p class="text-center font-weight-bold alert-info border-bottom border-alternate">Total accepté : <span>{{ total_accept}} DA</span></p>
-          <b-button size="sm" squared  :disabled="paidBtnDisabled" v-show="isAcceptable" class="float-right" variant="success" @click="acceptQuotation">Accepter</b-button>
-          <b-button size="sm" squared  :disabled="paidBtnDisabled" class="float-right" variant="primary" v-b-modal.cach-modal>Versement</b-button>
-          <b-button size="sm" squared  v-show="!isAcceptable" class="float-right" variant="light">Imprimer</b-button>
+        <b-col
+          sm="3"
+          :class="{ 'offset-9': !isAcceptable }"
+          v-if="this.quotation.length > 0 || !isAcceptable"
+        >
+          <p class="text-center font-weight-bold alert-success">
+            Remise :
+            <span>{{ remise }} DA</span>
+          </p>
+          <p class="text-center font-weight-bold alert-dark" v-show="isAcceptable">
+            Total :
+            <span>{{ total }} DA</span>
+          </p>
+          <p class="text-center font-weight-bold alert-dark" v-show="!isAcceptable">
+            Total :
+            <span>{{ display_total }} DA</span>
+          </p>
+          <p class="text-center font-weight-bold alert-info border-bottom border-alternate">
+            Total accepté :
+            <span>{{ total_accept }} DA</span>
+          </p>
+          <b-button
+            size="sm"
+            squared
+            :disabled="paidBtnDisabled"
+            v-show="isAcceptable"
+            class="float-right"
+            variant="success"
+            @click="acceptQuotation"
+          >Accepter</b-button>
+          <b-button
+            size="sm"
+            squared
+            :disabled="paidBtnDisabled"
+            class="float-right"
+            variant="primary"
+            v-b-modal.cach-modal
+          >Versement</b-button>
+          <b-button
+            size="sm"
+            squared
+            v-show="!isAcceptable"
+            class="float-right"
+            variant="light"
+          >Imprimer</b-button>
         </b-col>
-      </b-row>    
-      
+      </b-row>
+
       <b-modal
         id="cach-modal"
         ref="modal"
         title="Encaisser"
-        no-fade 
+        no-fade
         @show="resetModal"
         @hidden="resetModal"
-        @ok="!isAcceptable ? validatePayement : validateCach">
-        <form ref="form" >
+        @ok="!isAcceptable ? validatePayement : validateCach"
+      >
+        <form ref="form">
           <b-form-group
             :state="nameState"
             label="Total encaissé"
@@ -118,358 +201,282 @@
             label-for="name-input"
             invalid-feedback="Name is required"
           >
-            <b-form-input
-              id="name-input"
-              v-model="total_paid"
-              :state="nameState"
-              required
-            ></b-form-input>
+            <b-form-input id="name-input" v-model="total_paid" :state="nameState" required></b-form-input>
           </b-form-group>
         </form>
       </b-modal>
     </div>
-
-  </div>  
-
+  </div>
 </template>
 
-
-
 <script>
-  import SchemaComponent from './SchemaComponent.vue';
-  export default {
-    components : {
-      SchemaComponent
-    },
+import SchemaComponent from "./SchemaComponent.vue";
+import Category from "./plan-schema/Category.vue";
+import QuotationTable from "./plan-schema/QuotationTable.vue";
+export default {
+  components: {
+    SchemaComponent,
+    Category,
+    QuotationTable
+  },
 
-    props : [
-      'patient',
-    ],
-    data () {
-      return {
-        quotStates : [
-          { 'name' : 'Devis' , 'state' : true},
-          { 'name' : 'Plan' , 'state' : false},
-          { 'name' : 'En cours' , 'state' : false},
-          { 'name' : 'Fait' , 'state' : false},
-        ],
-        fields: [          
-          { key: 'selected', sortable: false },
-          { key: 'num_dent', sortable: true },
-          { key: 'acte',     sortable: true },
-          { key: 'prix',     sortable: true },
-        ],
-        acceptedQuotationFields: [          
-          { key: 'index', sortable: true },
-          { key: 'num_dent', sortable: true },
-          { key: 'acte',     sortable: true },
-          { key: 'prix',     sortable: true },
-          { key: 'status',   sortable: true },
-        ],        
-        edit: false,
-        selectedTooth  : new Array(),
-        schema_id : '',
-        selected: [],
-        categories : new Array(),
-        selectedActs : [],
-        quotation : [],
-        acceptedQuotation : [],
-        oldQuotation : [],
-        isAcceptable : true,
-        id : '',
-        sortBy: 'num_dent',
-        sortDesc: false,
-        remise : 0,
-        total_accept : 0,
-        total_paid : 0,
-        nameState: null,
-        paidBtnDisabled : true,
-        isActVisible : true,
-        isToothVisible : true,
+  props: ["patient"],
+  data() {
+    return {
+      quotStates: [
+        { name: "Devis", state: true },
+        { name: "Plan", state: false },
+        { name: "En cours", state: false },
+        { name: "Fait", state: false }
+      ],
+
+      acceptedQuotationFields: [
+        { key: "index", sortable: true },
+        { key: "num_dent", sortable: true },
+        { key: "act", sortable: true, label: "Acte" },
+        { key: "price", sortable: true, label: "Prix" },
+        { key: "state", sortable: true, label: "Status" }
+      ],
+
+      selectedTooth: new Array(),
+      schema_id: "",
+
+      quotation: [],
+      acceptedQuotation: [],
+      oldQuotation: [],
+      isAcceptable: true,
+      id: "",
+
+      remise: 0,
+      total_accept: 0,
+      total_paid: 0,
+      display_total: 0,
+      nameState: null,
+      paidBtnDisabled: true,
+      isActVisible: true,
+      isToothVisible: true,
+      fields: [
+        { key: "selected", sortable: false },
+        { key: "num_dent", sortable: true },
+        { key: "acte", sortable: true },
+        { key: "prix", sortable: true }
+      ],
+      selected: [],
+      sortBy: "num_dent",
+      sortDesc: false,
+      edit: false
+    };
+  },
+  methods: {
+    onRowSelected(items) {
+      this.selected = items;
+    },
+    selectAllRows() {
+      this.$refs.selectableTable.selectAllRows();
+    },
+    clearSelected() {
+      this.$refs.selectableTable.clearSelected();
+    },
+    checkFormValidity() {
+      const valid = this.$refs.form.checkValidity();
+      this.nameState = valid;
+      return valid;
+    },
+    resetModal() {
+      this.total_paid = this.total_accept;
+      this.nameState = null;
+    },
+    validateCach(bvModalEvt) {
+      // Prevent modal from closing
+      bvModalEvt.preventDefault();
+      // Trigger submit handler
+      this.handleSubmit();
+    },
+    handleSubmit() {
+      // Exit when the form isn't valid
+      if (!this.checkFormValidity()) {
+        return;
       }
-    },
-    methods : {
-      checkFormValidity() {
-        const valid = this.$refs.form.checkValidity()
-        this.nameState = valid
-        return valid
-      },
-      resetModal() {
-        this.total_paid = this.total_accept;
-        this.nameState  = null;
-      },
-      validateCach(bvModalEvt) {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault()
-        // Trigger submit handler
-        this.handleSubmit()
-      },
-      handleSubmit() {
-        // Exit when the form isn't valid
-        if (!this.checkFormValidity()) {
-          return
-        }
-        // Create Form
-        let form = this.createForm('onDay');
-        // Send data to the server
-        axios.post('/patient/devis' , form)
-          .then( (response) => {
-            // empty table
-            this.quotation = [];
-            // empty selected rows
-            this.selected = [];
-            this.$bvModal.hide('cach-modal')
-            this.$toaster.success("Versement fait !")
-          })
-          .catch((exception) =>{
-            this.$toaster.error(exception)
-        }); 
-        // Hide the modal manually
-        this.$nextTick(() => {
-          this.$bvModal.hide('modal-prevent-closing')
+      // Create Form
+      let form = this.createForm("onDay");
+      // Send data to the server
+      axios
+        .post("/patient/devis", form)
+        .then(response => {
+          // empty table
+          this.quotation = [];
+          // empty selected rows
+          this.$refs.quotationTable.selected = [];
+          this.$bvModal.hide("cach-modal");
+          this.$toaster.success("Versement fait !");
         })
-      },
-      createForm(rhythmTraitement = null)
-      {
-        let form = new FormData();
-        form.set('selectedLignes' , JSON.stringify(this.selected));
-        form.set('quotation' , JSON.stringify(this.quotation));
-        form.set('discount' , this.remise);
-        form.set('total' , this.total);
-        form.set('total_accept' , this.total_accept);
-        form.set('total_paid' , this.total_paid);
-        form.set('rhythmTraitement' , rhythmTraitement);
-        form.set('patient_id' , '59');
-        return form;
-      },      
-      onRowSelected(items) 
-      {
-        this.selected = items
-      },      
-      selectAllRows() 
-      {
-        this.$refs.selectableTable.selectAllRows()
-      },
-      clearSelected() 
-      {
-        this.$refs.selectableTable.clearSelected()
-      },           
-      getActs ()
-      {
-        axios.get('/admin/act/get_acts')
-          .then( (response) => {
-            this.categories = response.data;
-          })
-          .catch((exception) =>{
-            this.$toaster.error(exception)
-          }); 
-      },
-      save()
-      {
-        // Add selected tooth and acts to quotation table
-        // For each selected teeth, bind with acts and create Quotation object
-        $.each(this.selectedTooth, (index,el) =>
-        {
-          // For each selected acts , Create new Quotation Row
-          $.each(this.selectedActs, (i , e) =>
-          {
-            this.quotation.push({
-              'act_id'   : e.id, 
-              'num_dent' : el,
-              'acte'     : e.nom,
-              'prix'     : e.price,
-            });            
-          });
+        .catch(exception => {
+          this.$toaster.error(exception);
+        });
+      // Hide the modal manually
+      this.$nextTick(() => {
+        this.$bvModal.hide("modal-prevent-closing");
+      });
+    },
+    createForm(rhythmTraitement = null) {
+      let form = new FormData();
+      form.set(
+        "selectedLignes",
+        JSON.stringify(this.$refs.quotationTable.selected)
+      );
+      form.set("quotation", JSON.stringify(this.quotation));
+      form.set("discount", this.remise);
+      form.set("total", this.total);
+      form.set("total_accept", this.total_accept);
+      form.set("total_paid", this.total_paid);
+      form.set("rhythmTraitement", rhythmTraitement);
+      form.set("patient_id", this.patient.id);
+      return form;
+    },
 
-          //this.createShapes(el , coords , context);
+    save() {
+      // Add selected tooth and acts to quotation table
+      // For each selected teeth, bind with acts and create Quotation object
+      $.each(this.selectedTooth, (index, el) => {
+        // For each selected acts , Create new Quotation Row
+        $.each(this.$refs.categories.selectedActs, (i, e) => {
+          this.quotation.push({
+            act_id: e.id,
+            num_dent: el,
+            acte: e.nom,
+            prix: e.price
+          });
         });
 
-        // Uncheck the Selected Acts
-        this.selectedActs = [];
+        //this.createShapes(el , coords , context);
+      });
 
-        // Deselect Selected tooth
-        this.selectedTooth = [];
-        this.num_tooth.map(e => e.state = false);
+      // Uncheck the Selected Acts
+      this.$refs.categories.selectedActs = [];
 
-        // sauvegarder la version orginal du devis
-        this.oldQuotation = this.quotation;
+      // Deselect Selected tooth
+      this.selectedTooth = [];
+      this.$refs.schema.num_tooth.map(e => (e.state = false));
 
-      },
-      createShapes(dent , coords , context) 
-      {   
-      },
-      acceptQuotation()
-      {
-        // Store Quotation into database
-        // Create form data
-        let form = this.createForm();
-        // Send data to the server
-        axios.post('/patient/devis' , form)
-          .then( (response) => {
-            this.handleQuotation(response);
-          })
-          .catch((exception) =>{
-            this.$toaster.error(exception)
-        });         
-
-      },
-      handleQuotation(response)
-      {
-        // Change Devis -> Plan
-        this.quotStates[0].state = false;
-        this.quotStates[1].state = true;
-        
-        // Display table with tooth, acts , and price
-        // Quotation table become the selected acts TO DO
-        this.acceptedQuotation = this.selected;
-        this.quotation = [];
-        // Add new Col, for state of the act ("Fait / En cours")
-        this.acceptedQuotation.forEach( e => e.status = "En cours");
-        this.acceptedQuotation.forEach( e => e.id = response.data.id);
-
-        // empty selected rows
-        this.selected = [];
-        this.clearSelected();
-        
-        // Hide accept btn  && Add print btn
-        this.isAcceptable = false;
-        // Hide Acts
-        this.isActVisible = false;
-        // Hide tooth btn
-        this.isToothVisible = false;
-
-        //reset total accept
-        this.total_accept = 0;
-        // display total
-        // ...
-      },
-      handleState(row)
-      {
-        row.status = (row.status == "En cours") ? "Fait" : "En cours";
-        // Calculé la somme total faite
-        this.total_accept+= row.prix;
-        this.tolta_paid = this.total_accept;
-      },
-      validatePayement(){
-        let total_paid = this.total_paid;
-        let lignes_devis = this.acceptedQuotation;
-        let form = new Form()
-        form.set('acceptedQuotation' , lignes_devis);
-        form.set('total_paid' , total_paid);
-        axios.post('/patient/devis/update_devis' , form)
-          .then( (response) => {
-
-            this.$bvModal.hide('cach-modal')
-            this.$toaster.success("Versement fait !")
-          })
-          .catch((exception) =>{
-            this.$toaster.error(exception)
-        }); 
-        // Hide the modal manually
-        this.$nextTick(() => {
-          this.$bvModal.hide('modal-prevent-closing')
-        })        
-      }
+      // sauvegarder la version orginal du devis
+      this.oldQuotation = this.quotation;
     },
-
-    watch : {
-      acceptedQuotation : {
-        handler : function (newVal) 
-        {
-          newVal.forEach( element =>{
-             if (element.status == "Fait"){
-                this.paidBtnDisabled = false;
-                return ;
-             }
-          });
-        },
-        deep : true,
-      },
-      selected : 
-      {
-        handler : function(newVal)
-        {
-          this.total_accept = 0;
-
-          this.paidBtnDisabled = (this.selected.length != 0) ? false : true;
-
-          $.each(newVal , (i , e) => this.total_accept+= parseInt(e.prix));
-        }, 
-        deep : true,
-      },
+    createShapes(dent, coords, context) {},
+    acceptQuotation() {
+      // Store Quotation into database
+      // Create form data
+      let form = this.createForm();
+      // Send data to the server
+      axios
+        .post("/patient/devis", form)
+        .then(response => {
+          this.handleQuotation(response);
+        })
+        .catch(exception => {
+          this.$toaster.error(exception);
+        });
     },
-    computed : 
-    {
-      // Calcul de la valeur total du devis
-      // Lorsque les ligne du devis changent , la valeur est recalculé en fct du nouveau devis
-      total : function()
-      {
-        let total = 0;
-        this.quotation.forEach(myfunction);
+    handleQuotation(response) {
+      // Change Devis -> Plan
+      this.quotStates[0].state = false;
+      this.quotStates[1].state = true;
+      this.display_total = this.total;
+      // Display table with tooth, acts , and price
+      // Quotation table become the selected acts TO DO
+      this.acceptedQuotation = this.selected;
+      this.quotation = [];
+      // Return created quotation rows to display in accepted quotation
+      this.acceptedQuotation = response.data;
 
-        function myfunction(value){
-          total+=parseInt(value.prix);
-        }
+      // empty selected rows
+      this.selected = [];
+      this.clearSelected();
 
-        return total;
-      }
+      // Hide accept btn  && Add print btn
+      this.isAcceptable = false;
+      // Hide Acts
+      this.isActVisible = false;
+      // Hide tooth btn
+      this.isToothVisible = false;
 
+      //reset total accept
+      this.total_accept = 0;
+      // TODO : Display discount
     },
-    mounted()
-    {
-      
-      // If Quotation in Progress
-      //  Display the Dental Schema, with the tooth updated
-      //  Display the current quotation of the patient in the table with the current state of each acts
-      //  Display the versement btn
-      //  Display the print btn
-      // Else
-      //  Display acts by category
-      //  Display dental schema
+    handleState(row) {
+      row.state = row.state == "En cours" ? "Fait" : "En cours";
 
-      this.getActs();
+      // Calculé la somme total faite
+      if (row.state == "Fait") this.total_accept += row.price;
+      else this.total_accept -= row.price;
+
+      this.total_paid = this.total_accept;
+
+      // * Enable payement button
+      this.paidBtnDisabled = this.total_paid != 0 ? false : true;
+    },
+    validatePayement() {
+      let total_paid = this.total_paid;
+      let lignes_devis = this.acceptedQuotation;
+      let form = new Form();
+      form.set("acceptedQuotation", lignes_devis);
+      form.set("total_paid", total_paid);
+      axios
+        .post("/patient/devis/update_devis", form)
+        .then(response => {
+          this.$bvModal.hide("cach-modal");
+          this.$toaster.success("Versement fait !");
+        })
+        .catch(exception => {
+          this.$toaster.error(exception);
+        });
+      // Hide the modal manually
+      this.$nextTick(() => {
+        this.$bvModal.hide("modal-prevent-closing");
+      });
     }
+  },
+
+  watch: {
+    selected: {
+      handler: function(newVal) {
+        this.total_accept = 0;
+
+        this.paidBtnDisabled = this.selected.length != 0 ? false : true;
+
+        $.each(newVal, (i, e) => (this.total_accept += parseInt(e.prix)));
+      },
+      deep: true
+    }
+  },
+  computed: {
+    // Calcul de la valeur total du devis
+    // Lorsque les ligne du devis changent , la valeur est recalculé en fct du nouveau devis
+    total: function() {
+      let total = 0;
+      this.quotation.forEach(myfunction);
+
+      function myfunction(value) {
+        total += parseInt(value.prix);
+      }
+
+      return total;
+    }
+  },
+  mounted() {
+    // If Quotation in Progress
+    //  Display the Dental Schema, with the tooth updated
+    //  Display the current quotation of the patient in the table with the current state of each acts
+    //  Display the versement btn
+    //  Display the print btn
+    // Else
+    //  Display acts by category
+    //  Display dental schema
   }
+};
 </script>
 
 <style>
-#btn-container {
-background-color: #e0e0e0;
-  display: inline-block;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  width: 708px;
-  margin-left: -3px;
-}
-.btn {
-
-}
- .list-number{
-  list-style : none;
-  margin-left : -39px;
-  margin-top : 0;
-  margin-bottom : 0;
- }
- .number {
-  padding: 5px 0px;
-  width: 40px;
-  text-align: center;
-  font-size: 0.75em;
-  font-weight: 900;
-  cursor: pointer;
-  margin: 2.5px 2px;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.number:hover {
-    border-radius: 3px;
-    background-color: #ccc;
-}
 /** The Magic **/
 .btn-breadcrumb .btn:not(:last-child):after {
   content: " ";
@@ -503,13 +510,13 @@ background-color: #e0e0e0;
 
 /** The Spacing **/
 .btn-breadcrumb .btn {
-  padding:6px 12px 6px 24px;
+  padding: 6px 12px 6px 24px;
 }
 .btn-breadcrumb .btn:first-child {
-  padding:6px 6px 6px 10px;
+  padding: 6px 6px 6px 10px;
 }
 .btn-breadcrumb .btn:last-child {
-  padding:6px 18px 6px 24px;
+  padding: 6px 18px 6px 24px;
 }
 
 /** Default button **/

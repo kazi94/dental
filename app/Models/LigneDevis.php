@@ -8,6 +8,12 @@ class LigneDevis extends Model
 {
     public $table ="lignedevis";
 
-	protected $fillable = ['num_dent','price','acte_id','devis_id' ,'state'];
+    protected $fillable = ['num_dent','price','acte_id','devis_id' ,'state'];
+    
+
+    public function act()
+    {
+        return $this->hasOne('App\Models\Acte', 'id', 'acte_id');
+    }
 
 }

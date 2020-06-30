@@ -70,7 +70,6 @@
     },
     props : [
       'patient',
-        'href'
     ],
     data () {
       return {

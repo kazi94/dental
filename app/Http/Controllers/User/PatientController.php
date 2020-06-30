@@ -145,7 +145,8 @@ class PatientController extends Controller
      */
     public function show($id)
     {
-        $patient = Patient::with('radios','prescriptions')->find($id);
+        $patient = $this->getPatient($id);
+
         $pathologies = DB::table('pathologie_patient')->join('pathologies','pathologies.id','pathologie_patient.pathologie_id')->where('patient_id',$id)->get();
         $antecedents = DB::table('antecedent_patient')->join('antecedents','antecedents.id','antecedent_patient.antecedent_id')->where('patient_id',$id)->get();
 
@@ -249,7 +250,7 @@ class PatientController extends Controller
 
 
     private function getPatient($id) {
-        return response()->json(Patient::with('antecedents','pathologies')->find($id) , 200);
+        return Patient::with('antecedents','pathologies' ,'lastSchema.lastQuotation.lines')->find($id);
     }
 
 
