@@ -7,7 +7,6 @@
 		    </div>
 		</div>
 	    <div class="card-body">
-
 	    	<div class="row" v-if="showinfos">
 				<div class="col-sm-3">
 					<div class="widget-content-wrapper">

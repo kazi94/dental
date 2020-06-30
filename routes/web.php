@@ -30,8 +30,13 @@ Route::prefix('/admin')->group(function()
 
 /*:::::::::::::::::::::PATIENT MANAGEMENT MODULE:::::::::::::::::::::::*/
  Route::resource('/patient','User\PatientController')->middleware('auth');
+<<<<<<< HEAD
  Route::get('/patients','User\PatientController@getPatients')->middleware('auth');
  Route::post('/patient/radiographie','User\PatientController@postFile')->name('upload')->middleware('auth');
+=======
+ Route::post('/patient/radiographie','User\PatientController@postFile')->name('upload')->middleware('auth');
+ Route::get('/patients','User\PatientController@getPatients')->middleware('auth');
+>>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
  Route::get('pathologies','User\PatientController@getPathologies')->middleware('auth');
  Route::get('antecedents','User\PatientController@getAntecedents')->middleware('auth');
  

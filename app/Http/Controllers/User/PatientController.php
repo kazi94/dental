@@ -95,7 +95,6 @@ class PatientController extends Controller
      **/
     public function store(Request $request)
    {
-
         $patient                      = new Patient;
         $patient->nom                 = ucfirst($request->nom);
         $patient->prenom              = ucfirst($request->prenom);
@@ -199,7 +198,6 @@ class PatientController extends Controller
         $antecedents =collect($request->antecedents)->map(function($e){
             return $e['id'];
         });
-
         $patient->pathologies()->sync($pathologies);
         $patient->antecedents()->sync($antecedents);
 

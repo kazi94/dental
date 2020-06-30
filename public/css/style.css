@@ -4,7 +4,11 @@
 }
 .active_row {
 	color: white;
+<<<<<<< HEAD
 	background-color: #adb5bd;
+=======
+	background-color: green;
+>>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
 	font-weight: bold;
 }
 .demo-gallery > ul {
@@ -13,7 +17,11 @@
 .demo-gallery > ul > li {
     float: left;
     margin-bottom: 15px;
+<<<<<<< HEAD
     margin-right: 20px;
+=======
+    /*margin-right: 20px;*/
+>>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
     width: 200px;
 }
 .demo-gallery > ul > li a {
@@ -120,6 +128,7 @@
 }
 .home .demo-gallery {
     padding-bottom: 80px;
+<<<<<<< HEAD
 }
 
 .alert-info {
@@ -136,4 +145,6 @@
     border-radius: .25rem;
     border-bottom: 1px solid;
     border-right: 1px solid;
+=======
+>>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
 }

@@ -12,6 +12,9 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
     <meta name="msapplication-tap-highlight" content="no">
+<<<<<<< HEAD
     <link rel="stylesheet" href="{{ asset('/plugins/bootstrap-4.4.1-dist/css/bootstrap.min.css') }}">
+=======
+>>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
     <link href="{{ asset('architect/main.css') }}" rel="stylesheet">
 </head>

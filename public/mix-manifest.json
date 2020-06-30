@@ -1,4 +1,7 @@
 {
+<<<<<<< HEAD
     "/js/admin_app.js": "/js/admin_app.js",
+=======
+>>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
     "/js/app.js": "/js/app.js"
 }

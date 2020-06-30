@@ -46,7 +46,11 @@
                     </a>
                 </li>
                 <li>
+<<<<<<< HEAD
                     <a href="{{ route('act.index') }}" class="">
+=======
+                    <a href="{{ route('acte.index') }}" class="">
+>>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
                         <i class="metismenu-icon pe-7s-rocket"></i>
                         Actes
                     </a>
@@ -65,7 +69,11 @@
                     </a>
                 </li>    
                 <li>
+<<<<<<< HEAD
                     <a href="{{ route('act.index') }}" class="">
+=======
+                    <a href="{{ route('acte.index') }}" class="">
+>>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
                         <i class="metismenu-icon pe-7s-rocket"></i>
                         Payements
                     </a>
