@@ -7,7 +7,7 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-bar(); 
+
 
 //VueFormWizard Registration
 // import VueFormWizard from 'vue-form-wizard'
@@ -15,20 +15,12 @@ bar();
 // Vue.use(VueFormWizard)
 
 //vForm Registration
-<<<<<<< HEAD
 import Vue from 'vue'
 
 import { Form, HasError, AlertError } from 'vform'
 window.Form = Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
-=======
-import Vue from 'vue';
-import { Form, HasError, AlertError } from 'vform';
-window.Form = Form;
-Vue.component(HasError.name, HasError);
-Vue.component(AlertError.name, AlertError);
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
 
 //V-toasrze Registration
 import Toaster from 'v-toaster'
@@ -44,7 +36,6 @@ Vue.use(Toaster, {timeout: 5000})
 //Vue-MultipleSelect Regsitration
 import Multiselect from 'vue-multiselect'
 Vue.component('multiselect', Multiselect)
-<<<<<<< HEAD
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
 // Install BootstrapVue
@@ -54,18 +45,12 @@ Vue.use(IconsPlugin)
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-=======
-
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
-
+import './style.css'
+import './custom.css'
 //VdtnetTable Registration
 import VdtnetTable from 'vue-datatables-net'
 
 // import 'datatables.net-bs4'
-<<<<<<< HEAD
-=======
-
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
 // below you should only import what you need
 // Example: import buttons and plugins
 // import 'datatables.net-buttons/js/dataTables.buttons.js'
@@ -83,15 +68,8 @@ import VdtnetTable from 'vue-datatables-net'
 Vue.component('patient-component', require('./components/PatientComponent.vue').default);
 Vue.component('liste-patient-component', require('./components/ListePatientComponent.vue').default)
 Vue.component('informations-component', require('./components/InformationsComponent.vue').default)
-<<<<<<< HEAD
-// Vue.component('radiographies-component', require('./components/RadiographiesComponent.vue').default)
-// Vue.component('prescriptions-component', require('./components/PrescriptionsComponent.vue').default)
 Vue.component('tabs-component', require('./components/TabsComponent.vue').default)
 Vue.component('schema-dental-component', require('./components/SchemaDentalComponent.vue').default)
-=======
-Vue.component('radiographies-component', require('./components/RadiographiesComponent.vue').default)
-Vue.component('prescriptions-component', require('./components/PrescriptionsComponent.vue').default)
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
 
 
 
@@ -105,10 +83,7 @@ Vue.component('prescriptions-component', require('./components/PrescriptionsComp
 const app = new Vue(
 {
     el: '#app',
-<<<<<<< HEAD
    
-=======
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
     data : {
     	pathologies : {},
     	antecedents : {},
@@ -116,26 +91,18 @@ const app = new Vue(
         showInfos: false,
         showRadios: false,
         showPrescriptions: false,
-<<<<<<< HEAD
         showRdv: false,
         showSchema : false,
-=======
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
         patients : [],
     },
     methods : {
     	newModal()
         {
-<<<<<<< HEAD
             
             $("#patient_add_modal").modal('show');     
 
         },
 
-=======
-                $("#patient_add_modal").modal('show');               
-        },
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
         generatePatient($event) 
         {
             //Afficher les informations perso/medic                 
@@ -147,29 +114,29 @@ const app = new Vue(
             this.showInfos = true;
             this.showRadios = true;
             this.showPrescriptions = true;
-<<<<<<< HEAD
             this.showRdv = true;
             this.showSchema = true;
 
         },
 
-=======
-        },    
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
         generateSelectedPatient($patient)
         {
             this.patient = $patient;
+            this.showSchema = false;
+            
+            setTimeout(() => {
+                lightGallery(document.getElementById('lightgallery'), {
+                    thumbnail:true
+                });
+                this.showInfos = true;
+                this.showRadios = true;             
+                this.showPrescriptions = true;            
+                this.showRdv = true;  
+                this.showSchema = true;  
+            }, '1000'); 
             //Afficher les boutons ajouter : radio, prescription,schema
-<<<<<<< HEAD
 
-            lightGallery(document.getElementById('lightgallery'), {
-                thumbnail:true
-            });
-            this.showInfos = true;
-            this.showRadios = true;             
-            this.showPrescriptions = true;            
-            this.showRdv = true;  
-            this.showSchema = true;          
+        
         },
 
         regeneratePatient(patient) 
@@ -178,31 +145,13 @@ const app = new Vue(
             $.each(this.patients, function(k, e) {
                 if (e.id === patient.id)
                     e = patient;
-=======
-            this.showInfos = true;
-            this.showRadios = true;
-            lightGallery(document.getElementById('lightgallery'), {
-                thumbnail:true
-            });
-            this.showPrescriptions = true;
-        },
-        regeneratePatient($patient){ // function to change the infos about patient in all components
-            this.patient = $patient;
-            $.each(this.patients, function(k, e) {
-                if (e.id === this.patient.id)
-                    e = this.patient;
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
             });
         }
     },
     mounted(){ // on mounted page, display all patients
         axios.get('/patients').then( (response) => {
             this.patients = response.data;
-<<<<<<< HEAD
         });
-=======
-        } );
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
     }
 
 });

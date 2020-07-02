@@ -11,12 +11,8 @@ const mix = require('laravel-mix');
  |
  */
 mix.disableNotifications();
-<<<<<<< HEAD
  mix.js('resources/js/app.js', 'public/js');
  mix.js('resources/js/admin_app.js', 'public/js');
-=======
-mix.js('resources/js/app.js', 'public/js');
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
 // mix.css('node_modules/gentelella/vendors/animate.css/animate.css', 'public/css')
 //  	.css('node_modules/gentelella/vendors/bootstrap/dist/css/bootstrap.css', 'public/css')
 // 	.css('node_modules/gentelella/vendors/font-awesome/css/font-awesome.css', 'public/css')

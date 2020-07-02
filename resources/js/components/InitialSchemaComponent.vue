@@ -24,7 +24,7 @@
 
       <b-button
         v-for="(btm_btn, btm_idx) in num_tooth"
-        :keys="btm_idx"
+        :key="btm_idx"
         v-if="btm_idx > 15"
         :pressed.sync="btm_btn.state"
         variant="outline-success"
@@ -39,7 +39,7 @@
       <div class="rounded-0" >
         <b-button
           v-for="(btn, idx) in buttons"
-          :keys="idx"
+          :key="idx"
           :pressed.sync="btn.state"
            
           squared 

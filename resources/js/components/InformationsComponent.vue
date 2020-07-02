@@ -1,14 +1,14 @@
 <template>
     <div class="main-card mb-2 card">
 		<div class="card-header">
-		    <h5 class="card-title">Informations Personnels et Médicales</h5>
+		    <h5 class="card-title">Informations Personnels</h5>
 		    <div class="btn-actions-pane-right actions-icon-btn" v-if="showinfos">
 		        <button @click="updatePatient(patient)" data-toggle="tooltip" data-placement="bottom" title="Modifier les informations patient" class="btn-icon btn-icon-only btn btn-link"><i class="pe-7s-note btn-icon-wrapper"></i></button>
 		    </div>
 		</div>
-	    <div class="card-body">
+	    <div class="card-body p-1 pl-3">
 	    	<div class="row" v-if="showinfos">
-				<div class="col-sm-3">
+				<!-- <div class="col-sm-3">
 					<div class="widget-content-wrapper">
 	                   <div class="mr-3 ml-2 widget-content">
 	                        <img width="50" class="rounded-circle" src="/img/user.png" alt="">
@@ -18,17 +18,26 @@
 	                        <div class="widget-subheading">{{ patient.profession }}</div>
 	                    </div>
 	                </div>
-				</div>
+				</div> -->
 
-				<div class="col-sm-3 mt-2">
+				<!-- <div class="col-sm-3 mt-2">
 					<p><strong>Age :</strong> <span v-if=" patient.age != '' ">{{ patient.age + ' ans' }}</span></p>
 					<p><strong>Sexe :</strong>{{ patient.sexe }} </p>
 					<p><strong>Adresse :</strong> {{ patient.adresse }}</p>
-				</div>
-				<div class="col-sm-6 mt-2">
+				</div> -->
+				<!-- <div class="col-sm-6 mt-2">
 					<p><strong>Pathologies :</strong> <span v-for="path in patient.pathologies">{{ path.pathologie }},</span></p>
 					<p><strong>Antécédents Stomatologiques :</strong> <span v-for="ant in patient.antecedents">{{ ant.nom }},</span> </p>
 					<p><strong>Fumeur :</strong> {{ patient.fumeur }}</p>
+				</div>				 -->
+				<div class="col-sm-8 ">
+					<dt><strong>Patient :</strong> </dt><dd>{{ patient.nom }} {{ patient.prenom }}</dd>
+					<dt><strong>Téléphone :</strong> </dt><dd>{{ patient.sexe }}</dd> 
+				</div>				
+				<div class="col-sm-4">
+					<dt class="text-success"  v-if="patient.last_schema"><strong>Créditeur :</strong> <span>{{ patient.last_schema.last_quotation.crediteur.crediteur }} DA</span> </dt>
+					<dt class="text-warning" v-if="patient.last_schema"><strong>Débiteur : </strong> <span></span> </dt>
+					<dt  v-if="patient.last_schema"><strong>Dernier versement : </strong> <span>{{ patient.last_schema.last_quotation.last_payment.paid_at }}</span> </dt>
 				</div>
 	    	</div>
 
@@ -194,7 +203,9 @@
                 type: Array 
             },
 			patient: Object,
-			showinfos: Boolean,         
+			showinfos : {
+                type: Boolean
+            },        
         },		
 		data() {
             return {
@@ -235,7 +246,6 @@
 		},
 		mounted() {
 			console.log("Informations Component mounted")
-			$('[data-toggle="tooltip"]').tooltip()
 		},
 	}
 </script>

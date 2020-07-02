@@ -9,7 +9,7 @@ use App\Models\Schema;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Debugbar;
 class DevisController extends Controller
 {
     /**
@@ -119,15 +119,17 @@ class DevisController extends Controller
      **/
     public function updateDevis(Request $request)
     {       
-        // mettre à jour les actes de en cours  à fait
-        foreach ($request->acceptedQuotation as $value) {
-            $quot_id = LigneDevis::where('id', $value->id)
-                ->update(['state' => $value->status]);        
+        // mettre à jour les actes : en cours  à fait
+        $selectedLignes = json_decode($request->acceptedQuotation, true);
+        foreach ($selectedLignes as $value) {
+            $ligne_id = LigneDevis::where('id', $value['id'])
+                ->update([ 'state' => $value['state'] ]);    
+                $quot_id = LigneDevis::find($value['id']);    
         }
-
-        // Make payement if exist !
+        Debugbar::info($quot_id->devis_id);
+        // Make payement if exist ! (Always exist)
         if ($request->total_paid != 0)
-            $this->createPayment($request->total_paid , $quot_id);        
+            $this->createPayment($request->total_paid , $quot_id->devis_id);        
 
         return response()->json([] , 201);
 

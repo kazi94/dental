@@ -37,36 +37,12 @@
                         </div>
                         <button class="close"></button>
                     </div>
-<<<<<<< HEAD
                 </div>
-=======
-                    <ul class="header-menu nav">
-                        <li class="nav-item">
-                            <a href="javascript:void(0);" class="nav-link" data-toggle="modal" data-target=".patient_add_modal" {{-- data-toggle="tooltip" data-placement="bottom" --}} title="Ajouter un nouveau patient">
-                                <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"> </i>
-                                Patient
-                            </a>
-                        </li>
-                        <li class="btn-group nav-item">
-                            <a href="javascript:void(0);" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Ajouter un nouveau schéma dentaire">
-                                <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"></i>
-                                Schéma dentaire
-                            </a>
-                        </li>
-                        <li class="dropdown nav-item">
-                            <a href="javascript:void(0);" class="nav-link">
-                                <i class="nav-link-icon fa fa-cog"></i>
-                                Paramètres
-                            </a>
-                        </li>
-                    </ul>        </div>
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
                 <div class="app-header-right">
                     <div class="header-btn-lg pr-0">
                         <div class="widget-content p-0">
                             <div class="widget-content-wrapper">
                                 <div class="widget-content-left">
-<<<<<<< HEAD
                                       <div class="btn-group">
                                           <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
                                               <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}+{{ Auth::user()->prenom }}" alt="..." width="42" class="rounded-circle">
@@ -86,29 +62,6 @@
                                     </div>
                                     <div class="widget-subheading">
                                         {{ Auth::user()->profession }}
-=======
-                                    <div class="btn-group">
-                                        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
-                                            <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}+{{ Auth::user()->prenom }}  " alt="..." width="42" class="rounded-circle">
-                                            <i class="fa fa-angle-down ml-2 opacity-8"></i>
-                                        </a>
-                                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
-                                            <button type="button" tabindex="0" class="dropdown-item">User Account</button>
-                                            <button type="button" tabindex="0" class="dropdown-item">Settings</button>
-                                            <h6 tabindex="-1" class="dropdown-header">Header</h6>
-                                            <button type="button" tabindex="0" class="dropdown-item">Actions</button>
-                                            <div tabindex="-1" class="dropdown-divider"></div>
-                                            <button type="button" tabindex="0" class="dropdown-item">Dividers</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="widget-content-left  ml-3 header-user-info">
-                                    <div class="widget-heading">
-                                        Alina Mclourd
-                                    </div>
-                                    <div class="widget-subheading">
-                                        VP People Manager
->>>>>>> a3433d2ecbd535b1e67896b2cf4c7a16d59556b3
                                     </div>
                                 </div>
                                 <div class="widget-content-right header-user-info ml-3">

@@ -248,7 +248,13 @@ class PatientController extends Controller
 
 
     private function getPatient($id) {
-        return Patient::with('antecedents','pathologies' ,'lastSchema.lastQuotation.lines')->find($id);
+        return Patient::with(
+            'antecedents',
+            'pathologies' ,
+            'lastSchema.lastQuotation.lines.act',
+            'lastSchema.lastQuotation.crediteur',
+            'lastSchema.lastQuotation.lastPayment'
+            )->find($id);
     }
 
 
