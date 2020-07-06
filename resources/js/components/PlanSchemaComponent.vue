@@ -20,7 +20,7 @@
         <div class="col-sm-12">
           <div
             class="btn-group btn-breadcrumb mb-2 d-sm-flex"
-            v-if="this.quotation.length > 0 ||  patient.last_schema != null"
+            v-if="this.quotation.length > 0 || this.acceptedQuotation.length > 0"
           >
             <span
               v-for="(quotState, index) in quotStates"
@@ -83,7 +83,7 @@
           </div>
 
           <!-- Table Plan -->
-          <div v-if="patient.last_schema != null">
+          <div>
             <b-table
               bordered
               responsive="sm"
@@ -124,7 +124,7 @@
       </div>
 
       <b-row>
-        <b-col sm="9" v-if="this.quotation.length > 0">
+        <b-col sm="9" v-if="this.quotation.length > 0 ">
           <p>
             <b-button
               size="sm"
@@ -141,7 +141,7 @@
         <b-col
           sm="3"
           :class="{ 'offset-9': !isQuotation }"
-          v-if="this.quotation.length > 0 || patient.last_schema != null"
+          v-if="this.quotation.length > 0 || this.acceptedQuotation.length > 0"
         >
           <p class="text-center font-weight-bold alert-success">
             Remise :
