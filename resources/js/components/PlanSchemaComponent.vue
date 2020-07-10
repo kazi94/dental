@@ -8,7 +8,7 @@
         :p_class="!isQuotation ? 'mb-2' : ''"
       ></schema-component>
 
-      <div class="col-md-4" v-show="isActVisible && patient.last_schema == null">
+      <div class="col-md-4" v-show="isActVisible">
         <category ref="categories"></category>
 
         <b-button size="sm" variant="success" class="btn-block" squared @click="save">Ajouter</b-button>
@@ -20,7 +20,7 @@
         <div class="col-sm-12">
           <div
             class="btn-group btn-breadcrumb mb-2 d-sm-flex"
-            v-if="this.quotation.length > 0 ||  patient.last_schema != null"
+            v-if="this.quotation.length > 0 || this.acceptedQuotation.length > 0"
           >
             <span
               v-for="(quotState, index) in quotStates"
@@ -83,8 +83,9 @@
           </div>
 
           <!-- Table Plan -->
-          <div v-if="patient.last_schema != null">
+          <div>
             <b-table
+              v-if="acceptedQuotation.length > 0"
               bordered
               responsive="sm"
               small
@@ -124,24 +125,16 @@
       </div>
 
       <b-row>
-        <b-col sm="9" v-if="this.quotation.length > 0">
+        <b-col sm="9" v-if="this.quotation.length > 0 ">
           <p>
-            <b-button
-              size="sm"
-              squared
-              @click="this.selectAllRows"
-            >Tout selectionner</b-button>
-            <b-button
-              size="sm"
-              squared
-              @click="this.clearSelected"
-            >Vider la selection</b-button>
+            <b-button size="sm" squared @click="this.selectAllRows">Tout selectionner</b-button>
+            <b-button size="sm" squared @click="this.clearSelected">Vider la selection</b-button>
           </p>
         </b-col>
         <b-col
           sm="3"
           :class="{ 'offset-9': !isQuotation }"
-          v-if="this.quotation.length > 0 || patient.last_schema != null"
+          v-if="this.quotation.length > 0 || this.acceptedQuotation.length > 0"
         >
           <p class="text-center font-weight-bold alert-success">
             Remise :
@@ -195,10 +188,11 @@
         no-fade
         button-size="sm"
         modal-ok="Valider"
+        ok-title="Encaisser"
         @show="resetModal"
         @hidden="resetModal"
         @ok="verify"
-        >
+      >
         <form ref="form">
           <b-form-group
             :state="nameState"
@@ -211,17 +205,60 @@
           </b-form-group>
         </form>
       </b-modal>
-
     </div>
   </div>
 </template>
 
 <script>
-
 import SchemaComponent from "./SchemaComponent.vue";
 import Category from "./plan-schema/Category.vue";
 import QuotationTable from "./plan-schema/QuotationTable.vue";
 
+// outside of the component:
+function initialState() {
+  return {
+    quotStates: [
+      { name: "Devis", state: true },
+      { name: "Plan", state: false },
+      { name: "En cours", state: false },
+      { name: "Fait", state: false }
+    ],
+    acceptedQuotationFields: [
+      { key: "index", sortable: true },
+      { key: "num_dent", sortable: true },
+      { key: "act", sortable: true, label: "Acte" },
+      { key: "price", sortable: true, label: "Prix" },
+      { key: "state", sortable: true, label: "Status" }
+    ],
+    selectedTooth: new Array(),
+    schema_id: "",
+    quotation: [],
+    acceptedQuotation: [],
+    oldQuotation: [],
+    isQuotation: true,
+    id: "",
+    remise: 0,
+    total_accept: 0,
+    total_paid: 0,
+    display_total: 0,
+    nameState: null,
+    paidBtnDisabled: true,
+    isActVisible: true,
+    isToothVisible: true,
+    fields: [
+      { key: "selected", sortable: false },
+      { key: "num_dent", sortable: true },
+      { key: "acte", sortable: true },
+      { key: "prix", sortable: true }
+    ],
+    selected: [],
+    sortBy: "num_dent",
+    sortDesc: false,
+    edit: false
+  };
+}
+
+// COMPONENT
 export default {
   components: {
     SchemaComponent,
@@ -231,46 +268,7 @@ export default {
 
   props: ["patient"],
   data() {
-    return {
-      quotStates: [
-        { name: "Devis", state: true },
-        { name: "Plan", state: false },
-        { name: "En cours", state: false },
-        { name: "Fait", state: false }
-      ],
-      acceptedQuotationFields: [
-        { key: "index", sortable: true },
-        { key: "num_dent", sortable: true },
-        { key: "act", sortable: true, label: "Acte" },
-        { key: "price", sortable: true, label: "Prix" },
-        { key: "state", sortable: true, label: "Status" }
-      ],
-      selectedTooth: new Array(),
-      schema_id: "",
-      quotation: [],
-      acceptedQuotation: [],
-      oldQuotation: [],
-      isQuotation: true,
-      id: "",
-      remise: 0,
-      total_accept: 0,
-      total_paid: 0,
-      display_total: 0,
-      nameState: null,
-      paidBtnDisabled: true,
-      isActVisible: true,
-      isToothVisible: true,
-      fields: [
-        { key: "selected", sortable: false },
-        { key: "num_dent", sortable: true },
-        { key: "acte", sortable: true },
-        { key: "prix", sortable: true }
-      ],
-      selected: [],
-      sortBy: "num_dent",
-      sortDesc: false,
-      edit: false
-    };
+    return initialState();
   },
 
   methods: {
@@ -293,7 +291,6 @@ export default {
       this.nameState = null;
     },
     validateCach() {
-
       // Exit when the form isn't valid
       if (!this.checkFormValidity()) {
         return;
@@ -321,10 +318,7 @@ export default {
     },
     createForm(rhythmTraitement = null) {
       let form = new FormData();
-      form.set(
-        "selectedLignes",
-        JSON.stringify(this.selected)
-      );
+      form.set("selectedLignes", JSON.stringify(this.selected));
       form.set("quotation", JSON.stringify(this.quotation));
       form.set("discount", this.remise);
       form.set("total", this.total);
@@ -404,31 +398,27 @@ export default {
       // TODO : Display discount
     },
     handleState(row) {
-      if (row.state = "En cours"){
-        row.state =  "Fait";
-        // Calculé la somme total faite
-        /*if (row.state == "Fait")*/ this.total_accept += row.price;
-        /*else this.total_accept -= row.price*/;
+      if (row.state == "En cours") {
+        row.state = "Fait";
+        this.total_accept += row.price; // Calculé la somme total faite
+        this.total_paid = this.total_accept;
+      } else if (row.state == "Fait" && !row.lock) {
+        row.state = "En cours";
+        this.total_accept -= row.price; // Calculé la somme total faite
+        this.total_paid = this.total_accept;
       }
-
-      this.total_paid = this.total_accept;
-      // * Enable payement button
-      this.paidBtnDisabled = this.total_paid != 0 ? false : true;      
-
+      // * Handle payement button
+      this.paidBtnDisabled = this.total_paid != 0 ? false : true;
     },
-    verify(bvModalEvt){
+    verify(bvModalEvt) {
       // Prevent modal from closing
       bvModalEvt.preventDefault();
 
-      if (!this.isQuotation)
-        this.validatePayements();
-      else  
-        this.validateCach();
-
+      if (!this.isQuotation) this.validatePayements();
+      else this.validateCach();
     },
     // Confirm Payement(s) of the created quotation
     validatePayements() {
-
       let total_paid = this.total_paid;
       let lignes_devis = this.acceptedQuotation;
       let form = new FormData();
@@ -439,6 +429,13 @@ export default {
       axios
         .post("/patient/devis/update_devis", form)
         .then(response => {
+          if (response.data == "fait") {
+            // Total paid == total of Plan
+            // empty and reset tables and schema and show categories for new quotation
+            Object.assign(this.$data, initialState());
+
+            // TODO : RESET DENTAL SCHEMA
+          }
           this.$bvModal.hide("cach-modal");
           this.$toaster.success("Versement fait !");
         })
@@ -450,26 +447,24 @@ export default {
       this.$nextTick(() => {
         this.$bvModal.hide("modal-prevent-closing");
       });
-
     },
-    initialState()
-    {
-      this.isQuotation =  true;
+    initialState() {
+      this.isQuotation = true;
       this.acceptedQuotation = [];
-      this.remise = 0
-      this.display_total = 0
+      this.remise = 0;
+      this.display_total = 0;
       this.quotStates[0].state = true;
       this.quotStates[2].state = false;
-      this.isToothVisible =  true;      
+      this.isToothVisible = true;
     }
   },
 
   watch: {
     selected: {
-      handler: function(newVal , old) {
+      handler: function(newVal, old) {
         this.total_accept = 0;
         console.log("old val " + JSON.stringify(old));
-        console.log("new val " + JSON.stringify(newVal)  );
+        console.log("new val " + JSON.stringify(newVal));
         // Enable 'Accepter' && 'Versement' buttons
         this.paidBtnDisabled = this.selected.length != 0 ? false : true;
         // Calculate total_accept
@@ -477,9 +472,9 @@ export default {
       },
       deep: true
     },
-    'selected.prix' : function( val , oldVal) {
-        console.log("old val " + JSON.stringify(oldVal));
-        console.log("new val " + JSON.stringify(val)  );
+    "selected.prix": function(val, oldVal) {
+      console.log("old val " + JSON.stringify(oldVal));
+      console.log("new val " + JSON.stringify(val));
     }
   },
 
@@ -499,16 +494,19 @@ export default {
   },
 
   mounted() {
-    console.log("Plan schema Component")
+    console.log("Plan schema Component");
     // If Quotation Exist && in Progress
-    //  Display the Dental Schema, with the tooth updated
+    // Display the Dental Schema, with the tooth updated
     //....
     //  Display the current quotation of the patient in the table with the current state of each acts
     //  Display the versement btn
     //  Display the print btn
-    if (this.patient.last_schema != null)
-    {
-      this.isQuotation =  false;
+    if (
+      this.patient.last_schema != null &&
+      this.patient.last_schema.last_quotation != null &&
+      this.patient.last_schema.last_quotation.lines != null
+    ) {
+      this.isQuotation = false;
       // Display lines Quotation in Plan Table
       this.acceptedQuotation = this.patient.last_schema.last_quotation.lines;
       //Display discount
@@ -519,11 +517,11 @@ export default {
       this.quotStates[0].state = false;
       this.quotStates[2].state = true;
       // Hide Tooth numbers
-      this.isToothVisible =  false;
-    } else 
-        this.initialState();
+      this.isToothVisible = false;
+      this.isActVisible = false;
+      // TODO :Display the Dental Schema, with the tooth updated
+    } else Object.assign(this.$data, initialState());
   }
-
 };
 </script>
 

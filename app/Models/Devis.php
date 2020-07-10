@@ -12,6 +12,8 @@ class Devis extends Model
 
 	protected $fillable = ['schema_id','total','discount','total_accept' ,'state'];
 
+	protected $appends = ['date_devis' ,'debit'];
+
 	public function lines()
 	{
 	    return $this->hasMany('App\Models\LigneDevis', 'devis_id');
@@ -48,5 +50,20 @@ class Devis extends Model
 
 	public function getDateDevisAttribute(){
 		return date("d/m/Y" , strtotime($this->created_at));
+	}
+
+	/**
+	 * Calculate Debit of Quotation
+	 *
+	 * 		
+	 *
+	 * @param 
+	 * @return Debit
+	 **/
+	public function getDebitAttribute($value)
+	{
+		if ($this->crediteur)
+			return $this->total_accept - $this->crediteur->crediteur;
+		else return null;
 	}
 }

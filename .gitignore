@@ -1,6 +1,7 @@
 # Build and Release Folders
 /node_modules
 /vendor
+/public/gentelella
 
 
 # Other files and folders

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     @include('layouts.head') 
-    <body @if (strpos(url()->current(),"/appointement") != false) onload="init();" @endif >
+    <body @if (strpos(url()->current(),"/rendez-vous") != false) onload="init();" @endif >
         
         <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header closed-sidebar" >
             @include('layouts.header')   
