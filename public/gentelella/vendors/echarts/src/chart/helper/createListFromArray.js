@@ -1,11 +1,11 @@
-define(function(require) {
-    'use strict';
+cdefine(function(require) {
+    "use strict";
 
-    var List = require('../../data/List');
-    var completeDimensions = require('../../data/helper/completeDimensions');
-    var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../../util/model');
-    var CoordinateSystem = require('../../CoordinateSystem');
+    var List = require("../../data/List");
+    var completeDimensions = require("../../data/helper/completeDimensions");
+    var zrUtil = require("zrender/core/util");
+    var modelUtil = require("../../util/model");
+    var CoordinateSystem = require("../../CoordinateSystem");
     var getDataItemValue = modelUtil.getDataItemValue;
     var converDataValue = modelUtil.converDataValue;
 
@@ -18,8 +18,9 @@ define(function(require) {
     }
     function ifNeedCompleteOrdinalData(data) {
         var sampleItem = firstDataNotNull(data);
-        return sampleItem != null
-            && !zrUtil.isArray(getDataItemValue(sampleItem));
+        return (
+            sampleItem != null && !zrUtil.isArray(getDataItemValue(sampleItem))
+        );
     }
 
     /**
@@ -30,10 +31,10 @@ define(function(require) {
         data = data || [];
 
         if (!zrUtil.isArray(data)) {
-            throw new Error('Invalid data.');
+            throw new Error("Invalid data.");
         }
 
-        var coordSysName = seriesModel.get('coordinateSystem');
+        var coordSysName = seriesModel.get("coordinateSystem");
         var creator = creators[coordSysName];
         var registeredCoordSys = CoordinateSystem.get(coordSysName);
         // FIXME
@@ -41,43 +42,61 @@ define(function(require) {
         var dimensions = result && result.dimensions;
         if (!dimensions) {
             // Get dimensions from registered coordinate system
-            dimensions = (registeredCoordSys && registeredCoordSys.dimensions) || ['x', 'y'];
-            dimensions = completeDimensions(dimensions, data, dimensions.concat(['value']));
+            dimensions = (registeredCoordSys &&
+                registeredCoordSys.dimensions) || ["x", "y"];
+            dimensions = completeDimensions(
+                dimensions,
+                data,
+                dimensions.concat(["value"])
+            );
         }
         var categoryAxisModel = result && result.categoryAxisModel;
         var categories;
 
-        var categoryDimIndex = dimensions[0].type === 'ordinal'
-            ? 0 : (dimensions[1].type === 'ordinal' ? 1 : -1);
+        var categoryDimIndex =
+            dimensions[0].type === "ordinal"
+                ? 0
+                : dimensions[1].type === "ordinal"
+                ? 1
+                : -1;
 
         var list = new List(dimensions, seriesModel);
 
         var nameList = createNameList(result, data);
 
-        var dimValueGetter = (categoryAxisModel && ifNeedCompleteOrdinalData(data))
-            ? function (itemOpt, dimName, dataIndex, dimIndex) {
-                // Use dataIndex as ordinal value in categoryAxis
-                return dimIndex === categoryDimIndex
-                    ? dataIndex
-                    : converDataValue(getDataItemValue(itemOpt), dimensions[dimIndex]);
-            }
-            : function (itemOpt, dimName, dataIndex, dimIndex) {
-                var value = getDataItemValue(itemOpt);
-                var val = converDataValue(value && value[dimIndex], dimensions[dimIndex]);
-                if (categoryDimIndex === dimIndex) {
-                    // If given value is a category string
-                    if (typeof val === 'string') {
-                        // Lazy get categories
-                        categories = categories || categoryAxisModel.getCategories();
-                        val = zrUtil.indexOf(categories, val);
-                        if (val < 0 && !isNaN(val)) {
-                            // In case some one write '1', '2' istead of 1, 2
-                            val = +val;
-                        }
-                    }
-                }
-                return val;
-            };
+        var dimValueGetter =
+            categoryAxisModel && ifNeedCompleteOrdinalData(data)
+                ? function(itemOpt, dimName, dataIndex, dimIndex) {
+                      // Use dataIndex as ordinal value in categoryAxis
+                      return dimIndex === categoryDimIndex
+                          ? dataIndex
+                          : converDataValue(
+                                getDataItemValue(itemOpt),
+                                dimensions[dimIndex]
+                            );
+                  }
+                : function(itemOpt, dimName, dataIndex, dimIndex) {
+                      var value = getDataItemValue(itemOpt);
+                      var val = converDataValue(
+                          value && value[dimIndex],
+                          dimensions[dimIndex]
+                      );
+                      if (categoryDimIndex === dimIndex) {
+                          // If given value is a category string
+                          if (typeof val === "string") {
+                              // Lazy get categories
+                              categories =
+                                  categories ||
+                                  categoryAxisModel.getCategories();
+                              val = zrUtil.indexOf(categories, val);
+                              if (val < 0 && !isNaN(val)) {
+                                  // In case some one write '1', '2' istead of 1, 2
+                                  val = +val;
+                              }
+                          }
+                      }
+                      return val;
+                  };
 
         list.initData(data, nameList, dimValueGetter);
 
@@ -85,15 +104,15 @@ define(function(require) {
     }
 
     function isStackable(axisType) {
-        return axisType !== 'category' && axisType !== 'time';
+        return axisType !== "category" && axisType !== "time";
     }
 
     function getDimTypeByAxis(axisType) {
-        return axisType === 'category'
-            ? 'ordinal'
-            : axisType === 'time'
-            ? 'time'
-            : 'float';
+        return axisType === "category"
+            ? "ordinal"
+            : axisType === "time"
+            ? "time"
+            : "float";
     }
 
     /**
@@ -101,98 +120,110 @@ define(function(require) {
      * @return {Object} {dimensions, categoryAxisModel};
      */
     var creators = {
-
-        cartesian2d: function (data, seriesModel, ecModel) {
-            var xAxisModel = ecModel.getComponent('xAxis', seriesModel.get('xAxisIndex'));
-            var yAxisModel = ecModel.getComponent('yAxis', seriesModel.get('yAxisIndex'));
+        cartesian2d: function(data, seriesModel, ecModel) {
+            var xAxisModel = ecModel.getComponent(
+                "xAxis",
+                seriesModel.get("xAxisIndex")
+            );
+            var yAxisModel = ecModel.getComponent(
+                "yAxis",
+                seriesModel.get("yAxisIndex")
+            );
             if (!xAxisModel || !yAxisModel) {
-                throw new Error('Axis option not found');
+                throw new Error("Axis option not found");
             }
 
-            var xAxisType = xAxisModel.get('type');
-            var yAxisType = yAxisModel.get('type');
+            var xAxisType = xAxisModel.get("type");
+            var yAxisType = yAxisModel.get("type");
 
             var dimensions = [
                 {
-                    name: 'x',
+                    name: "x",
                     type: getDimTypeByAxis(xAxisType),
                     stackable: isStackable(xAxisType)
                 },
                 {
-                    name: 'y',
+                    name: "y",
                     // If two category axes
                     type: getDimTypeByAxis(yAxisType),
                     stackable: isStackable(yAxisType)
                 }
             ];
 
-            var isXAxisCateogry = xAxisType === 'category';
+            var isXAxisCateogry = xAxisType === "category";
 
-            completeDimensions(dimensions, data, ['x', 'y', 'z']);
+            completeDimensions(dimensions, data, ["x", "y", "z"]);
 
             return {
                 dimensions: dimensions,
                 categoryIndex: isXAxisCateogry ? 0 : 1,
                 categoryAxisModel: isXAxisCateogry
                     ? xAxisModel
-                    : (yAxisType === 'category' ? yAxisModel : null)
+                    : yAxisType === "category"
+                    ? yAxisModel
+                    : null
             };
         },
 
-        polar: function (data, seriesModel, ecModel) {
-            var polarIndex = seriesModel.get('polarIndex') || 0;
+        polar: function(data, seriesModel, ecModel) {
+            var polarIndex = seriesModel.get("polarIndex") || 0;
 
-            var axisFinder = function (axisModel) {
-                return axisModel.get('polarIndex') === polarIndex;
+            var axisFinder = function(axisModel) {
+                return axisModel.get("polarIndex") === polarIndex;
             };
 
             var angleAxisModel = ecModel.findComponents({
-                mainType: 'angleAxis', filter: axisFinder
+                mainType: "angleAxis",
+                filter: axisFinder
             })[0];
             var radiusAxisModel = ecModel.findComponents({
-                mainType: 'radiusAxis', filter: axisFinder
+                mainType: "radiusAxis",
+                filter: axisFinder
             })[0];
 
             if (!angleAxisModel || !radiusAxisModel) {
-                throw new Error('Axis option not found');
+                throw new Error("Axis option not found");
             }
 
-            var radiusAxisType = radiusAxisModel.get('type');
-            var angleAxisType = angleAxisModel.get('type');
+            var radiusAxisType = radiusAxisModel.get("type");
+            var angleAxisType = angleAxisModel.get("type");
 
             var dimensions = [
                 {
-                    name: 'radius',
+                    name: "radius",
                     type: getDimTypeByAxis(radiusAxisType),
                     stackable: isStackable(radiusAxisType)
                 },
                 {
-                    name: 'angle',
+                    name: "angle",
                     type: getDimTypeByAxis(angleAxisType),
                     stackable: isStackable(angleAxisType)
                 }
             ];
-            var isAngleAxisCateogry = angleAxisType === 'category';
+            var isAngleAxisCateogry = angleAxisType === "category";
 
-            completeDimensions(dimensions, data, ['radius', 'angle', 'value']);
+            completeDimensions(dimensions, data, ["radius", "angle", "value"]);
 
             return {
                 dimensions: dimensions,
                 categoryIndex: isAngleAxisCateogry ? 1 : 0,
                 categoryAxisModel: isAngleAxisCateogry
                     ? angleAxisModel
-                    : (radiusAxisType === 'category' ? radiusAxisModel : null)
+                    : radiusAxisType === "category"
+                    ? radiusAxisModel
+                    : null
             };
         },
 
-        geo: function (data, seriesModel, ecModel) {
+        geo: function(data, seriesModel, ecModel) {
             // TODO Region
             // 多个散点图系列在同一个地区的时候
             return {
-                dimensions: completeDimensions([
-                    {name: 'lng'},
-                    {name: 'lat'}
-                ], data, ['lng', 'lat', 'value'])
+                dimensions: completeDimensions(
+                    [{ name: "lng" }, { name: "lat" }],
+                    data,
+                    ["lng", "lat", "value"]
+                )
             };
         }
     };
@@ -212,10 +243,10 @@ define(function(require) {
                 if (zrUtil.isArray(data[0]) && data[0].length > 1) {
                     nameList = [];
                     for (var i = 0; i < dataLen; i++) {
-                        nameList[i] = categories[data[i][result.categoryIndex || 0]];
+                        nameList[i] =
+                            categories[data[i][result.categoryIndex || 0]];
                     }
-                }
-                else {
+                } else {
                     nameList = categories.slice(0);
                 }
             }
@@ -225,5 +256,4 @@ define(function(require) {
     }
 
     return createListFromArray;
-
 });

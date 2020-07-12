@@ -36,17 +36,17 @@
                 <div class="card-body">
                     <div class="tab-content">
                         
-                        <div class="tab-pane show active" id="tab-0" role="tabpanel">
-                            <general-component></general-component> 
+                        <div class="tab-pane show " id="tab-0" role="tabpanel">
+                            <!-- <general-component></general-component>  -->
                         </div>
                         <div class="tab-pane show" id="tab-1" role="tabpanel">
-                            <user-component></user-component>
+                            <!-- <user-component></user-component> -->
                         </div>
-                        <div class="tab-pane show" id="tab-2" role="tabpanel">
+                        <div class="tab-pane show active" id="tab-2" role="tabpanel">
                             <ordonnance-component></ordonnance-component>
                         </div>
                         <div class="tab-pane show" id="tab-3" role="tabpanel">
-                            <act-component></act-component>
+                            <!-- <act-component></act-component> -->
                         </div>
                     </div>
                     

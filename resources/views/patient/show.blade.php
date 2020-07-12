@@ -72,7 +72,7 @@
                         </div>
                         <ul class="header-menu nav">
                             <li class="nav-item">
-                                <a href="javascript:void(0);" class="nav-link" v-on:click="newModal()" {{-- data-toggle="modal" data-target=".patient_add_modal" --}} data-toggle="tooltip" data-placement="bottom" title="Ajouter un nouveau patient">
+                                <a href="javascript:void(0);" class="nav-link" v-on:click="newModal()"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un nouveau patient">
                                     <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"> </i>
                                     Patient
                                 </a>
@@ -89,11 +89,8 @@
                                     Radiographie
                                 </a>
                             </li>
-                            <li class="btn-group nav-item" v-show="showRdv">
-                                <a href="javascript:void(0);" class="nav-link" {{-- data-toggle="tooltip" data-placement="bottom" --}} title="Ajouter une nouvelle ordonnance">
-                                    <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"></i>
-                                    Rendez-vous
-                                </a>
+                            <li class="btn-group nav-item" v-if="showRdv">
+                                <rendez-vous-btn :patient="patient"></rendez-vous-btn>
                             </li>                                                    
                         </ul>        
                     </div>
@@ -177,44 +174,50 @@
                                 <li class="app-sidebar__heading">APPLICATIONS</li>
                                 <li>
                                     <a href="{{ route('user.index') }}" {{-- class="mm-active" --}}>
-                                        <i class="metismenu-icon pe-7s-rocket"></i>
+                                        <i class="metismenu-icon pe-7s-home"></i>
                                         Mon cabinet
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('user.index') }}" class="">
-                                        <i class="metismenu-icon pe-7s-rocket"></i>
+                                        <i class="metismenu-icon pe-7s-id"></i>
                                         Mes patients
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('act.index') }}" class="">
-                                        <i class="metismenu-icon pe-7s-rocket"></i>
+                                        <i class="metismenu-icon pe-7s-cash"></i>
                                         Mes honoraires
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('act.index') }}" class="">
-                                        <i class="metismenu-icon pe-7s-rocket"></i>
+                                        <i class="metismenu-icon pe-7s-note2"></i>
+                                        Mes ordonnances
+                                    </a>
+                                </li>                                
+                                <li>
+                                    <a href="{{ route('appointement.index') }}" class="">
+                                        <i class="metismenu-icon pe-7s-date"></i>
                                         Mon agenda
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('act.index') }}" class="">
-                                        <i class="metismenu-icon pe-7s-rocket"></i>
+                                        <i class="metismenu-icon pe-7s-config"></i>
                                         Réglages
                                     </a>
                                 </li>                                                                                                                        
                                 <li class="app-sidebar__heading">MEDIAS</li>
                                 <li>
                                     <a href="{{ route('patient.create') }}" class="">
-                                        <i class="metismenu-icon pe-7s-rocket"></i>
+                                        <i class="metismenu-icon pe-7s-video"></i>
                                         Mes videos
                                     </a>
                                 </li>    
                                 <li>
                                     <a href="{{ route('patient.index') }}" class="">
-                                        <i class="metismenu-icon pe-7s-rocket"></i>
+                                        <i class="metismenu-icon pe-7s-photo"></i>
                                         Mes photos
                                     </a>
                                 </li>    
@@ -228,8 +231,9 @@
                 <div class="app-main__outer">
                     <div class="app-main__inner">
 
-                        <!-- <div class="app-page-title">
-                            <div class="page-title-wrapper">
+                        <!-- 
+                            <div class="app-page-title">
+                             <div class="page-title-wrapper">
                                 <div class="page-title-heading">
                                     <div class="page-title-icon">
                                         <i class="pe-7s-folder icon-gradient bg-happy-itmeo">
@@ -241,7 +245,8 @@
                                     </div>
                                 </div> 
                                 </div>
-                        </div> -->
+                            </div>
+                        -->
 
                         <div class="row">
 
@@ -328,6 +333,5 @@
         <script src="{{ asset('plugins/lightgallery.js-master/demo/js/lg-fullscreen.min.js') }}"></script>
         <script src="{{ asset('plugins/lightgallery.js-master/demo/js/lg-thumbnail.min.js') }}"></script>
         <script src="{{ asset('js/app.js') }}" type="text/javascript"></script>
-
     </body>
 </html>

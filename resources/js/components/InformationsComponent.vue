@@ -1,7 +1,7 @@
 <template>
   <div class="main-card mb-2 card">
     <div class="card-header">
-      <h5 class="card-title">Informations Personnels</h5>
+      <h5 class="card-title">Informations sur le patient : {{ patient.nom }} {{ patient.prenom }}</h5>
       <div class="btn-actions-pane-right actions-icon-btn" v-if="showinfos">
         <button
           @click="updatePatient(patient)"
@@ -16,52 +16,36 @@
     </div>
     <div class="card-body p-1 pl-3">
       <div class="row" v-if="showinfos">
-        <!-- <div class="col-sm-3">
-					<div class="widget-content-wrapper">
-	                   <div class="mr-3 ml-2 widget-content">
-	                        <img width="50" class="rounded-circle" src="/img/user.png" alt="">
-	                    </div>
-	                    <div class="widget-content">
-	                        <div class="widget-heading"><strong>{{ patient.nom }} {{ patient.prenom }}</strong></div>
-	                        <div class="widget-subheading">{{ patient.profession }}</div>
-	                    </div>
-	                </div>
-        </div>-->
-
-        <!-- <div class="col-sm-3 mt-2">
-					<p><strong>Age :</strong> <span v-if=" patient.age != '' ">{{ patient.age + ' ans' }}</span></p>
-					<p><strong>Sexe :</strong>{{ patient.sexe }} </p>
-					<p><strong>Adresse :</strong> {{ patient.adresse }}</p>
-        </div>-->
-        <!-- <div class="col-sm-6 mt-2">
-					<p><strong>Pathologies :</strong> <span v-for="path in patient.pathologies">{{ path.pathologie }},</span></p>
-					<p><strong>Antécédents Stomatologiques :</strong> <span v-for="ant in patient.antecedents">{{ ant.nom }},</span> </p>
-					<p><strong>Fumeur :</strong> {{ patient.fumeur }}</p>
-        </div>-->
         <div class="col-sm-8">
-          <dt>
+          <p>
             <strong>Patient :</strong>
-          </dt>
-          <dd>{{ patient.nom }} {{ patient.prenom }}</dd>
-          <dt>
+            <span>{{ patient.nom }} {{ patient.prenom }}</span>
+          </p>
+          <dd></dd>
+          <p>
             <strong>Téléphone :</strong>
-          </dt>
-          <dd>{{ patient.sexe }}</dd>
+            <span>{{ patient.num_tel }}</span>
+          </p>
         </div>
         <div class="col-sm-4">
           <dt
             class="text-success"
-            v-if="typeof patient.last_schema.last_quotation.crediteur != undefined"
+            v-if="patient.last_schema && patient.last_schema.last_quotation && patient.last_schema.last_quotation.crediteur"
           >
             <strong>Créditeur :</strong>
             <span>{{ patient.last_schema.last_quotation.crediteur.crediteur }} DA</span>
           </dt>
-          <dt class="text-warning" v-if="patient.last_schema">
+          <dt
+            class="text-danger"
+            v-if="patient.last_schema && patient.last_schema.last_quotation && patient.last_schema.last_quotation.debit"
+          >
             <strong>Débiteur :</strong>
-            <span></span>
+            <span>{{ patient.last_schema.last_quotation.debit }} DA</span>
           </dt>
-          <dt v-if="patient.last_schema">
-            <strong>Dernier versement :</strong>
+          <dt
+            v-if="patient.last_schema && patient.last_schema.last_quotation && patient.last_schema.last_quotation.last_payment"
+          >
+            <strong>Dernier versement Le :</strong>
             <span>{{ patient.last_schema.last_quotation.last_payment.paid_at }}</span>
           </dt>
         </div>
@@ -356,7 +340,8 @@ export default {
         fumeur: "",
         medecin_externe: "",
         pathologies: [],
-        antecedents: []
+        antecedents: [],
+        hasCredit: false
       })
     };
   },
@@ -381,6 +366,7 @@ export default {
         });
     }
   },
+
   mounted() {
     console.log("Informations Component mounted");
   }
