@@ -15,7 +15,7 @@
           
           <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
             
-            <i class=" pe-7s-graph icon-gradient bg-mean-fruit fa-5x mb-2">
+            <i class=" pe-7s-graph1 icon-gradient bg-asteroid fa-5x mb-2">
             </i>
             
             <h5 class="card-title">MON CABINET
@@ -30,7 +30,7 @@
           
           <div class="mb-3 text-center card card-body card-patient" onclick="window.location.href = '{{ route('patient.index') }}'">
             
-            <i class=" pe-7s-graph icon-gradient bg-mean-fruit fa-5x mb-2">
+            <i class=" pe-7s-id icon-gradient bg-happy-itmeo fa-5x mb-2">
             </i>
             
             <h5 class="card-title">MES PATIENTS
@@ -45,7 +45,7 @@
           
           <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
             
-            <i class=" pe-7s-graph icon-gradient bg-mean-fruit fa-5x mb-2">
+            <i class=" pe-7s-note2 icon-gradient bg-happy-fisher fa-5x mb-2">
             </i>
             
             <h5 class="card-title">MES ORDONNANCES
@@ -60,7 +60,7 @@
           
           <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
             
-            <i class=" pe-7s-graph icon-gradient bg-mean-fruit fa-5x mb-2">
+            <i class=" pe-7s-cash icon-gradient bg-grow-early fa-5x mb-2">
             </i>
             
             <h5 class="card-title">MES HONORAIRES
@@ -73,9 +73,9 @@
         
         <div class="col-md-3 mr-3" style="cursor: pointer;">
           
-          <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('setting.index') }}'">
+          <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('appointement.index') }}'">
             
-            <i class=" pe-7s-graph icon-gradient bg-mean-fruit fa-5x mb-2">
+            <i class=" pe-7s-date icon-gradient bg-plum-plate fa-5x mb-2">
             </i>
             
             <h5 class="card-title">AGENDA
@@ -90,7 +90,7 @@
           
           <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('setting.index') }}'">
             
-            <i class=" pe-7s-graph icon-gradient bg-mean-fruit fa-5x mb-2">
+            <i class=" pe-7s-config  icon-gradient bg-mean-fruit fa-5x mb-2">
             </i>
             
             <h5 class="card-title">REGLAGES
@@ -152,7 +152,7 @@
       
       <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
         
-        <i class=" pe-7s-graph icon-gradient bg-mean-fruit fa-5x mb-2">
+        <i class=" pe-7s-video icon-gradient bg-mean-fruit fa-5x mb-2">
         </i>
         
         <h5 class="card-title">VIDEOS DEMOS
@@ -167,7 +167,7 @@
       
       <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
         
-        <i class=" pe-7s-graph icon-gradient bg-mean-fruit fa-5x mb-2">
+        <i class=" pe-7s-photo icon-gradient bg-mean-fruit fa-5x mb-2">
         </i>
         
         <h5 class="card-title">MES PHOTOS

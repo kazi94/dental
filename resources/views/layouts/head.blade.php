@@ -14,4 +14,5 @@
     <meta name="msapplication-tap-highlight" content="no">
     <link rel="stylesheet" href="{{ asset('/plugins/bootstrap-4.4.1-dist/css/bootstrap.min.css') }}">
     <link href="{{ asset('architect/main.css') }}" rel="stylesheet">
+    @yield('styles')
 </head>

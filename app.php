@@ -14,7 +14,8 @@ return [
     */
 
     'name' => env('APP_NAME', 'AnaPharmDz'),
-
+//                 HERE I ADDed SOMME DISTANT COMMAND
+// AND HERE I ADDED SOMME LOCAL COMMAND
     /*
     |--------------------------------------------------------------------------
     | Application Environment

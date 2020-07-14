@@ -5,14 +5,14 @@ Auth::routes();
 
 
 Route::get('/', function () {
-    if(Auth::user()) return redirect('home');
+    if(Auth::user()) return redirect('acceuil');
     else return view('auth.login');
 });
 
-Route::resource('/home' , 'HomeController');
+Route::resource('/acceuil' , 'HomeController' , ['names' => 'home']);
 Route::get('test' , 'HomeController@index')->name('name');
 
-/*:::::::::::::::::::::ADMINISTRATION MODULE:::::::::::::::::::::::*/
+/*//*******************ADMINISTRATION MODULE//*******************::*/
 Route::prefix('/admin')->group(function()
 {
  	Route::get('role/get-roles','Admin\RoleController@getRoles')->middleware('auth');
@@ -26,15 +26,19 @@ Route::prefix('/admin')->group(function()
     // Route::resource('profile','Admin\RoleController');                                                       
 
 });
-/*:::::::::::::::::::::END ADMINISTRATION MODULE:::::::::::::::::::::::*/
+/*//*******************END ADMINISTRATION MODULE//*******************::*/
 
-/*:::::::::::::::::::::PATIENT MANAGEMENT MODULE:::::::::::::::::::::::*/
- Route::resource('/patient','User\PatientController')->middleware('auth');
- Route::get('/patients','User\PatientController@getPatients')->middleware('auth');
- Route::post('/patient/radiographie','User\PatientController@postFile')->name('upload')->middleware('auth');
- Route::get('pathologies','User\PatientController@getPathologies')->middleware('auth');
- Route::get('antecedents','User\PatientController@getAntecedents')->middleware('auth');
- 
+//*******************APPOINTEMENT MODULE*******************************
+Route::resource('/patient/rendez-vous', 'User\AppointementController' , ['names' => 'appointement'])->middleware('auth');
+// Route::post('/appointement/storePatient', 'AppointementController@storePatient')->middleware('auth');
+//*******************END APPOINTEMENT MODULE*******************************
+
+/*//*******************PATIENT MANAGEMENT MODULE//*******************::*/
+Route::resource('/patient','User\PatientController')->middleware('auth');
+Route::get('/patients','User\PatientController@getPatients')->middleware('auth');
+Route::post('/patient/radiographie','User\PatientController@postFile')->name('upload')->middleware('auth');
+Route::get('pathologies','User\PatientController@getPathologies')->middleware('auth');
+Route::get('antecedents','User\PatientController@getAntecedents')->middleware('auth');
 Route::resource('/patient/prescription','User\PrescriptionController')->middleware('auth');
 Route::post('/patient/devis/update_devis','User\DevisController@updateDevis')->middleware('auth');
 Route::resource('/patient/devis','User\DevisController')->middleware('auth');
@@ -43,12 +47,8 @@ Route::resource('/patient/schema-dentaire','User\SchemaDentaireController')->mid
 Route::get('/patient/prescription/{id}/print','User\PrescriptionController@print')->middleware('auth');
 Route::get('/medicament/{query}','User\MedicamentController@search')->middleware('auth');
 // Route::post('/medicamentDci','User\MedicamentController@getMedicamentDci')->middleware('auth');
-/*:::::::::::::::::::::END PATIENT MANAGEMENT MODULE:::::::::::::::::::::::*/
+/*//*******************END PATIENT MANAGEMENT MODULE//*******************::*/
 
-//*******************APPOINTEMENT MODULE*******************************
-Route::resource('/appointement', 'User\AppointementController')->middleware('auth');
-// Route::post('/appointement/storePatient', 'AppointementController@storePatient')->middleware('auth');
-//*******************END APPOINTEMENT MODULE*******************************
 
 // Route::post('bugs_report', 'ReportController@reportBug')->name('report_bug');
 

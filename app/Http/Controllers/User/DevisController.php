@@ -123,7 +123,10 @@ class DevisController extends Controller
         $selectedLignes = json_decode($request->acceptedQuotation, true);
         foreach ($selectedLignes as $value) {
             $ligne_id = LigneDevis::where('id', $value['id'])
-                ->update([ 'state' => $value['state'] ]);    
+                ->update([ 
+                    'state' => $value['state'], 
+                    'lock'  => $value['state'] == "Fait" ? 'true' : 'false',  // lock i.e on UI can't change state to "En cours"
+                    ]);    
                 $quot_id = LigneDevis::find($value['id']);    
         }
         Debugbar::info($quot_id->devis_id);
@@ -131,10 +134,26 @@ class DevisController extends Controller
         if ($request->total_paid != 0)
             $this->createPayment($request->total_paid , $quot_id->devis_id);        
 
+        // Get The Sum of Payements
+        $totalPayments = $this->getSumPayments($quot_id->devis_id);
+        // Check if Sum is equal to Accepted Total Quotation
+        if ($totalPayments->crediteur->crediteur == $totalPayments->total_accept) {
+            
+            Devis::where('id', $quot_id->devis_id)
+                ->update([ 'state' => "payer&&fait" ]);  
+
+            return response()->json("fait" , 201);
+        }
+
+
         return response()->json([] , 201);
 
     }
 
+
+    protected function getSumPayments( $quot_id) {
+        return Devis::with('crediteur')->find($quot_id);
+    }
     /**
      * Show the form for editing the specified resource.
      *
