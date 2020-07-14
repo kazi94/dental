@@ -10,6 +10,7 @@ use DB;
 use Auth;
 use Storage;
 use App\Models\Cabinet;
+use App\Http\Requests\SettingsRequest;
 
 
 class SettingController extends Controller
@@ -60,8 +61,11 @@ class SettingController extends Controller
      * @return view
      * @author 
      **/
-    public function store(Request $request)
+    public function store(SettingsRequest $request)
    { 
+        
+        
+
         $cabinet = Cabinet::first();
 
         if ($cabinet) 

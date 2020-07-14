@@ -219,16 +219,28 @@ class PatientController extends Controller
     {
         $uploadedFile = $request->file('file');
         $patient_id = $request->id;
+        $this->validate($request , [
+            'file' => 'image'
+        ]);
+        // Handle file upload
+        if ($request->hasFile('file')){
 
-        $path = $uploadedFile->store('public');//store file in public storage folder
-        if (Storage::mimeType($path) == 'image/png' || Storage::mimeType($path) == 'image/jpeg')// Stocker tout les format des images à une seul et unique extension
-            $uploadedFile->move(public_path().'/img/radios', time().'.jpeg');    
+            $fileNameToStore = '/img/radios/'.time().'.jpeg';
+            $path = $request->file('file')->store('/im9mmmg/radio/');
+            $upload = new Radio;
+            $upload->img_url    = $fileNameToStore;
+            $upload->patient_id = $patient_id;
+            $upload->created_by = $request->user()->id;
+            $upload->save();
+        } 
+        else 
+            return response()->json([] , 200);
+        
+        //$path = $uploadedFile->store('public');//store file in public storage folder
+        //if (Storage::mimeType($path) == 'image/png' || Storage::mimeType($path) == 'image/jpeg')// Stocker tout les format des images à une seul et unique extension
+          //  $uploadedFile->move(public_path().'/img/radios', time().'.jpeg');    
 
-        $upload = new Radio;
-        $upload->img_url    = '/img/radios/'.time().'.jpeg';
-        $upload->patient_id = $patient_id;
-        $upload->created_by = $request->user()->id;
-        $upload->save();
+
 
       return response()->json($upload , 200); 
     }
