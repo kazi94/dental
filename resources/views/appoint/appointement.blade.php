@@ -76,19 +76,18 @@
           <p class="alert alert-success" id="message" style="display: none;">{{ session('message') }}</p>
       @endif
 
-    <div class="sch-d-head">
+    <!-- <div class="sch-d-head">
         <div class="sch-d-head-inside">
-          <!-- <span class="elem-center" style="line-height: 19px;">Chirurgiens dentiste:</span> -->
           <div class="elem-center" style="height: 19px">
             <select name="user" id="user">
-                <option option value="none" > Selectionner un chirurgien dentiste</option>
-                @foreach( $users as $user)
-                  <option value="{{ $user->id }}" > {{ $user->name }} {{ $user->prenom }} </option>
-                @endforeach
-            </select>
+                <option option value="none" > Selectionner un chirurgien dentiste</option>-->
+                <!-- @foreach( $users as $user) -->
+                  <!-- <option value="{{ $user->id }}" > {{ $user->name }} {{ $user->prenom }} </option> -->
+                <!-- @endforeach -->
+            <!-- </select>
           </div>
         </div>
-      </div> 
+      </div>  --> 
 <!-- <div class="sch_control">
 	<div class="filters_wrapper" id="filters_wrapper">
 		<span>Display:</span>
@@ -196,10 +195,11 @@
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_readonly.js?v=5.2.1" type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/sources/locale/locale_fr.js" type="text/javascript" charset="utf-8"></script>
 <script src="{{ asset('/plugins/select2/dist/js/select2.min.js') }}"type="text/javascript" charset="utf-8"></script>
-	<script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_limit.js" type="text/javascript" charset="utf-8"></script>
-	<script src='/plugins/scheduler/codebase/ext/dhtmlxscheduler_timeline.js' type="text/javascript" charset="utf-8"></script>
-	<script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_units.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_multiselect.js" type="text/javascript" charset="utf-8"></script>
+<script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_limit.js" type="text/javascript" charset="utf-8"></script>
+<script src='/plugins/scheduler/codebase/ext/dhtmlxscheduler_timeline.js' type="text/javascript" charset="utf-8"></script>
+<script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_units.js" type="text/javascript" charset="utf-8"></script>
+<script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_multiselect.js" type="text/javascript" charset="utf-8"></script>
+<script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_tooltip.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript" charset="utf-8">
   //
@@ -253,15 +253,13 @@
 			scheduler.config.multisection = true;
 			scheduler.locale.labels.timeline_tab = "Cabinet";
 			scheduler.locale.labels.unit_tab = "Unit";
-			scheduler.locale.labels.section_custom = "Section";      
+			scheduler.locale.labels.section_custom = "Assigner à ";      
     // ************************! End Config Scheduler************************** //
-    			var users = scheduler.serverList("users");
-      //     [
-			// 	{key: 1, label: "James Smith"},
-			// 	{key: 2, label: "John Williams"},
-			// 	{key: 3, label: "David Miller"},
-			// 	{key: 4, label: "Linda Brown"}
-			// ];
+
+    // ************************Config users view******************************** //
+
+      var users = scheduler.serverList("users");
+
 
 			scheduler.createTimelineView({
 				name: "timeline",
@@ -270,7 +268,7 @@
 				x_step: 8,
 				x_size: 24,
 				y_unit: users,
-				y_property: "user_id",
+				y_property: "assign_to",
 				render: "bar",
 				second_scale:{
 					x_unit: "day", // unit which should be used for second scale
@@ -280,7 +278,7 @@
 
 			scheduler.createUnitsView({
 				name: "unit",
-				property: "user_id",
+				property: "assign_to",
 				list: users
 			});
 
@@ -302,7 +300,9 @@
 					timeline: 2, // only 1 section
 					unit: 2
 				}
-			});
+      });
+    // ************************! End Config users view************************** //
+
     // ************************Filter events by Famille******************************** //
 			// // default values for filters
 			// var filters = {
@@ -441,28 +441,53 @@
         {name:"Patient",     height:23,  type:"my_editor1",   map_to:"patient_id",options:scheduler.serverList("type")},
         {name:"Famille",     height:23,  type:"my_editor2",   map_to:"category",options:scheduler.serverList("type")},
         {name:"Fauteuil",     height:23,  type:"my_editor3",   map_to:"fauteuil"},
-        { name:"custom", height:22, map_to:"user_id", type:"multiselect", options: users, vertical:"false" },
+        { name:"custom", height:22, map_to:"assign_to", type:"multiselect", options: users, vertical:"false" },
         {name:"Description", height:100, type:"textarea",     map_to:"text"},
         {name:"Periode",     height:72,  type:"time",         map_to:"auto"}
       ]; 
     // ************************! End Config Light Box**************************** //
 
     // ************************ Config && Style Events Box********************************* //
-      /*function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-      }
-      // Style Events box
-      // return Css class or style
-      scheduler.templates.event_class=function(start, end, event){
-        var style = "{background-color:"+getRandomColor()+" !important;}";
 
-        return "past_event";
-      };*/
+      scheduler.templates.event_text=function(start,end,event){
+        return "Patient:<b> </b><br>"+"Famille:"+event.category.name+"<br>Fauteuil N°:"+event.fauteuil;
+      };
+
+      //*----------------------------------------
+      //* Tooltips
+      //*----------------------------------------  
+      //default definition
+      scheduler.templates.event_header = function(start,end,ev){
+          return scheduler.templates.event_date(start)+" - "+
+          scheduler.templates.event_date(end) + " " +ev.category.name;
+      };  
+      
+      var format = scheduler.date.date_to_str("%Y-%m-%d %H:%i"); 
+        scheduler.templates.tooltip_text = function(start,end,event) {
+            return "<b>Créer par :</b> "+event.created_by.name+" "+event.created_by.prenom+"</b><br/><b>Assigner à :</b> "+ event.assign_to.name+" "+event.assign_to.prenom;
+      };
+
+      //*----------------------------------------
+      //* Touch Support (Popup on click on event)
+      //*----------------------------------------  
+      // the content of the pop-up edit form
+      scheduler.templates.quick_info_content = function(start, end, ev){ 
+          return ev.text ;
+      };
+      // the date of the pop-up edit form
+      scheduler.templates.quick_info_date = function(start, end, ev){
+          if (scheduler.isOneDayEvent(ev)){
+              return scheduler.templates.day_date(start, end, ev) + " " +
+                  scheduler.templates.event_header(start, end, ev);
+          }else{
+              return scheduler.templates.week_date(start, end, ev);
+          }
+      }; 
+      // the title of the pop-up edit form 
+      scheduler.templates.quick_info_title = function(start, end, ev){ 
+          return ev.category.name; 
+      };      
+
     // ************************! End Config && Style Events Box**************************** //
     
     scheduler.init('scheduler_here',new Date(),"week");

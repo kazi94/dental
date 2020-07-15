@@ -83,7 +83,8 @@ class AppointementController extends Controller
 
         }
         else
-            $appointements = Appointement::where('created_by',Auth::id())->get();
+            // $appointements = Appointement::where('created_by',Auth::id())->get();
+            $appointements = Appointement::with('patient' , 'category' , 'assignTo' , 'createdBy')->get();
 
         //Returned Format should be : { value : '' , label : ''}
         $patients = Patient::select('id as value',DB::raw("CONCAT(nom, ' ',prenom) as label"))->get();
@@ -92,7 +93,7 @@ class AppointementController extends Controller
         $categories = Category::select('id as value',"name as label" , "color")->get();
 
         $users = \App\User::select('id as value',DB::raw("CONCAT(name, ' ',prenom) as label"))
-        ->where('id' , '!=' , Auth::id())
+        // ->where('id' , '!=' , Auth::id())
         ->get();
 
         return response()->json([
@@ -134,6 +135,7 @@ class AppointementController extends Controller
        $event->start_date = $request->start_date;
        $event->end_date   = $request->end_date;
        $event->updated_by = Auth::id();
+       $event->assign_to  = $request->assign_to;
        $event->save();
  
        return response()->json([
