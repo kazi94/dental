@@ -43,10 +43,10 @@
                             <!-- <user-component></user-component> -->
                         </div>
                         <div class="tab-pane show active" id="tab-2" role="tabpanel">
-                            <ordonnance-component></ordonnance-component>
+                            <!-- <ordonnance-component></ordonnance-component> -->
                         </div>
-                        <div class="tab-pane show" id="tab-3" role="tabpanel">
-                            <!-- <act-component></act-component> -->
+                        <div class="tab-pane show active" id="tab-3" role="tabpanel">
+                            <act-component></act-component>
                         </div>
                     </div>
                     

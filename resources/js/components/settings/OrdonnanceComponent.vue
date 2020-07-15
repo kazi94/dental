@@ -12,39 +12,39 @@
             </div>
         </div>
 
-        <!-- <table class="mb-0 table">
-      <thead>
-        <tr>
-          <td>#</td>
-          <th>Ordonnance</th>
-          <th>Médicaments</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(val,index) in ordonnances">
-          <th scope="row">{{ index + 1 }}</th>
-          <td>{{ val.nom }}</td>
-          <td>{{ val.imploded }}</td>
-          <td>
-            <button
-              class="btn btn-danger btn-icon btn-icon-only mr-2 rounded-0"
-              @click="removeOrdonnance(val.id,index)"
-              title="Supprimer"
-            >
-              <i class="pe-7s-trash btn-icon-wrapper"></i>
-            </button>
-            <button
-              class="btn btn-primary btn-icon btn-icon-only mr-2 rounded-0"
-              @click="update(val)"
-              title="Modifier"
-            >
-              <i class="pe-7s-edit btn-icon-wrapper"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>-->
+        <table class="mb-0 table">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <th>Ordonnance</th>
+                    <th>Médicaments</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(val, index) in ordonnances">
+                    <th scope="row">{{ index + 1 }}</th>
+                    <td>{{ val.nom }}</td>
+                    <td>{{ val.imploded }}</td>
+                    <td>
+                        <button
+                            class="btn btn-danger btn-icon btn-icon-only mr-2 rounded-0"
+                            @click="removeOrdonnance(val.id, index)"
+                            title="Supprimer"
+                        >
+                            <i class="pe-7s-trash btn-icon-wrapper"></i>
+                        </button>
+                        <button
+                            class="btn btn-primary btn-icon btn-icon-only mr-2 rounded-0"
+                            @click="update(val.id)"
+                            title="Modifier"
+                        >
+                            <i class="pe-7s-edit btn-icon-wrapper"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <div
             class="modal fade"
             tabindex="-1"
@@ -137,7 +137,7 @@
                                     <div>
                                         <b-form-textarea
                                             class="rounded-0"
-                                            v-model="medicament.preview"
+                                            v-model="textPreview"
                                             placeholder="Ici l'affichage de l'odonnance...."
                                             rows="3"
                                             max-rows="6"
@@ -149,7 +149,14 @@
                                             value="Ajouter"
                                             class="btn btn-primary rounded-0"
                                             @click="addToList"
-                                            v-if="!editMode"
+                                            v-if="!editItem"
+                                        />
+                                        <input
+                                            type="button"
+                                            value="Modifier"
+                                            class="btn btn-success rounded-0"
+                                            @click="updatedItem"
+                                            v-else
                                         />
                                     </div>
                                 </b-form>
@@ -159,13 +166,13 @@
                                 <!-- Liste des médicaments -->
                                 <b-list-group>
                                     <b-list-group-item
+                                        v-if="ordonnance.medicaments.length > 0"
                                         v-for="(val,
                                         index) in ordonnance.medicaments"
                                         :key="index"
-                                        v-if="ordonnance.medicaments.length > 0"
                                         class="rounded-0"
                                     >
-                                        {{ val.preview }}
+                                        <span v-html="val.preview"></span>
                                         <input
                                             class="btn btn-sm btn-success rounded-0  update"
                                             type="button"
@@ -199,15 +206,17 @@
                             Fermer
                         </button>
                         <input
-                            type="submit"
+                            type="button"
                             value="Valider"
                             class="btn btn-success rounded-0"
+                            @click="storeOrdonnanceType"
                             v-if="!editMode"
                         />
                         <input
-                            type="submit"
+                            type="button"
                             value="Modifier"
                             class="btn btn-success rounded-0"
+                            @click="updateOrdonnanceType"
                             v-else
                         />
                     </div>
@@ -227,6 +236,7 @@ export default {
     data() {
         return {
             editMode: false,
+            editItem: false,
             ordonnances: [],
             medicament: {
                 medicament: null,
@@ -240,14 +250,16 @@ export default {
             ordonnance: {
                 nom: "Ordonnance sans nom",
                 medicaments: []
-            }
+            },
+            indexToUpdate: null,
+            textPreview: null
         };
     },
     watch: {
         medicament: {
             handler(newVal) {
                 if (Object.keys(this.medicament).length === 0) return 0;
-                return (this.medicament.preview = ` ${this.medicament.medicament} qsp (pendant ${this.medicament.frequence} jours). ${this.medicament.nb_prise} ${this.medicament.forme}/jour `);
+                return (this.textPreview = `${this.medicament.medicament} qsp (pendant ${this.medicament.frequence} jours). ${this.medicament.nb_prise} ${this.medicament.forme}/jour `);
             },
             deep: true
         }
@@ -271,11 +283,24 @@ export default {
             return result.sp_nom;
         },
         // remove medicament from table
-        removeItem(event, index) {
+        removeItem(index) {
             this.ordonnance.medicaments.splice(index, 1);
         },
-        updateItem(event, index) {
+        updateItem(index) {
             this.medicament = this.ordonnance.medicaments[index];
+
+            this.editItem = true;
+
+            this.indexToUpdate = index;
+        },
+        updatedItem() {
+            this.ordonnance.medicaments[
+                this.indexToUpdate
+            ] = this.getJsonMedicament();
+
+            this.editItem = false;
+
+            this.onReset();
         },
         showModal() {
             //   this.form.reset();
@@ -284,17 +309,45 @@ export default {
                 .modal("show");
         },
         addToList() {
-            this.ordonnance.medicaments.push({
+            this.ordonnance.medicaments.push(this.getJsonMedicament());
+
+            // Reset Forms
+            this.onReset();
+        },
+        getJsonMedicament() {
+            const formatedTextPreview = this.formatTextPreview();
+            return {
                 medicament: this.medicament.medicament,
                 medicament_id: this.medicament.medicament_id,
                 forme: this.medicament.forme,
                 nb_prise: this.medicament.nb_prise,
                 frequence: this.medicament.frequence,
-                preview: this.medicament.preview
-            });
+                preview: formatedTextPreview
+            };
+        },
 
-            // Reset Forms
-            this.onReset();
+        formatTextPreview() {
+            let previewToFormat = this.textPreview;
+
+            // format the fiexed elements
+            previewToFormat.replace(
+                this.medicament.medicament,
+                "<b>" + this.medicament.medicament + "</b>"
+            );
+            previewToFormat.replace(
+                this.medicament.frequence,
+                "<b>" + this.medicament.frequence + "</b>"
+            );
+            previewToFormat.replace(
+                this.medicament.nb_prise + " " + this.medicament.forme,
+                "<b>" +
+                    this.medicament.nb_prise +
+                    " " +
+                    this.medicament.forme +
+                    "</b>"
+            );
+
+            return previewToFormat;
         },
         onReset() {
             this.medicament.medicament = "";
@@ -303,18 +356,19 @@ export default {
             this.medicament.nb_prise = "";
             this.medicament.preview = "";
         },
-        onSubmit() {
+        storeOrdonnanceType() {
             // Sent Ordonnance to the Server
             const data = this.ordonnance;
-
             axios
                 .post("/admin/ordonnance-type", data) // Send Ordonnance to server
                 .then(response => {
                     //add Ordonnance to list
-                    this.ordonnances.push(response.data);
+                    this.fetchOrdonnancesType();
 
                     //Reset Forms
-                    this.medicaments = [];
+                    this.onReset();
+                    // Reset Ordonnance type Object
+
                     $("#ordonnance_modal").modal("hide");
 
                     this.$toaster.success("Ordonnance ajoutée !");
@@ -334,56 +388,53 @@ export default {
                 });
         },
 
-        update(ordonnance) {
-            this.nom = ordonnance.nom;
-            this.id = ordonnance.id;
-            this.medicaments = ordonnance.medicaments;
+        update(ordonnance_id) {
+            this.id = ordonnance_id;
+            axios
+                .get("/admin/ordonnance-type/" + ordonnance_id)
+                .then(response => {
+                    this.ordonnance = response.data;
+                })
+                .catch(exception => {
+                    this.$toaster.error(exception);
+                });
+            this.showModal();
+
             this.editMode = true;
-            //   this.form.reset();
-            $("#ordonnance_modal")
-                .appendTo("body")
-                .modal("show");
         },
 
-        updateOrdonnaceType() {
-            if ((this.medicaments = []))
-                alert("Vous devez renseigner au moin un médicament");
-            else {
-                let ordo = this.ordonnances;
-                this.form.fill({
-                    medicaments: this.medicaments,
-                    nom: this.nom
+        updateOrdonnanceType() {
+            const data = this.ordonnance;
+            axios
+                .put("/admin/ordonnance-type/" + this.id, data)
+                .then(response => {
+                    this.fetchOrdonnancesType();
+
+                    $("#ordonnance_modal").modal("hide");
+
+                    this.editMode = false;
+
+                    this.$toaster.success(response.data.success);
+                })
+                .catch(exception => {
+                    this.$toaster.error(exception);
                 });
-                axios
-                    .put("/admin/ordonnance-type/" + this.id, this.form)
-                    .then(response => {
-                        $.each(ordo, (index, val) => {
-                            if (val.id == response.data.id)
-                                ordo[index] = response.data;
-                        });
-                        $("#ordonnance_modal").modal("hide");
-                        this.form.reset();
-                        this.medicaments = [];
-                        this.editMode = false;
-                    })
-                    .catch(exception => {
-                        this.$toaster.error(exception);
-                    });
-            }
+        },
+        fetchOrdonnancesType() {
+            axios
+                .get("/admin/ordonnance-type")
+                .then(response => {
+                    this.ordonnances = response.data;
+                })
+                .catch(exception => {
+                    this.$toaster.error(exception);
+                });
         }
     },
-    computed: {},
     mounted() {
         console.log("ordonnances Component mounted");
 
-        axios
-            .get("/admin/ordonnance-type")
-            .then(response => {
-                this.ordonnances = response.data;
-            })
-            .catch(exception => {
-                this.$toaster.error(exception);
-            });
+        this.fetchOrdonnancesType();
     }
 };
 </script>
