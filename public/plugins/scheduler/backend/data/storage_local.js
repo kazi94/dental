@@ -1,8 +1,16 @@
 require("date-format-lite"); // add date format
 var xssFilters = require('xss-filters');
 
-let lastId = 0;
-const generateId = () => ++lastId;
+const generateId = (items) => {
+	let maxId = 1;
+	for(let i in items){
+		if(Number(items[i].id) > maxId){
+			maxId = Number(items[i].id);
+		}
+	}
+
+	return maxId + 1;
+};
 
 class Storage {
 	constructor(collection, params) {
@@ -71,7 +79,7 @@ class Storage {
 	async insert(data) {
 		data.start_date = data.start_date.date();
 		data.end_date = data.end_date.date();
-		data.id = generateId();
+		data.id = generateId(this._datastore);
 		this._datastore[data.id] = data;
 
 		return {
