@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Models\Ordonnancetype;
+use App\Models\OrdonnancetypeLine;
 
 class OrdonnanceTypeController extends Controller
 {
@@ -47,15 +48,19 @@ class OrdonnanceTypeController extends Controller
         $ordonnance->nom       = ucfirst($request->nom);
         $ordonnance->save();
 
-        $medicaments = collect($request->medicaments)->map(function($antecedent){
-            return $antecedent['SP_CODE_SQ_PK'];
-        });
-        //associate ordonnance with medicaments
-        $ordonnance->medicaments()->sync($medicaments);
+        foreach($request->medicaments as $line){
+            $ordonnanceTypeLine = new OrdonnanceTypeLine;
+            $ordonnanceTypeLine->medicament = $line['medicament'];
+            $ordonnanceTypeLine->medicament_id = $line['medicament_id'];
+            $ordonnanceTypeLine->nb_prise = $line['nb_prise'];
+            $ordonnanceTypeLine->forme = $line['forme'];
+            $ordonnanceTypeLine->frequence = $line['frequence'];
+            $ordonnanceTypeLine->preview = $line['preview'];
+            $ordonnanceTypeLine->ordonnancetype_id = $ordonnance->id;
+            $ordonnanceTypeLine->save();
+        }
 
-        $this->implodeMedicaments($ordonnance);
-
-        return response()->json($ordonnance , 200);
+        return response()->json([] , 200);
         
     }
 
@@ -67,7 +72,7 @@ class OrdonnanceTypeController extends Controller
      */
     public function show($id)
     {
-        //
+        return response()->json(OrdonnanceType::with('medicaments')->findOrFail($id) , 201);
     }
 
     /**
@@ -94,20 +99,40 @@ class OrdonnanceTypeController extends Controller
         $ordonnance->nom       = ucfirst($request->nom);
         $ordonnance->save();
 
-        $medicaments =collect($request->medicaments)->map(function($e){
-            return $e['SP_CODE_SQ_PK'];
-        });
 
-        $ordonnance->medicaments()->sync($medicaments);
+        OrdonnanceTypeLine::where('ordonnancetype_id' , $id)->delete();
 
-        $ordonnance = Ordonnancetype::with('medicaments')->find($id);
+       return 
+        $this->addLignesOrdonnanceType($id, $request->medicaments) ?
+              response()->json(['success' => 'Ordonnance Type modifiée avec succés!'] , 200) : 'Erreur dans la modification !';  
+           
 
-        $this->implodeMedicaments($ordonnance);
 
-        return response()->json( $ordonnance, 200);
+        return response()->json( [] , 200);
 
     }
+    /**
+     * Add lignes Prescriptions
+     *
+     * @return void
+     * @author 
+     **/
+    private function addLignesOrdonnanceType($id, $medicaments)
+    {
+        foreach($medicaments as $line){
+            $ordonnanceTypeLine = new OrdonnanceTypeLine;
+            $ordonnanceTypeLine->medicament = $line['medicament'];
+            $ordonnanceTypeLine->medicament_id = $line['medicament_id'];
+            $ordonnanceTypeLine->nb_prise = $line['nb_prise'];
+            $ordonnanceTypeLine->forme = $line['forme'];
+            $ordonnanceTypeLine->frequence = $line['frequence'];
+            $ordonnanceTypeLine->preview = $line['preview'];
+            $ordonnanceTypeLine->ordonnancetype_id = $id;
+            $ordonnanceTypeLine->save();
+        }
 
+        return true;
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -123,7 +148,9 @@ class OrdonnanceTypeController extends Controller
 
     protected function implodeMedicaments($ordonnance){
         $ordonnance['imploded'] = implode(',', array_map(function($v){
-            return $v['SP_NOM'] ;
-        },$ordonnance['medicaments']->toArray()));
+            return $v['medicament'] ;
+        },$ordonnance->medicaments->toArray()));
+
+        
     }
 }

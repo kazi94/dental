@@ -10,6 +10,6 @@ class Ordonnancetype extends Model
 
     public function medicaments()
     {
-        return $this->belongsToMany('App\Models\Medicament','ordonnancetype_sp_specialite','ordonnancetype_id','sp_specialite_id');
+        return $this->hasMany('App\Models\OrdonnanceTypeLine');
     }
 }

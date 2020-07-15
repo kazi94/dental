@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Query\Builder;
 use App\Models\Patient;
+use App\Models\Category;
 use App\Models\Appointement;
 use Auth;
 use DB;
@@ -33,9 +34,9 @@ class AppointementController extends Controller
 
         // if (Auth::user()->cant('patients.view')) return redirect()->back();
         
-        // $patients = Patient::all();
+        $users = \App\User::all();
 
-        return view('appoint.appointement');
+        return view('appoint.appointement' , compact('users'));
     }
 
     /**
@@ -57,9 +58,12 @@ class AppointementController extends Controller
      */
     public function store(Request $request)
     {
+        $d = json_decode($request->category);
         $request['start_date'] = $request->date_rdv." ".$request->start_date;
         $request['end_date']   = $request->date_rdv." ".$request->end_date;
         $request->request->add(['created_by' =>  Auth::user()->id]);
+        $request->request->add(['color' =>  $d->color]);
+        $request->request->add(['category_id' =>  $d->key]);
 
         $appoint = Appointement::create($request->all());
 
@@ -74,15 +78,30 @@ class AppointementController extends Controller
      */
     public function show($id)
     {
-        $appointements = Appointement::where('created_by',Auth::id())->get();
+        if ($id != 'null'){
+            $appointements = Appointement::where('created_by',$id)->get();
+
+        }
+        else
+            // $appointements = Appointement::where('created_by',Auth::id())->get();
+            $appointements = Appointement::with('patient' , 'category' , 'assignTo' , 'createdBy')->get();
 
         //Returned Format should be : { value : '' , label : ''}
         $patients = Patient::select('id as value',DB::raw("CONCAT(nom, ' ',prenom) as label"))->get();
 
+
+        $categories = Category::select('id as value',"name as label" , "color")->get();
+
+        $users = \App\User::select('id as value',DB::raw("CONCAT(name, ' ',prenom) as label"))
+        // ->where('id' , '!=' , Auth::id())
+        ->get();
+
         return response()->json([
             "data"        => $appointements,
             "collections" => [
-              "type" => $patients // add to list of lightbox
+              "type" => $patients,
+              "categories" => $categories ,// add to list of lightbox
+              "users" => $users 
             ]
         ]); 
     }
@@ -116,6 +135,7 @@ class AppointementController extends Controller
        $event->start_date = $request->start_date;
        $event->end_date   = $request->end_date;
        $event->updated_by = Auth::id();
+       $event->assign_to  = $request->assign_to;
        $event->save();
  
        return response()->json([

@@ -129,7 +129,6 @@ class DevisController extends Controller
                     ]);    
                 $quot_id = LigneDevis::find($value['id']);    
         }
-        Debugbar::info($quot_id->devis_id);
         // Make payement if exist ! (Always exist)
         if ($request->total_paid != 0)
             $this->createPayment($request->total_paid , $quot_id->devis_id);        
