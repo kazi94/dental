@@ -194,7 +194,7 @@
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_quick_info.js?v=5.2.1" type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_readonly.js?v=5.2.1" type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/sources/locale/locale_fr.js" type="text/javascript" charset="utf-8"></script>
-<script src="{{ asset('/plugins/select2/dist/js/select2.min.js') }}"type="text/javascript" charset="utf-8"></script>
+<script src="/plugins/select2/dist/js/select2.min.js"type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_limit.js" type="text/javascript" charset="utf-8"></script>
 <script src='/plugins/scheduler/codebase/ext/dhtmlxscheduler_timeline.js' type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_units.js" type="text/javascript" charset="utf-8"></script>
@@ -234,6 +234,7 @@
   });
  
 	function init($user_id = null) {
+    // TODO this is a todo comment
 
     // ************************Config Scheduler******************************** //
       scheduler.config.touch             = "force"; //when touch to the cas , modals appear
@@ -371,7 +372,7 @@
       });    
     // ************************! End Handle with Json Data**************************** //
 
-    // ************************ Config Light Box********************************* //
+    // ************@installed ************ Config Light Box********************************* //
       scheduler.form_blocks["my_editor1"]={
           render:function(sns){
             let options = "";
@@ -450,7 +451,7 @@
     // ************************ Config && Style Events Box********************************* //
 
       scheduler.templates.event_text=function(start,end,event){
-        return "Patient:<b> </b><br>"+"Famille:"+event.category.name+"<br>Fauteuil N°:"+event.fauteuil;
+        return "Patient:<b>"" </b><br>Famille:"+event.category.name+"<br>Fauteuil N°:"+event.fauteuil;
       };
 
       //*----------------------------------------
