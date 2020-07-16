@@ -227,12 +227,6 @@
     // }
   //
 
-  $("#user").change(function(){
-    const $user_id =  $(this).val();
-
-    init($user_id);
-  });
- 
 	function init($user_id = null) {
     // TODO this is a todo comment
 
@@ -449,10 +443,10 @@
     // ************************! End Config Light Box**************************** //
 
     // ************************ Config && Style Events Box********************************* //
-
-      scheduler.templates.event_text=function(start,end,event){
-        return "Patient:<b>"" </b><br>Famille:"+event.category.name+"<br>Fauteuil N°:"+event.fauteuil;
-      };
+      // Config Event box content
+      // scheduler.templates.event_text=function(start,end,event){
+      //   return "Patient:<b> </b><br>"+"Famille:"+event.category.name+"<br>Fauteuil N°:"+event.fauteuil;
+      // };
 
       //*----------------------------------------
       //* Tooltips
@@ -460,12 +454,13 @@
       //default definition
       scheduler.templates.event_header = function(start,end,ev){
           return scheduler.templates.event_date(start)+" - "+
-          scheduler.templates.event_date(end) + " " +ev.category.name;
+          scheduler.templates.event_date(end) ;
       };  
       
       var format = scheduler.date.date_to_str("%Y-%m-%d %H:%i"); 
         scheduler.templates.tooltip_text = function(start,end,event) {
-            return "<b>Créer par :</b> "+event.created_by.name+" "+event.created_by.prenom+"</b><br/><b>Assigner à :</b> "+ event.assign_to.name+" "+event.assign_to.prenom;
+            if (event.created_by.name)
+              return "<b>Créer par :</b> "+event.created_by.name+" "+event.created_by.prenom+"</b><br/><b>Assigner à :</b> "+ event.assign_to.name+" "+event.assign_to.prenom;
       };
 
       //*----------------------------------------
@@ -485,9 +480,9 @@
           }
       }; 
       // the title of the pop-up edit form 
-      scheduler.templates.quick_info_title = function(start, end, ev){ 
-          return ev.category.name; 
-      };      
+      // scheduler.templates.quick_info_title = function(start, end, ev){ 
+      //     return ev.category.name; 
+      // };      
 
     // ************************! End Config && Style Events Box**************************** //
     

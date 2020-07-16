@@ -256,30 +256,31 @@
                                 v-on:patient-folder="generateSelectedPatient"
                                 ></liste-patient-component>
 
-                                <tabs-component 
+                                <!-- <tabs-component 
                                 :showradios="showRadios"
                                 :showprescriptions="showPrescriptions"
                                 :patient="patient">
-                                </tabs-component>
+                                </tabs-component> -->
                                 
                             </div>
 
                             <div class="col-md-9">
-                            <informations-component 
+                            <!-- <informations-component 
                                 :patient="patient"
                                 :showinfos="showInfos"
                                 v-on:updated-patient="regeneratePatient"
                                 :pathologies="{{ $pathologies->toJson() }}"
                                 :antecedents="{{ $antecedents->toJson() }}"
-                                ></informations-component>    
+                                ></informations-component>     -->
 
-                                <schema-dental-component :patient="patient" :showschema="showSchema"></schema-dental-component>
+                                <!-- <schema-dental-component :patient="patient"  :showschema="showSchema"  ></schema-dental-component> -->
+                                <schema-dental-component :patient="patient"></schema-dental-component>
                             </div>
                         </div>
                     </div>
 
                     <!-- FOOTER -->
-                    <div class="app-wrapper-footer">
+                    <!-- <div class="app-wrapper-footer">
                         <div class="app-footer">
                             <div class="app-footer__inner">
                                 <div class="app-footer-left">
@@ -291,7 +292,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div> 
+                    </div>  -->
                     <!-- END FOOTER -->
 
                 </div> 
