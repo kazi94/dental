@@ -194,7 +194,7 @@
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_quick_info.js?v=5.2.1" type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_readonly.js?v=5.2.1" type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/sources/locale/locale_fr.js" type="text/javascript" charset="utf-8"></script>
-<script src="{{ asset('/plugins/select2/dist/js/select2.min.js') }}"type="text/javascript" charset="utf-8"></script>
+<script src="/plugins/select2/dist/js/select2.min.js"type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_limit.js" type="text/javascript" charset="utf-8"></script>
 <script src='/plugins/scheduler/codebase/ext/dhtmlxscheduler_timeline.js' type="text/javascript" charset="utf-8"></script>
 <script src="/plugins/scheduler/codebase/ext/dhtmlxscheduler_units.js" type="text/javascript" charset="utf-8"></script>
@@ -227,13 +227,8 @@
     // }
   //
 
-  $("#user").change(function(){
-    const $user_id =  $(this).val();
-
-    init($user_id);
-  });
- 
 	function init($user_id = null) {
+    // TODO this is a todo comment
 
     // ************************Config Scheduler******************************** //
       scheduler.config.touch             = "force"; //when touch to the cas , modals appear
@@ -371,7 +366,7 @@
       });    
     // ************************! End Handle with Json Data**************************** //
 
-    // ************************ Config Light Box********************************* //
+    // ************@installed ************ Config Light Box********************************* //
       scheduler.form_blocks["my_editor1"]={
           render:function(sns){
             let options = "";
@@ -448,10 +443,10 @@
     // ************************! End Config Light Box**************************** //
 
     // ************************ Config && Style Events Box********************************* //
-
-      scheduler.templates.event_text=function(start,end,event){
-        return "Patient:<b> </b><br>"+"Famille:"+event.category.name+"<br>Fauteuil N°:"+event.fauteuil;
-      };
+      // Config Event box content
+      // scheduler.templates.event_text=function(start,end,event){
+      //   return "Patient:<b> </b><br>"+"Famille:"+event.category.name+"<br>Fauteuil N°:"+event.fauteuil;
+      // };
 
       //*----------------------------------------
       //* Tooltips
@@ -459,12 +454,13 @@
       //default definition
       scheduler.templates.event_header = function(start,end,ev){
           return scheduler.templates.event_date(start)+" - "+
-          scheduler.templates.event_date(end) + " " +ev.category.name;
+          scheduler.templates.event_date(end) ;
       };  
       
       var format = scheduler.date.date_to_str("%Y-%m-%d %H:%i"); 
         scheduler.templates.tooltip_text = function(start,end,event) {
-            return "<b>Créer par :</b> "+event.created_by.name+" "+event.created_by.prenom+"</b><br/><b>Assigner à :</b> "+ event.assign_to.name+" "+event.assign_to.prenom;
+            if (event.created_by.name)
+              return "<b>Créer par :</b> "+event.created_by.name+" "+event.created_by.prenom+"</b><br/><b>Assigner à :</b> "+ event.assign_to.name+" "+event.assign_to.prenom;
       };
 
       //*----------------------------------------
@@ -484,9 +480,9 @@
           }
       }; 
       // the title of the pop-up edit form 
-      scheduler.templates.quick_info_title = function(start, end, ev){ 
-          return ev.category.name; 
-      };      
+      // scheduler.templates.quick_info_title = function(start, end, ev){ 
+      //     return ev.category.name; 
+      // };      
 
     // ************************! End Config && Style Events Box**************************** //
     
