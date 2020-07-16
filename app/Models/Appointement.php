@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Appointement extends Model
 {
 
-		protected $fillable = ['created_by','patient_id','text','start_date' , 'end_date' ,'category_id' , 'color' ,'fauteuil' ,'assign_to'];
+	protected $fillable = ['created_by','patient_id','text','start_date' , 'end_date' ,'category_id' , 'color' ,'fauteuil' ,'assign_to'];
 
 	public function patient()
 	{
