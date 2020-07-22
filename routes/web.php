@@ -40,6 +40,7 @@ Route::post('/patient/radiographie','User\PatientController@postFile')->name('up
 Route::get('pathologies','User\PatientController@getPathologies')->middleware('auth');
 Route::get('antecedents','User\PatientController@getAntecedents')->middleware('auth');
 Route::resource('/patient/prescription','User\PrescriptionController')->middleware('auth');
+Route::post('/patient/devis/add-acts','User\DevisController@AddLinesQuotation')->middleware('auth');
 Route::post('/patient/devis/update_devis','User\DevisController@updateDevis')->middleware('auth');
 Route::resource('/patient/devis','User\DevisController')->middleware('auth');
 Route::delete('/patient/schema-dentaire/remove_tooth/{toothToRemove}','User\SchemaDentaireController@removeTooth')->middleware('auth');

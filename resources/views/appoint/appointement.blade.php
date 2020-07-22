@@ -366,7 +366,7 @@
       });    
     // ************************! End Handle with Json Data**************************** //
 
-    // ************@installed ************ Config Light Box********************************* //
+    //************************ Config Light Box********************************* //
       scheduler.form_blocks["my_editor1"]={
           render:function(sns){
             let options = "";
