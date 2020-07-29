@@ -2,7 +2,7 @@
   <div>
     <div class="main-card mb-3 card">
       <div class="card-header">
-        <ul class="nav">
+        <ul class="nav col-sm-10">
           <li class="nav-item">
             <a data-toggle="tab" href="#tab-eg1-1" class="active nav-link">Initiale</a>
           </li>
@@ -16,14 +16,14 @@
             <a data-toggle="tab" href="#tab-eg1-3" class="nav-link">Règlements</a>
           </li>
         </ul>
-        <i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>Schéma Dentaire
+        <div class="d-none d-sm-block">Schéma Dentaire</div>
       </div>
       <div class="card-body">
         <div class="tab-content">
           <div class="tab-pane active show" id="tab-eg1-1" role="tabpanel">
             <initial-schema-component :patient="patient" v-if="showschema"></initial-schema-component>
           </div>
-          <div class="tab-pane  show" id="tab-eg1-0" role="tabpanel">
+          <div class="tab-pane show" id="tab-eg1-0" role="tabpanel">
             <plan-schema-component :patient="patient" v-if="showschema"></plan-schema-component>
           </div>
           <div class="tab-pane show" id="tab-eg1-2" role="tabpanel">
@@ -48,13 +48,13 @@ export default {
     InitialSchemaComponent,
     PlanSchemaComponent,
     Quotation,
-    Payment
+    Payment,
   },
   props: ["patient", "showschema"],
   data() {
     return {};
   },
   methods: {},
-  mounted() {}
+  mounted() {},
 };
 </script>

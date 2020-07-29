@@ -46,27 +46,11 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "./style.css";
 import "./custom.css";
+
+Vue.component("patients", require("./components/Patients.vue").default);
 const patients = new Vue({
     el: "#patients",
-    data: {
-        fields: [
-            "nom",
-            "prenom",
-            "date_naissance",
-            "age",
-            { key: "num_tel", label: "Téléphone" }
-        ],
-        patients: []
-    },
-    methods: {
-        newModal() {
-            $("#patient_add_modal").modal("show");
-        }
-    },
-    mounted() {
-        // on mounted page, display all patients
-        axios.get("/patients").then(response => {
-            this.patients = response.data;
-        });
-    }
+    data: {},
+    methods: {},
+    mounted() {}
 });

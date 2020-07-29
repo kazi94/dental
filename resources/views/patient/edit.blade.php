@@ -251,7 +251,7 @@
                         <div class="row">
 
                             <div class="col-md-12">
-                                <liste-patient-component 
+                                {{-- <liste-patient-component 
                                 :patients="patients"
                                 v-on:patient-folder="generateSelectedPatient"
                                 ></liste-patient-component>
@@ -260,7 +260,7 @@
                                 :showradios="showRadios"
                                 :showprescriptions="showPrescriptions"
                                 :patient="patient">
-                                </tabs-component> 
+                                </tabs-component>  --}}
                                 
                             </div>
 
@@ -269,11 +269,11 @@
                                 :patient="patient"
                                 :showinfos="showInfos"
                                 v-on:updated-patient="regeneratePatient"
-                                :pathologies="{{ $pathologies->toJson() }}"
-                                :antecedents="{{ $antecedents->toJson() }}"
+                                {{-- :pathologies="{{ $pathologies->toJson() }}" --}}
+                                {{-- :antecedents="{{ $antecedents->toJson() }}" --}}
                                 ></informations-component>     -->
 
-                                <schema-dental-component :patient="patient"  :showschema="showSchema"  ></schema-dental-component> 
+                                <schema-dental-component :patient="{{ $patient }}"  :showschema="showSchema"  ></schema-dental-component> 
                             </div>
                         </div>
                     </div>
@@ -311,8 +311,8 @@
                         </button>
                     </div>
                         <patient-component 
-                        v-bind:pathologies="{{ $pathologies->toJson() }}"
-                        v-bind:antecedents="{{ $antecedents->toJson() }}"
+                        v-bind:pathologies="{{ $pats->toJson() }}"
+                        v-bind:antecedents="{{ $ant->toJson() }}"
                         v-on:generated-patient="generatePatient"  
                         >
                         </patient-component>

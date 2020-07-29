@@ -1,14 +1,25 @@
 @extends('layouts.app')
 @section('content')
 <div class="app-main__inner" id="patients">
+  <div class="row">
+    <div class="col-sm-11 col-md-10">
+       <h3>MES PATIENTS
+  </h3> 
+    </div>
+
+    <div class="col-sm-2 pl-md-5">
+      <button class="btn btn-primary rounded-0">Ajouter</button>
+    </div>
+  </div>
   
-  <h3>APPLICATIONS
-  </h3>
   
   <div class="row">
     
     <div class="col-sm-12">
-      <b-table striped hover :items="patients" :fields="fields"></b-table>
+      <div class="card card-body">
+        <patients></patients>
+
+      </div>
     </div>
     
   </div>
