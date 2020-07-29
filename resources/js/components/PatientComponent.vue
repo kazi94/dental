@@ -2,7 +2,8 @@
   <form
     class="needs-validation"
     novalidate
-    @submit.prevent="editMode ? updatePatient()  : createPatient()"
+    method="post"
+    action="/patient/"
     enctype="multipart/form-data"
   >
     <div class="modal-body">
@@ -239,11 +240,11 @@
 export default {
   props: {
     pathologies: {
-      type: Array
+      type: Array,
     },
     antecedents: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   data() {
     return {
@@ -259,8 +260,8 @@ export default {
         fumeur: "",
         medecin_externe: "",
         pathologies: [],
-        antecedents: []
-      })
+        antecedents: [],
+      }),
     };
   },
   methods: {
@@ -273,7 +274,7 @@ export default {
 
       axios
         .post("/patient/", this.form)
-        .then(response => {
+        .then((response) => {
           $("#patient_add_modal").modal("hide");
           this.$toaster.success(response.data.success);
           //Pass form data to parent
@@ -282,14 +283,14 @@ export default {
 
           this.form.reset();
         })
-        .catch(exception => {
+        .catch((exception) => {
           this.$toaster.error(exception);
         });
-    }
+    },
   },
   mounted() {
     console.log("Component mounted.");
-  }
+  },
 };
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

@@ -122,10 +122,21 @@ class PatientController extends Controller
 
         $patient = $this->getPatient($patient->id); 
 
-        return response()->json([
-            'patient' => $patient,
-            'success' => 'Patient ajouté avec succés!'
-        ]); 
+        // return response()->json([
+        //     'patient' => $patient,
+        //     'success' => 'Patient ajouté avec succés!'
+        // ]);
+        $pathologies = DB::table('pathologie_patient')->join('pathologies','pathologies.id','pathologie_patient.pathologie_id')->where('patient_id',$id)->get();
+        $antecedents = DB::table('antecedent_patient')->join('antecedents','antecedents.id','antecedent_patient.antecedent_id')->where('patient_id',$id)->get();
+
+        $patient->pathologies = $pathologies;
+        $patient->antecedents = $antecedents;
+
+        $pats = $this->getPathologies();
+        $ant =  $this->getAntecedents();
+
+
+        return view('patient.edit' , compact ('patient' , 'pats' , 'ant'));
     }
 
     public function getPathologies()
@@ -164,7 +175,18 @@ class PatientController extends Controller
      */
     public function edit($id)
     {
+        $patient = $this->getPatient($id);
 
+        $pathologies = DB::table('pathologie_patient')->join('pathologies','pathologies.id','pathologie_patient.pathologie_id')->where('patient_id',$id)->get();
+        $antecedents = DB::table('antecedent_patient')->join('antecedents','antecedents.id','antecedent_patient.antecedent_id')->where('patient_id',$id)->get();
+
+        $patient->pathologies = $pathologies;
+        $patient->antecedents = $antecedents;
+
+        $pats = $this->getPathologies();
+        $ant =  $this->getAntecedents();
+
+        return view('patient.edit' , compact('patient' , 'pats' , 'ant') );
     }
 
     /**

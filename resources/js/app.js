@@ -68,10 +68,10 @@ Vue.component(
     "patient-component",
     require("./components/PatientComponent.vue").default
 );
-Vue.component(
-    "liste-patient-component",
-    require("./components/ListePatientComponent.vue").default
-);
+// Vue.component(
+//     "liste-patient-component",
+//     require("./components/ListePatientComponent.vue").default
+// );
 Vue.component(
     "informations-component",
     require("./components/InformationsComponent.vue").default
@@ -90,16 +90,15 @@ Vue.component(
 );
 const app = new Vue({
     el: "#app",
-
     data: {
         pathologies: {},
         antecedents: {},
         patient: {},
-        showInfos: false,
-        showRadios: false,
-        showPrescriptions: false,
-        showRdv: false,
-        showSchema: false,
+        showInfos: true,
+        showRadios: true,
+        showPrescriptions: true,
+        showRdv: true,
+        showSchema: true,
         patients: []
     },
     methods: {
