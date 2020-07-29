@@ -55,7 +55,7 @@ class PatientController extends Controller
 
         if (Auth::user()->cant('patients.view')) return redirect()->back();
         
-        $patients = Patient::with('hospi')->get();
+        $patients = Patient::all();
 
         return view('user.patient.show',compact('patients'));
     }

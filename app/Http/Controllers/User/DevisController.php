@@ -40,6 +40,7 @@ class DevisController extends Controller
      */
     public function store(Request $request)
     {
+        
         $quotState  = (($request->total_accept-$request->total_paid) == 0 ) ? 'payer&&fait' : 'devis';
         $ligneState = ($request->rhythmTraitement == 'onDay' ) ? 'Fait' : 'En cours'; // * Traitement d'un patient qui vient en une seule journée
         
@@ -63,27 +64,61 @@ class DevisController extends Controller
             'schema_id'    => $schema->id,
         ]);
 
-        $selectedLignes = json_decode($request->selectedLignes, true);
+        
         //Store lignes quotation
-        foreach ($selectedLignes  as $ligne) {
-            $ids[] = LigneDevis::create([
-                'devis_id'  => $quotation->id,
-                'num_dent'  => $ligne['num_dent'],
-                'acte_id'   => $ligne['act_id'],
-                'price'     => $ligne['prix'],
-                'state'     => $ligneState,
-            ])->id;
-        }
+        $selectedLignes = json_decode($request->selectedLignes, true);
+        $ids = $this->storeLinesQuotation($selectedLignes , $quotation->id , $ligneState);
+
 
         // Make payement if exist !
         if ($request->total_paid != 0)
             $this->createPayment($request->total_paid , $quotation->id);
 
-
-        
         return response()->json(LigneDevis::whereIn('id' , $ids)->with('act:id,nom')->get() ,201);
     }
 
+    public function AddLinesQuotation(Request $req)
+    {
+        $quotation = Devis::find($req->quot_id);
+        
+        // add new total
+        $quotation->total = $req->total;
+        $quotation->save();
+
+
+        // add new lines
+        $ligne = json_decode($req->lignes , true);
+
+        $ids = $this->storeLinesQuotation($ligne , $quotation->id , "En cours");
+
+        return response()->json(LigneDevis::where('devis_id' , $quotation->id)->with('act:id,nom')->get() ,201);
+
+    }
+
+
+    /**
+     * store lines to databasz
+     *
+     * 
+     *
+     * @param Type $var Description
+     * @return type
+     * @throws conditon
+     **/
+    public function storeLinesQuotation($lines ,$quot_id, $state)
+    {
+        foreach ($lines  as $ligne) {
+            $ids[] = LigneDevis::create([
+                'devis_id'  => $quot_id,
+                'num_dent'  => $ligne['num_dent'],
+                'acte_id'   => $ligne['act_id'],
+                'price'     => $ligne['prix'],
+                'state'     => $state,
+            ])->id;
+        }
+
+        return $ids;
+    }
     /**
      * undocumented function
      *
