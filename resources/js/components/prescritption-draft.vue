@@ -2,6 +2,7 @@
   <div>
     <a
       href="javascript:void(0);"
+      v-b-modal.modal-1v-b-modal.modal-1
       v-b-modal.modal-prescription
       class="nav-link"
       title="Ajouter une nouvelle ordonnance"
@@ -11,38 +12,25 @@
     </a>
 
     <b-modal
-      id="modal-prescription"
+      id="modal-1"
       title="Nouvelle ordonnance"
+      size="xl"
       no-fade
       button-size="sm"
       ok-title="Imprimer"
       cancel-title="Annuler"
+      @show="onReset"
     >
       <div>
         <b-form>
-          <b-form-group
-            id="input-group-ordonnance"
-            label="Sélectionner l'ordonnance type"
-            label-for="input-ordonnance"
-            class="font-weight-bold"
-          >
-            <b-form-select v-model="selected" :options="ordonnances_type" class="col-sm-10"></b-form-select>
-          </b-form-group>
-          <b-form-group label="Médicaments">
-            <b-form-checkbox-group
-              v-model="selectedMeds"
-              :options="medics"
-              name="flavour-2a"
-              stacked
-            ></b-form-checkbox-group>
-          </b-form-group>
+          <b-form-select v-model="selected" :options="options"></b-form-select>
         </b-form>
       </div>
       <template v-slot:modal-footer="{ ok, cancel }">
         <!-- Emulate built in modal footer ok and cancel button actions -->
-        <b-button size="sm" squared variant="secondary" @click="onReset()">Annuler</b-button>
-        <b-button size="sm" squared variant="primary" @click="onSubmit()">
-          <b-icon icon="cloud-download" variant="white" class="mr-1"></b-icon>Imprimer
+        <b-button size="sm" rounded variant="secondary" @click="onReset()">Annuler</b-button>
+        <b-button size="sm" rounded variant="primary" @click="onSubmit()">
+          <b-icon icon="printer-fill" variant="white" class="mr-1"></b-icon>Imprimer
         </b-button>
       </template>
     </b-modal>
@@ -175,88 +163,158 @@
 </template>
 
 <script>
-import { jsPDF } from "jspdf";
-
+import Autocomplete from "vuejs-auto-complete";
 export default {
-  props: ["patient"],
-  components: {},
+  props: ["patient", "showprescriptions"],
+  components: {
+    Autocomplete,
+  },
   data() {
     return {
-      selected: null,
-      selectedMeds: null,
-      medics: [],
-      ordonnances_type: [],
+      medicaments: [],
+      form: new Form({
+        patient: "",
+        medicaments: [],
+      }),
+      prescriptions: [],
+      editMode: false,
+      id: "",
     };
   },
   methods: {
-    /*
-     * Get the list of ordonnances type
-     */
-    fetchOrdonnancesType() {
+    showModal() {
+      // clear medicaments list
+      this.medicaments = [];
+
+      $("#modal_prescription").appendTo("body").modal("show");
+    },
+
+    // addToList(){
+    //     this.medicaments.push(this.medicament);
+    // },
+
+    search(input) {
+      return "/medicament/" + input;
+    },
+
+    addDistributionGroup(medicament) {
+      this.medicaments.push(medicament.selectedObject);
+      // access the autocomplete component methods from the parent
+      this.$refs.autocomplete.clear();
+    },
+
+    formattedDisplay(result) {
+      return result.SP_NOM;
+    },
+
+    // remove medicament from table
+    remove(event, index) {
+      this.medicaments.splice(index, 1);
+      event.preventDefault();
+    },
+
+    // validate form and print prescription
+    printPrescription(print = true, id = null) {
+      this.form.fill({
+        medicaments: this.medicaments,
+        patient: this.patient.id,
+      });
+
+      // udpdate Prescription
+      if (this.editMode)
+        axios
+          .put("/patient/prescription/" + this.id, this.form)
+          .then((response) => {
+            $("#modal_prescription").modal("hide");
+
+            this.$toaster.success(response.data.success);
+
+            this.form.reset();
+
+            // clear medicaments list
+            this.medicaments = [];
+            //print Prescription
+            if (print)
+              openInNewTab(
+                "/patient/prescription/" +
+                  response.data.prescription.id +
+                  "/print"
+              );
+          })
+          .catch((exception) => {
+            this.$toaster.error(exception);
+          });
+      else
+        axios
+          .post("/patient/prescription", this.form)
+          .then((response) => {
+            $("#modal_prescription").modal("hide");
+
+            this.$toaster.success(response.data.success);
+
+            this.form.reset();
+
+            this.patient.prescriptions.push(response.data.prescription);
+
+            //print Prescription
+            if (print)
+              openInNewTab(
+                "/patient/prescription/" +
+                  response.data.prescription.id +
+                  "/print"
+              );
+          })
+          .catch((exception) => {
+            this.$toaster.error(exception);
+          });
+    },
+
+    //remove Prescription
+    removePrescription(index, id) {
       axios
-        .get("/admin/ordonnance-type/get-ordonnances-type")
+        .delete("/patient/prescription/" + id)
         .then((response) => {
-          this.ordonnances_type = response.data;
+          this.patient.prescriptions.splice(index, 1);
+          this.$toaster.success(response.data.success);
         })
         .catch((exception) => {
-          console.log(exception);
+          this.$toaster.error(exception);
         });
     },
-    onReset() {
-      this.$bvModal.hide("modal-prescription");
-      this.selectedMeds = [];
-      this.medics = [];
-    },
-    onSubmit() {
-      if (this.selectedMeds.length != 0) {
-        // create pdf file
-        const doc = new jsPDF();
-        let y = 10;
-        this.selectedMeds.forEach((val, index) => {
-          doc.text(index + 1 + "- " + val, 10, y); // 2nd args : x position; 3rd args : y position
-          y += 10;
-        });
-        // download pdf file
-        doc.save("ordonnance.pdf");
-        // save prescription to db
-        this.savePrescription();
-        // close the modal
-        this.onReset();
-      } else alert("Veuillez sélectionner un médicament");
-    },
-    savePrescription() {
-      let form = new FormData();
-      form.set("medicaments", this.selectedMeds);
-      form.set("patient_id", this.patient.id);
-      // save the prescription into the db
+
+    editPrescription(id) {
+      let vm = this;
+      this.medicaments = [];
+      this.editMode = true;
+      this.id = id;
+
       axios
-        .post("/patient/prescription", form)
+        .get("/patient/prescription/" + id)
         .then((response) => {
-          this.$toaster.success("Ordonnance ajoutée !");
+          console.log(response.data.lignes);
+          $.each(response.data.lignes, function (key, value) {
+            // vm.medicaments.push(value);
+            vm.medicaments.push({
+              SP_CODE_SQ_PK: value.medicament_id,
+              SP_NOM: value.medicament,
+            });
+          });
+
+          $("#modal_prescription").appendTo("body").modal("show");
         })
         .catch((exception) => {
           this.$toaster.error(exception);
         });
     },
   },
-  watch: {
-    /*
-     * Show the list of medocs when ordonnance type is selected
-     */
-    selected: {
-      handler: function (newV) {
-        let vm = this;
-        let selectedOrdonnance = newV; // Ex : 4 or 5 , 6 , {id}
-        vm.ordonnances_type.forEach(function (value, index) {
-          if (value.value === newV) vm.medics = value.medicaments; // show the list of medocs
-        });
-        vm.selectedMeds = vm.medics; // check all medics
-      },
-    },
-  },
+  computed: {},
   mounted() {
     console.log("Prescriptions Component mounted");
-    this.fetchOrdonnancesType();
   },
 };
+
+function openInNewTab(url) {
+  var win = window.open(url, "_blank");
+  win.focus();
+}
 </script>

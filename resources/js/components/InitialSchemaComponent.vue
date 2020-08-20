@@ -19,7 +19,7 @@
             id="initial_schema_canvas"
             style="position: absolute; left: 0px; top: 0px; padding: 0px; border: 0px; width :100%;height:100%; z-index : 9999"
           ></canvas>
-          <img src="/img/schema.png" id="schema-map" usemap="#image-map" width="100%" />
+          <!-- <img src="/img/schema.png" id="schema-map" usemap="#image-map" width="100%" /> -->
 
           <map name="image-map">
             <area
@@ -72,21 +72,21 @@ export default {
         {
           caption: "rac-resid",
           nom: "Racines résiduelles",
-          state: false
+          state: false,
         },
         {
           caption: "frac-rad",
           nom: "Fracture radiculaire",
-          state: false
+          state: false,
         },
         {
           caption: "frac-cor",
           nom: "Fracture coronaire",
-          state: false
+          state: false,
         },
         { caption: "carie-p", nom: "P", state: false },
         { caption: "carie-m", nom: "M", state: false },
-        { caption: "carie-d", nom: "D", state: false }
+        { caption: "carie-d", nom: "D", state: false },
       ],
       num_tooth: [
         { num: 18, state: false },
@@ -120,13 +120,13 @@ export default {
         { num: 35, state: false },
         { num: 36, state: false },
         { num: 37, state: false },
-        { num: 38, state: false }
+        { num: 38, state: false },
       ],
       selectedTooth: new Array(),
       schema_id: "",
       formData: [],
       form: new Form(),
-      disabled: true
+      disabled: true,
     };
   },
   methods: {
@@ -134,13 +134,13 @@ export default {
       // remove selected tooth from DB
       axios
         .delete("/patient/schema-dentaire/remove_tooth/" + toothToDelete)
-        .then(response => {
+        .then((response) => {
           // remove formulas from dental schema
           //
           // Deselect selected tooth
           this.resetTooth();
         })
-        .catch(exception => {
+        .catch((exception) => {
           this.$toaster.error(exception);
         });
     },
@@ -148,11 +148,11 @@ export default {
       this.removeTooth(this.selectedTooth);
     },
     resetAll() {
-      let allTooth = this.num_tooth.map(t => t.num);
+      let allTooth = this.num_tooth.map((t) => t.num);
       this.removeTooth(allTooth);
     },
-    tooth: function(num) {
-      let index = this.num_tooth.map(t => t.num).indexOf(num);
+    tooth: function (num) {
+      let index = this.num_tooth.map((t) => t.num).indexOf(num);
       let state = this.num_tooth[index].state;
       if (state) this.selectedTooth.push(num);
       else this.selectedTooth.splice(this.selectedTooth.indexOf(num), 1);
@@ -162,7 +162,7 @@ export default {
 
       axios
         .post("/patient/schema-dentaire", this.form)
-        .then(response => {
+        .then((response) => {
           // Set Schema ID
           this.schema_id = response.data;
 
@@ -170,33 +170,33 @@ export default {
           this.resetTooth();
 
           // Deselect formulas buttons
-          this.buttons.map(b => (b.state = false));
+          this.buttons.map((b) => (b.state = false));
 
           // Reset formData
           this.formData = [];
         })
-        .catch(exception => {
+        .catch((exception) => {
           this.$toaster.error(exception);
         });
     },
     resetTooth() {
       this.selectedTooth = [];
-      this.num_tooth.map(t => (t.state = false));
+      this.num_tooth.map((t) => (t.state = false));
     },
     // Active the areas with their specefic formules
     manageFormule(formule) {
       //this.createFormData(formule);
 
       // render shapes
-      this.selectedTooth.forEach(t => this.renderShapes(formule, t));
+      this.selectedTooth.forEach((t) => this.renderShapes(formule, t));
     },
-    createFormData: function(formule) {
+    createFormData: function (formule) {
       this.formData.push({
         patient_id: this.patient.id,
         nums_dent: this.selectedTooth,
         type: "initial",
         formule: formule,
-        schema_id: this.schema_id
+        schema_id: this.schema_id,
       });
     },
     renderShapes(formule, selectedTooth) {
@@ -204,7 +204,7 @@ export default {
       // Get the Coords of the teeth
       // Get the Coords of the formulas
       var coord =
-        "552, 26, 573, 64, 584, 115, 595, 199, 597, 236, 568, 238, 529, 231, 530, 207, 537, 110, 544, 28, 550, 20";
+        "552,26,573,64,584,115,595,199,597,236,568,238,529,231,530,207,537,110,544,28,550,20";
       var coords = coord.split(",");
       var c = document.querySelector("#initial_schema_canvas");
       // $('#canvas').css('z-index' , '1');
@@ -220,26 +220,26 @@ export default {
       context.lineTo(coords[0], coords[1]);
       context.closePath(); // On relie
       context.fill();
-    }
+    },
   },
   watch: {
     selectedTooth: {
-      handler: function(newVal) {
+      handler: function (newVal) {
         let length = newVal.length;
         if (length > 0) {
           this.disabled = false;
         } else {
           this.disabled = true;
         }
-      }
-    }
+      },
+    },
   },
   mounted() {
     // Remplir le schema initiale via les data of ddb
     // loop under initial Traitement of Patient
     // set area activated with the given teeth number
     // $('#schema_map').mapster('set' , true , key, options);
-  }
+  },
 };
 </script>
 

@@ -50,14 +50,13 @@ class PrescriptionController extends Controller
    {
 
         $prescription = new Prescription;
-        $prescription->type = 'prescription';
+        $prescription->type = $request->medicaments;
         $prescription->date_prescription = today();
-        $prescription->patient_id = $request->patient;
+        $prescription->patient_id = $request->patient_id;
         $prescription->created_by = Auth::id();
         $prescription->save();
 
-
-        $this->addLignesPrescription($prescription->id, $request->medicaments);
+        // $this->addLignesPrescription($prescription->id, $request->medicaments);
 
         return response()->json([
             'prescription' => $prescription,
@@ -143,9 +142,7 @@ class PrescriptionController extends Controller
     {
         foreach ($lignes as $val) {
             $ligne = new Ligneprescription;
-            $ligne->medicament_id = $val['SP_CODE_SQ_PK'];
-            $ligne->medicament = $val['SP_NOM'];
-            $ligne->date_prise = today();
+            $ligne->medicament = $val;
             $ligne->prescription_id = $id;
             $ligne->save();
         }
