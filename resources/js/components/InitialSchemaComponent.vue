@@ -49,7 +49,7 @@
             xmlns:xlink="http://www.w3.org/1999/xlink"
             width="775"
             height="314"
-          /></svg>
+          />
           <img src="/img/schema.png" id="schema-map" width="100%" usemap="#image-map" />
         </div>
         <!-- <map name="image-map">
@@ -217,6 +217,9 @@ export default {
     sendToServer(formulas, teeth) {
       let form = this.createFormData(formulas, teeth);
 
+      // remove all the drawing shapes of the selected teeth before redraw new shapes
+      this.removeShapes();
+
       axios
         .post("/patient/schema-dentaire", form)
         .then((response) => {
@@ -229,6 +232,16 @@ export default {
         .catch((exception) => {
           this.$toaster.error(exception);
         });
+    },
+    removeShapes() {
+      // find polygon elements by teeth attribute
+      var polygons = document.getElementsByTagName("polygon");
+      for (let index = 0; index < polygons.length; index++) {
+        const points = polygons[index].getAttribute("teeth");
+        if (points == this.selectedTeeth)
+          // remove polygon node
+          polygons[index].remove();
+      }
     },
     resetTooth() {
       this.selectedTooth = [];
@@ -244,24 +257,25 @@ export default {
       return formData;
     },
     createShapes(coords = []) {
-      var draw = SVG('#initial_schema_canvas')
-      draw.rect(100,100).animate().fill('#f03').move(100,100
-      var c = document.querySelector("#initial_schema_canvas");
-      var context = c.getContext("2d");
-      context.clearRect(0, 0, 775, 319);
-      coords.forEach((coord) => {
-        let cords = coord.coord.split(",");
-        context.fillStyle = coord.color;
-        cords = this.convertCoord(cords); // array
-        context.beginPath();
-        context.moveTo(coords[0], coords[1]);
-        let len = cords.length;
-        for (let i = 2; i < cords.length; i += 2) {
-          context.lineTo(cords[i], cords[i + 1]);
-        }
-        context.lineTo(cords[0], cords[1]);
-        context.closePath(); // On relie
-        context.fill();
+      let draw = SVG("#initial_schema_canvas");
+      let polygonID;
+      coords.forEach((c) => {
+        let convertTo = this.convertCoord(c.coord); // array
+        if (c.formulas == "frac-cor" || c.formulas == "frac-rad")
+          polygonID = draw
+            .polyline(convertTo)
+            .fill("black")
+            .stroke({ width: 1 });
+        else
+          polygonID = draw
+            .polygon(convertTo)
+            .fill(c.color)
+            .stroke({ width: 1 });
+
+        document
+          .getElementById(polygonID)
+          .setAttribute("teeth", this.selectedTeeth);
+        document.getElementById(polygonID).setAttribute("title", c.formulas);
       });
     },
     convertCoord(coord) {
@@ -283,11 +297,13 @@ export default {
         ratioY = 2.724306967;
       }
       // change value of coords coordinate with the size of the actual media : laptop,tablete,mobile
-      let val = coord.map((c, i) =>
-        i % 2 == 0 ? parseInt(c / ratioX) : parseInt(c / ratioY)
-      );
+      let val = coord
+        .split(",")
+        .map((c, i) =>
+          i % 2 == 0 ? parseInt(c / ratioX) : parseInt(c / ratioY)
+        );
 
-      return val;
+      return val.toString();
     },
     onShowPopover() {
       this.$root.$on("bv::popover::show", (bvEventObj) => {
@@ -324,7 +340,7 @@ export default {
             // false
             this.checkedTooth.push({
               teeth: this.selectedTeeth,
-              formulas: newVal,
+              formulas: newVal, //array
             });
             // here
             this.sendToServer(newVal, this.selectedTeeth);
@@ -348,11 +364,16 @@ export default {
   },
   mounted() {
     this.onShowPopover();
-)
-    // Remplir le schema initiale via les data of ddb
-    // loop under initial Traitement of Patient
-    // set area activated with the given teeth number
-    // $('#schema_map').mapster('set' , true , key, options);
+
+    // set formules in schema
+    patient.formules.forEach((e) => {
+      this.checkedTooth.push({
+        teeth: e.num_dent,
+        formulas: split(",", e.formules),
+      });
+      this.sendToServer(e.formulas, e.num_dent);
+      this.schema_id = e.schema_id;
+    });
   },
 };
 </script>

@@ -17,6 +17,10 @@ class Schema extends Model
 	}
 	public function quotations()
 	{
-		return $this->hasmANY('App\Models\Devis', 'schema_id', 'id');
-	}  	    
+		return $this->hasMany('App\Models\Devis', 'schema_id', 'id');
+	}
+	
+	public function formules () {
+		return $this->hasMany('App\Models\Traitement');
+	}
 }

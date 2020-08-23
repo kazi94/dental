@@ -75,7 +75,7 @@ class SchemaDentaireController extends Controller
             ['num_dent' => $request->teeth,'schema_id' => $schema->id],
             [                
             'num_dent'   => $request->teeth,
-            'formule'    => $request->formulas,
+            'formules'    => $request->formulas, // "frac-rad,carie,abs..."
             'created_by' => Auth::id(),
             'schema_id'  => $schema->id 
             ]);
@@ -83,7 +83,7 @@ class SchemaDentaireController extends Controller
             // get the coords ,color of the selected formulas and teeth
             $coords = Formule::where('teeth', $request->teeth)
             ->whereIn('formulas' , explode("," , $request->formulas))
-            ->select('coord','color')
+            ->select('coord','color','formulas')
             ->get();
 
         return response()->json([
