@@ -8,14 +8,14 @@
           :pressed.sync="btn.state"
           v-if="idx <= 15"
           variant="outline-success"
-          class="mr-1 ml-1 mb-1"
-          squared
+          class="ml-2 mb-1 rounded-circle"
+          style="margin-right : 0.5rem"
           size="sm"
           :id="`${btn.num}`"
           @click="tooth(btn.num)"
         >
           {{ btn.num }}
-          <b-popover :target="`${btn.num}`" triggers="hover" placement="auto">
+          <b-popover :target="`${btn.num}`" triggers="focus" placement="bottom">
             <template v-slot:title>Formules</template>
             <b-form-group>
               <b-form-checkbox-group
@@ -29,7 +29,7 @@
         </b-button>
 
         <div style="position : relative">
-          <canvas
+          <!-- <canvas
             width="775"
             height="319"
             id="initial_schema_canvas"
@@ -37,7 +37,19 @@
             left: 0px; top: 0px; 
             padding: 0px; 
             border: 0px;"
-          ></canvas>
+          ></canvas>-->
+          <svg
+            id="initial_schema_canvas"
+            style="position: absolute; 
+            left: 0px; top: 0px; 
+            padding: 0px; 
+            border: 0px;"
+            xmlns="http://www.w3.org/2000/svg"
+            version="1.1"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            width="775"
+            height="314"
+          /></svg>
           <img src="/img/schema.png" id="schema-map" width="100%" usemap="#image-map" />
         </div>
         <!-- <map name="image-map">
@@ -54,14 +66,14 @@
           v-if="btm_idx > 15"
           :pressed.sync="btm_btn.state"
           variant="outline-success"
-          class="mr-1 ml-1 mb-1 mt-1"
-          squared
+          class="ml-1 mt-1 rounded-circle"
+          style="margin-right : 0.7rem"
           size="sm"
           @click="tooth(btm_btn.num)"
           :id="`${btm_btn.num}`"
         >
           {{ btm_btn.num }}
-          <b-popover :target="`${btm_btn.num}`" triggers="hover" placement="auto">
+          <b-popover :target="`${btm_btn.num}`" triggers="focus" placement="right">
             <template v-slot:title>Formules</template>
             <b-form-group>
               <b-form-checkbox-group
@@ -93,6 +105,7 @@
 </template>
 
 <script>
+import { SVG } from "@svgdotjs/svg.js";
 export default {
   components: {},
   props: ["patient"],
@@ -201,88 +214,93 @@ export default {
       if (state) this.selectedTooth.push(num);
       else this.selectedTooth.splice(this.selectedTooth.indexOf(num), 1);
     },
-    sendToServer(formulas, tooth) {
-      this.form = this.createFormData(formulas, tooth);
+    sendToServer(formulas, teeth) {
+      let form = this.createFormData(formulas, teeth);
 
       axios
-        .post("/patient/schema-dentaire", this.form)
+        .post("/patient/schema-dentaire", form)
         .then((response) => {
           // Set Schema ID
-          this.schema_id = response.data;
+          this.schema_id = response.data.schema_id;
 
-          // Deselect all tooth
-          this.resetTooth();
-
-          // Deselect formulas buttons
-          this.buttons.map((b) => (b.state = false));
-
-          // Reset formData
-          this.formData = [];
+          // Create shapes
+          this.createShapes(response.data.coords);
         })
         .catch((exception) => {
           this.$toaster.error(exception);
         });
     },
-    save() {
-      // get the num of selected teeth
-      // get the selected formulas
-      let selectedTooth = this.selectedTooth; // [5,41,3,6,9...]
-      selectedFormulas = this.buttons.map((b) => (b.state ? b.caption : "")); // [frac,abs,carie...]
-
-      if (this.selectedTooth.length > 0 && selectedFormulas.length > 0) {
-        // if selected
-        //TODO save into db
-        //TODO get coords and color of the num tooth and formulas from the server
-        // this.sendToServer(selectedFormulas, selectedTooth);
-        //TODO format coords with the current media display :320px , 375,425,768,1024,1440,2560px
-        //TODO draw shapes foreach selected tooth and formulas
-        // add selected teeth and formulas to table
-        // reset formulas and selected tooth
-      } else
-        this.$toaster.info(
-          "Veuillez sélectionner au moin une dent et une formule !"
-        );
-    },
     resetTooth() {
       this.selectedTooth = [];
       this.num_tooth.map((t) => (t.state = false));
     },
-    // Active the areas with their specefic formules
-    manageFormule(formule) {
-      //this.createFormData(formule);
-      // if unchecked => render shapes of the selected tooth
-      this.selectedTooth.forEach((t) => this.renderShapes(formule, t));
-
-      // else remove shape of the selected tooth
+    createFormData: function (formulas, teeth) {
+      let formData = new FormData();
+      formData.append("teeth", teeth);
+      formData.append("formulas", formulas); //array
+      formData.append("patient_id", this.patient.id);
+      formData.append("schema_id", this.schema_id);
+      formData.append("type", "initial");
+      return formData;
     },
-    createFormData: function (formulas, tooth) {
-      // let formules = [];
-      // formulas.forEach((e) => {
-      //   tooth.forEach((e1) => {
-      //     formules.push({
-      //       nums_dent: e1,
-      //       formule: e,
-      //     });
-      // });
-    },
-    renderShapes(formule, selectedTeeth) {
-      var coord =
-        "358,15,378,62,383,105,388,134,387,152,355,154,342,143,348,113,352,66,354,35";
-      var coords = coord.split(",");
+    createShapes(coords = []) {
+      var draw = SVG('#initial_schema_canvas')
+      draw.rect(100,100).animate().fill('#f03').move(100,100
       var c = document.querySelector("#initial_schema_canvas");
-      // $('#canvas').css('z-index' , '1');
-      var context = c.getContext("2d"); /*.clearRect(0, 0, width, height);*/
+      var context = c.getContext("2d");
+      context.clearRect(0, 0, 775, 319);
+      coords.forEach((coord) => {
+        let cords = coord.coord.split(",");
+        context.fillStyle = coord.color;
+        cords = this.convertCoord(cords); // array
+        context.beginPath();
+        context.moveTo(coords[0], coords[1]);
+        let len = cords.length;
+        for (let i = 2; i < cords.length; i += 2) {
+          context.lineTo(cords[i], cords[i + 1]);
+        }
+        context.lineTo(cords[0], cords[1]);
+        context.closePath(); // On relie
+        context.fill();
+      });
+    },
+    convertCoord(coord) {
+      // '358,15,378,62,383,105,388,134,387,152,355,154,342,143,348,113,352,66,354,35'
+      let mediaWidth = window.innerWidth;
+      let ratioX = 1;
+      let ratioY = 1;
 
-      context.fillStyle = "red";
-      context.beginPath();
-      context.moveTo(coords[0], coords[1]);
-      let len = coords.length;
-      for (let i = 2; i < coords.length; i += 2) {
-        context.lineTo(coords[i], coords[i + 1]);
+      if (mediaWidth == 1024) {
+        ratioX = 1.348122867;
+        ratioY = 1.34812467;
       }
-      context.lineTo(coords[0], coords[1]);
-      context.closePath(); // On relie
-      context.fill();
+      if (mediaWidth == 768) {
+        ratioX = 1.685671367;
+        ratioY = 1.685743577;
+      }
+      if (mediaWidth == 320) {
+        ratioX = 2.724137931;
+        ratioY = 2.724306967;
+      }
+      // change value of coords coordinate with the size of the actual media : laptop,tablete,mobile
+      let val = coord.map((c, i) =>
+        i % 2 == 0 ? parseInt(c / ratioX) : parseInt(c / ratioY)
+      );
+
+      return val;
+    },
+    onShowPopover() {
+      this.$root.$on("bv::popover::show", (bvEventObj) => {
+        this.selectedFormulas = [];
+        this.selectedTeeth = bvEventObj.target.id;
+
+        // return the formulas of the hovered teeth
+        for (let i = 0; i < this.checkedTooth.length; i++)
+          if (this.checkedTooth[i].teeth == this.selectedTeeth) {
+            this.selectedFormulas = this.checkedTooth[i].formulas;
+            break;
+          }
+      });
     },
   },
   watch: {
@@ -302,34 +320,35 @@ export default {
           let index = this.checkedTooth.findIndex(
             (p) => p.teeth == this.selectedTeeth
           ); // o or -1
-          if (index == -1 && this.selectedFormulas.length != 0) {
+          if (index == -1 && newVal.length != 0) {
             // false
             this.checkedTooth.push({
               teeth: this.selectedTeeth,
               formulas: newVal,
             });
-          } else {
-            this.checkedTooth[index].formulas = newVal;
+            // here
+            this.sendToServer(newVal, this.selectedTeeth);
+          } else if (index != -1) {
+            // the array of num teeth exist
+            this.checkedTooth[index].formulas = newVal; // add the new selected formula
+            // here
+            // newVal = ['frac']; ['frac','carie']; ['frac', 'carie' , 'abs']
+            // this.sendToServer(['frac'] , 22);
+            // this.sendToServer(['frac','carie'] , 22);
+            // this.sendToServer(['frac', 'carie' , 'abs']  , 22);
+            this.sendToServer(newVal, this.selectedTeeth);
           }
-        } else if (this.selectedFormulas.length != 0)
+        } else
           this.checkedTooth.push({
             teeth: this.selectedTeeth,
             formulas: newVal,
           });
-
-        console.log(newVal);
       },
     },
   },
   mounted() {
-    this.$root.$on("bv::popover::show", (bvEventObj) => {
-      this.selectedFormulas = [];
-      this.selectedTeeth = bvEventObj.target.id;
-      var formulas = this.checkedTooth.map((e) =>
-        e.teeth == this.selectedTeeth ? e.formulas : []
-      );
-      if (formulas != "") this.selectedFormulas = formulas;
-    });
+    this.onShowPopover();
+)
     // Remplir le schema initiale via les data of ddb
     // loop under initial Traitement of Patient
     // set area activated with the given teeth number
