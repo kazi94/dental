@@ -233,6 +233,22 @@ export default {
           this.$toaster.error(exception);
         });
     },
+    getCoords(formulas, teeth) {
+      axios
+        .get(
+          "/patient/schema-dentaire/get-coords/" +
+            teeth +
+            "&& formules=" +
+            formulas
+        )
+        .then((response) => {
+          // Create shapes
+          this.createShapes(response.data.coords);
+        })
+        .catch((exception) => {
+          this.$toaster.error(exception);
+        });
+    },
     removeShapes() {
       // find polygon elements by teeth attribute
       var polygons = document.getElementsByTagName("polygon");
@@ -369,11 +385,11 @@ export default {
     patient.formules.forEach((e) => {
       this.checkedTooth.push({
         teeth: e.num_dent,
-        formulas: split(",", e.formules),
+        formulas: e.formules.split(","),
       });
-      this.sendToServer(e.formulas, e.num_dent);
-      this.schema_id = e.schema_id;
+      this.getCoords(e.formules, e.num_dent);
     });
+    this.schema_id = patient.formules[0].schema_id;
   },
 };
 </script>
@@ -387,8 +403,7 @@ export default {
   width: 708px;
   margin-left: -3px;
 }
-.btn {
-}
+
 .list-number {
   list-style: none;
   margin-left: -39px;

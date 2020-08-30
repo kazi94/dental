@@ -102,6 +102,23 @@ class SchemaDentaireController extends Controller
     {
         //
     }
+    /**
+     * undocumented function summary
+     *
+     * Undocumented function long description
+     *
+     * @param Type $var Description
+     * @return type
+     * @throws conditon
+     **/
+    public function getCoords($teeth = null , $formulas)
+    {
+        // get the coords ,color of the selected formulas and teeth
+        $coords = Formule::where('teeth', $teeth)
+        ->whereIn('formulas' , explode("," , $formulas))
+        ->select('coord','color','formulas')
+        ->get();
+    }
 
     /**
      * Show the form for editing the specified resource.
