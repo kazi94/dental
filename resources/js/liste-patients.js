@@ -46,11 +46,20 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "./style.css";
 import "./custom.css";
-
+Vue.component(
+    "patient-component",
+    require("./components/PatientComponent.vue").default
+);
 Vue.component("patients", require("./components/Patients.vue").default);
 const patients = new Vue({
     el: "#patients",
     data: {},
-    methods: {},
+    methods: {
+        newModal() {
+            $("#patient_add_modal")
+                .appendTo("body")
+                .modal("show");
+        }
+    },
     mounted() {}
 });

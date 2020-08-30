@@ -76,10 +76,10 @@ Vue.component(
     "informations-component",
     require("./components/InformationsComponent.vue").default
 );
-Vue.component(
-    "tabs-component",
-    require("./components/TabsComponent.vue").default
-);
+// Vue.component(
+//     "tabs-component",
+//     require("./components/TabsComponent.vue").default
+// );
 Vue.component(
     "schema-dental-component",
     require("./components/SchemaDentalComponent.vue").default
@@ -88,6 +88,7 @@ Vue.component(
     "rendez-vous-btn",
     require("./components/RendezVousBtn.vue").default
 );
+Vue.component("prescription", require("./components/Prescription.vue").default);
 const app = new Vue({
     el: "#app",
     data: {

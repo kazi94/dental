@@ -119,24 +119,26 @@ class PatientController extends Controller
         });
         //associate patient with allergie
         $patient->antecedents()->sync($antecedents);
+        return redirect("patient/".$patient->id."/edit");
 
-        $patient = $this->getPatient($patient->id); 
+        
+        // $patient = $this->getPatient($patient->id); 
 
         // return response()->json([
         //     'patient' => $patient,
         //     'success' => 'Patient ajouté avec succés!'
         // ]);
-        $pathologies = DB::table('pathologie_patient')->join('pathologies','pathologies.id','pathologie_patient.pathologie_id')->where('patient_id',$id)->get();
-        $antecedents = DB::table('antecedent_patient')->join('antecedents','antecedents.id','antecedent_patient.antecedent_id')->where('patient_id',$id)->get();
+        // $pathologies = DB::table('pathologie_patient')->join('pathologies','pathologies.id','pathologie_patient.pathologie_id')->where('patient_id',$id)->get();
+        // $antecedents = DB::table('antecedent_patient')->join('antecedents','antecedents.id','antecedent_patient.antecedent_id')->where('patient_id',$id)->get();
 
-        $patient->pathologies = $pathologies;
-        $patient->antecedents = $antecedents;
+        // $patient->pathologies = $pathologies;
+        // $patient->antecedents = $antecedents;
 
-        $pats = $this->getPathologies();
-        $ant =  $this->getAntecedents();
+        // $pats = $this->getPathologies();
+        // $ant =  $this->getAntecedents();
 
 
-        return view('patient.edit' , compact ('patient' , 'pats' , 'ant'));
+        // return view('patient.edit' , compact ('patient' , 'pats' , 'ant'));
     }
 
     public function getPathologies()

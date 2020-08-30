@@ -12,4 +12,5 @@ class Ordonnancetype extends Model
     {
         return $this->hasMany('App\Models\OrdonnanceTypeLine');
     }
+
 }

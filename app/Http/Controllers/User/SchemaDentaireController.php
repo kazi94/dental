@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 use Auth;
 use App\Models\Schema;
 use App\Models\Traitement;
+use App\Models\Formule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -38,31 +39,57 @@ class SchemaDentaireController extends Controller
     public function store(Request $request)
     {
 
-        foreach ($request->all() as $formule) 
-        {
-        	// Create instance of Schema
-        	$schema = Schema::firstOrCreate( // firstOrCreate : store to DB if id not found
-        		[ 'id' => $formule['schema_id'] ],
-        		[
-            		'patient_id' => $formule['patient_id'],
-            		'type'  => $formule['type'],
-        	    ]
-            );
-        	// Create for each Selected Tooth instance of Traitement
-            $tooth =$formule['nums_dent'];
+        // foreach ($request->all() as $formule) 
+        // {
+        // 	// Create instance of Schema
+        // 	$schema = Schema::firstOrCreate( // firstOrCreate : store to DB if id not found
+        // 		[ 'id' => $formule['schema_id'] ],
+        // 		[
+        //     		'patient_id' => $formule['patient_id'],
+        //     		'type'  => $formule['type'],
+        // 	    ]
+        //     );
+        // 	// Create for each Selected Tooth instance of Traitement
+        //     $tooth =$formule['nums_dent'];
 
-            foreach ($tooth as $val) {
-            		Traitement::create([
-            			'num_dent'   => $val,
-            			'formule'    => $formule['formule'],
-            			'created_by' => Auth::id(),
-            			'schema_id'  => $schema->id 
-            		]);
+        //     foreach ($tooth as $val) {
+        //     		Traitement::create([
+        //     			'num_dent'   => $val,
+        //     			'formule'    => $formule['formule'],
+        //     			'created_by' => Auth::id(),
+        //     			'schema_id'  => $schema->id 
+        //     		]);
             
-            }
-        }
+        //     }
+        // }
+        // Create instance of Schema
+        $schema = Schema::firstOrCreate( // firstOrCreate : store to DB if id not found
+            [ 'id' => $request->schema_id ],
+            [
+                'patient_id' => $request->patient_id,
+                'type'  => $request->type,
+            ]
+        );
 
-        return response()->json($schema->id , 201);
+        Traitement::updateOrCreate(
+            ['num_dent' => $request->teeth,'schema_id' => $schema->id],
+            [                
+            'num_dent'   => $request->teeth,
+            'formules'    => $request->formulas, // "frac-rad,carie,abs..."
+            'created_by' => Auth::id(),
+            'schema_id'  => $schema->id 
+            ]);
+
+            // get the coords ,color of the selected formulas and teeth
+            $coords = Formule::where('teeth', $request->teeth)
+            ->whereIn('formulas' , explode("," , $request->formulas))
+            ->select('coord','color','formulas')
+            ->get();
+
+        return response()->json([
+            'schema_id' => $schema->id,
+            'coords'    => $coords 
+         ] , 201);
     }
 
     /**
@@ -74,6 +101,23 @@ class SchemaDentaireController extends Controller
     public function show(Schema $schema)
     {
         //
+    }
+    /**
+     * undocumented function summary
+     *
+     * Undocumented function long description
+     *
+     * @param Type $var Description
+     * @return type
+     * @throws conditon
+     **/
+    public function getCoords($teeth = null , $formulas)
+    {
+        // get the coords ,color of the selected formulas and teeth
+        $coords = Formule::where('teeth', $teeth)
+        ->whereIn('formulas' , explode("," , $formulas))
+        ->select('coord','color','formulas')
+        ->get();
     }
 
     /**

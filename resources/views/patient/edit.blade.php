@@ -78,10 +78,7 @@
                                 </a>
                             </li>
                             <li class="btn-group nav-item" v-show="showPrescriptions">
-                                <a href="javascript:void(0);" class="nav-link" {{-- data-toggle="tooltip" data-placement="bottom" --}} title="Ajouter une nouvelle ordonnance">
-                                    <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"></i>
-                                    Ordonnance
-                                </a>
+                                <prescription :patient="{{ $patient->toJson() }}"></prescription>
                             </li>
                             <li class="btn-group nav-item" v-show="showRadios">
                                 <a href="javascript:void(0);" class="nav-link" {{-- data-toggle="tooltip" data-placement="bottom" --}} title="Ajouter une nouvelle ordonnance">
@@ -314,6 +311,8 @@
                         v-bind:pathologies="{{ $pats->toJson() }}"
                         v-bind:antecedents="{{ $ant->toJson() }}"
                         v-on:generated-patient="generatePatient"  
+                        csrf="{{ csrf_token() }}"
+                        
                         >
                         </patient-component>
 

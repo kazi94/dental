@@ -19,7 +19,8 @@ Route::prefix('/admin')->group(function()
  	Route::resource('role','Admin\RoleController')->middleware('auth');
  	Route::get('reglages/general','Admin\SettingController@getSettings')->middleware('auth');
  	Route::resource('reglages','Admin\SettingController', ['names' => 'setting'])->middleware('auth');
-    Route::resource('user','Admin\UserController')->middleware('auth');   
+    Route::resource('user','Admin\UserController')->middleware('auth');  
+    Route::get('ordonnance-type/get-ordonnances-type' , 'Admin\OrdonnanceTypeController@getOrdonnancesType')->middleware('auth'); 
     Route::resource('ordonnance-type','Admin\OrdonnanceTypeController')->middleware('auth');   
     Route::get('act/get_acts', 'Admin\ActController@getActs')->middleware('auth');
     Route::resource('act','Admin\ActController')->middleware('auth');                                                       
@@ -43,6 +44,7 @@ Route::resource('/patient/prescription','User\PrescriptionController')->middlewa
 Route::post('/patient/devis/add-acts','User\DevisController@AddLinesQuotation')->middleware('auth');
 Route::post('/patient/devis/update_devis','User\DevisController@updateDevis')->middleware('auth');
 Route::resource('/patient/devis','User\DevisController')->middleware('auth');
+Route::get('/patient/schema-dentaire/get-coords/{teeth}&&formules={formulas}','User\SchemaDentaireController@getCoords')->middleware('auth');
 Route::delete('/patient/schema-dentaire/remove_tooth/{toothToRemove}','User\SchemaDentaireController@removeTooth')->middleware('auth');
 Route::resource('/patient/schema-dentaire','User\SchemaDentaireController')->middleware('auth');
 Route::get('/patient/prescription/{id}/print','User\PrescriptionController@print')->middleware('auth');

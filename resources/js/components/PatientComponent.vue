@@ -3,9 +3,10 @@
     class="needs-validation"
     novalidate
     method="post"
-    action="/patient/"
+    action="/patient"
     enctype="multipart/form-data"
   >
+    <input type="hidden" name="_token" :value="csrf" />
     <div class="modal-body">
       <div class="row">
         <div class="col-md-6">
@@ -230,8 +231,8 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">FERMER</button>
-      <input type="submit" value="AJOUTER" class="btn btn-primary" />
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      <input type="submit" value="Ajouter" class="btn btn-primary rounded-0" />
     </div>
   </form>
 </template>
@@ -245,6 +246,7 @@ export default {
     antecedents: {
       type: Array,
     },
+    csrf: String,
   },
   data() {
     return {
@@ -269,23 +271,20 @@ export default {
       this.form.pathologies.push(selectedOption.id);
     },
     createPatient() {
-      var patient = this.form;
-      console.log(patient);
-
-      axios
-        .post("/patient/", this.form)
-        .then((response) => {
-          $("#patient_add_modal").modal("hide");
-          this.$toaster.success(response.data.success);
-          //Pass form data to parent
-
-          this.$emit("generated-patient", response.data.patient);
-
-          this.form.reset();
-        })
-        .catch((exception) => {
-          this.$toaster.error(exception);
-        });
+      // var patient = this.form;
+      // console.log(patient);
+      // axios
+      //   .post("/patient/", this.form)
+      //   .then((response) => {
+      //     $("#patient_add_modal").modal("hide");
+      //     this.$toaster.success(response.data.success);
+      //     //Pass form data to parent
+      //     this.$emit("generated-patient", response.data.patient);
+      //     this.form.reset();
+      //   })
+      //   .catch((exception) => {
+      //     this.$toaster.error(exception);
+      //   });
     },
   },
   mounted() {

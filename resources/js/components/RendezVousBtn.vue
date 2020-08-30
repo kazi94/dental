@@ -23,8 +23,8 @@
     >
       <template v-slot:modal-footer="{ ok, cancel }">
         <!-- Emulate built in modal footer ok and cancel button actions -->
-        <b-button size="sm" rounded variant="secondary" @click="onReset()">Annuler</b-button>
-        <b-button size="sm" rounded variant="primary" @click="onSubmit()">
+        <b-button size="sm" squared variant="secondary" @click="onReset()">Annuler</b-button>
+        <b-button size="sm" squared variant="primary" @click="onSubmit()">
           <b-icon icon="calendar3" variant="white" class="mr-1"></b-icon>Programmer
         </b-button>
       </template>
@@ -81,8 +81,8 @@
 export default {
   props: {
     patient: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
@@ -90,10 +90,10 @@ export default {
         text: "",
         start_date: "08:00:00",
         end_date: "08:30:00",
-        patient_id: this.patient.id
+        patient_id: this.patient.id,
       },
       required: true,
-      hide_header: true
+      hide_header: true,
     };
   },
   methods: {
@@ -102,18 +102,18 @@ export default {
       const vm = this;
       axios
         .post("/patient/rendez-vous", this.form)
-        .then(response => {
+        .then((response) => {
           vm.$refs["modal-rdv"].hide();
           vm.$bvToast.toast(
             `rendez-vous programmer pour : ${vm.form.date_rdv} à ${vm.form.start_date}.`,
             {
               variant: "success",
               toaster: "b-toaster-bottom-center",
-              solid: true
+              solid: true,
             }
           );
         })
-        .catch(exception => {
+        .catch((exception) => {
           this.$toaster.error(exception);
         });
     },
@@ -121,8 +121,8 @@ export default {
       // Reset our form values
       this.form.date_rdv = "";
       this.form.description = "";
-    }
-  }
+    },
+  },
 };
 </script>
 

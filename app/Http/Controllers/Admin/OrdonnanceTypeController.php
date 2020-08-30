@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Models\Ordonnancetype;
-use App\Models\OrdonnancetypeLine;
+use App\Models\OrdonnanceTypeLine;
 
 class OrdonnanceTypeController extends Controller
 {
@@ -144,6 +144,40 @@ class OrdonnanceTypeController extends Controller
          Ordonnancetype::where('id',$id)->delete();
 
         return response()->json( [] , 200);
+    }
+
+
+    /**
+     * undocumented function summary
+     *
+     * Undocumented function long description
+     *
+     * @param Type $var Description
+     * @return type
+     * @throws conditon
+     **/
+    public function getOrdonnancesType()
+    {
+        $ordonnances = OrdonnanceType::with('medicaments')->get();
+
+        
+        $ordonnances = $ordonnances->map( function( $e ) {
+            return [
+                'value' => $e['id'],
+                'text' => $e['nom'], 
+                'medicaments' => $e['medicaments']->map(function($el){
+                    return $el['preview']; 
+                }),
+            ];
+        });
+
+        $ordonnances->prepend([
+            'value' => null,
+            'text'  => 'Veuillez sélectionner une ordonnance',
+            'medicaments' => null
+        ]);
+
+        return response()->json($ordonnances , 201);
     }
 
     protected function implodeMedicaments($ordonnance){

@@ -12,7 +12,7 @@
     "devDependencies": {
         "axios": "^0.19.2",
         "bootstrap": "^4.5.0",
-        "browser-sync": "^2.26.7",
+        "browser-sync": "^2.26.12",
         "browser-sync-webpack-plugin": "^2.2.2",
         "cross-env": "^5.1",
         "jquery": "^3.5.1",
@@ -25,7 +25,10 @@
         "vue-template-compiler": "^2.6.11"
     },
     "dependencies": {
+        "@svgdotjs/svg.js": "^3.0.16",
         "bootstrap-vue": "^2.15.0",
+        "gentelella": "^1.4.0",
+        "jspdf": "^2.0.0",
         "pkg.json": "^2.0.1",
         "select2": "^4.0.13",
         "v-toaster": "^1.0.3",
