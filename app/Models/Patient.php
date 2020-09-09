@@ -20,9 +20,13 @@ class Patient extends Model
     public function radios () {
     	return $this->hasMany('App\Models\Radio');
 	}
-	public function LastSchema()
+	public function lastSchema()
 	{
 		return $this->hasOne('App\Models\Schema', 'patient_id', 'id')->latest()->limit(1);
+	}
+	public function initialSchema()
+	{
+		return $this->hasOne('App\Models\Schema', 'patient_id', 'id')->where('type' ,'initial')->limit(1);
 	}
 	public function schemas()
 	{

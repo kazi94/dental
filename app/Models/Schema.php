@@ -20,7 +20,8 @@ class Schema extends Model
 		return $this->hasMany('App\Models\Devis', 'schema_id', 'id');
 	}
 	
-	public function formules () {
-		return $this->hasMany('App\Models\Traitement');
+	public function traitements () {
+		return $this->belongsToMany('App\Models\Formule' , 'traitements' ,'schema_id' , 'formule_id')
+		->withTimestamps();
 	}
 }

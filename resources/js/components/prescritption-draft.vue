@@ -26,7 +26,7 @@
           <b-form-select v-model="selected" :options="options"></b-form-select>
         </b-form>
       </div>
-      <template v-slot:modal-footer="{ ok, cancel }">
+      <template v-slot:modal-footer="{  }">
         <!-- Emulate built in modal footer ok and cancel button actions -->
         <b-button size="sm" rounded variant="secondary" @click="onReset()">Annuler</b-button>
         <b-button size="sm" rounded variant="primary" @click="onSubmit()">

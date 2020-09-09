@@ -19,7 +19,7 @@ Scheduler.plugin(function(scheduler){scheduler.locale = {
 		day_tab: "Jour",
 		week_tab: "Semaine",
 		month_tab: "Mois",
-		new_event: "Nouvel événement",
+		new_event: "Nouveau rendez-vous",
 		icon_save: "Enregistrer",
 		icon_cancel: "Annuler",
 		icon_details: "Détails",

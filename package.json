@@ -28,7 +28,7 @@
         "@svgdotjs/svg.js": "^3.0.16",
         "bootstrap-vue": "^2.15.0",
         "gentelella": "^1.4.0",
-        "jspdf": "^2.0.0",
+        "jspdf": "^2.1.0",
         "pkg.json": "^2.0.1",
         "select2": "^4.0.13",
         "v-toaster": "^1.0.3",

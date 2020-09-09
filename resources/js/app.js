@@ -103,6 +103,10 @@ const app = new Vue({
         patients: []
     },
     methods: {
+        getPrescription(prescription){
+            // pass new prescription to the child component shemaDental/prescriptionTab
+            this.$refs.tabs.getPrescription(prescription);
+        },
         newModal() {
             $("#patient_add_modal").modal("show");
         },

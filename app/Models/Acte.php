@@ -12,4 +12,8 @@ class Acte extends Model
     {
         return $this->belongsTo('App\Models\Category');
     }
+
+    public function coords(){
+        return $this->hasMany('App\Models\Formule');
+    }
 }

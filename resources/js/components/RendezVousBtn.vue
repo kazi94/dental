@@ -21,7 +21,7 @@
       @hidden="onReset"
       @ok="onSubmit"
     >
-      <template v-slot:modal-footer="{ ok, cancel }">
+      <template v-slot:modal-footer="{  }">
         <!-- Emulate built in modal footer ok and cancel button actions -->
         <b-button size="sm" squared variant="secondary" @click="onReset()">Annuler</b-button>
         <b-button size="sm" squared variant="primary" @click="onSubmit()">
@@ -62,7 +62,23 @@
               ></b-form-timepicker>
             </div>
           </div>
-
+      <b-form-group id="input-group-3" label="Fauteuil :" label-for="input-3" class="font-weight-bold">
+        <b-form-select
+          id="input-3"
+          v-model="form.fauteuil"
+          :options="fauteuils"
+          
+        ></b-form-select>
+      </b-form-group>
+      <b-form-group id="input-group-4" label="Famille:" label-for="input-4" class="font-weight-bold">
+        <b-form-select
+          id="input-4"
+          v-model="form.category_id"
+          :options="categories"
+          value-field="id"
+          text-field="name"
+        ></b-form-select>
+      </b-form-group>      
           <b-form-group
             id="input-group-act"
             label="Prochain Acte à faire:"
@@ -88,15 +104,24 @@ export default {
     return {
       form: {
         text: "",
+        date_rdv : new Date().toISOString().substr(0,10),
         start_date: "08:00:00",
         end_date: "08:30:00",
         patient_id: this.patient.id,
+        fauteuil : '1',
+        category_id:'1', 
       },
+      fauteuils: [
+          { value: 1, text: 'Fauteuil 1' },
+          { value: 2, text: 'Fauteuil 2' },
+        ],
+      categories: [],
       required: true,
       hide_header: true,
     };
   },
-  methods: {
+  methods: 
+  {
     onSubmit() {
       // Send data to the server
       const vm = this;
@@ -119,10 +144,23 @@ export default {
     },
     onReset() {
       // Reset our form values
-      this.form.date_rdv = "";
       this.form.description = "";
     },
+    getCategories(){
+      axios
+        .get("/admin/act/get_categories")
+        .then(response => {
+          this.categories = response.data;
+        })
+        .catch(exception => {
+         this.$toaster.error(exception);
+        });
+    }
   },
+
+  mounted(){
+    this.categories = this.getCategories();
+  }
 };
 </script>
 

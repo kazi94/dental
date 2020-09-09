@@ -102,6 +102,8 @@ class PatientController extends Controller
         $patient->age                 = $request->date_naissance ? intval(date('Y/m/d' ,strtotime("now")))- intval(date('Y/m/d',strtotime($patient->date_naissance))) : '0';
         $patient->profession          = $request->profession;
         $patient->adresse             = $request->adresse;
+        $patient->motif             = $request->motif;
+        $patient->num_tel             = $request->num_tel;
         $patient->sexe                = $request->sexe;
         $patient->fumeur              = $request->fumeur ;
         $patient->medecin_externe     = $request->medecin_externe;
@@ -287,9 +289,10 @@ class PatientController extends Controller
         return Patient::with(
             'antecedents',
             'pathologies' ,
-            'lastSchema.lastQuotation.lines.act',
+            'lastSchema.lastQuotation.lines.act.coords',
             'lastSchema.lastQuotation.crediteur',
-            'lastSchema.lastQuotation.lastPayment'
+            'lastSchema.lastQuotation.lastPayment',
+            'initialSchema.traitements'
             )->find($id);
     }
 

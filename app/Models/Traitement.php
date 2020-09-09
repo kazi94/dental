@@ -1,14 +1,18 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Model;
 
-class Traitement extends Model
+class Traitement extends Pivot
 {
-    protected $fillable = ['num_dent', 'formule', 'created_by', 'schema_id'];
+    protected $fillable = ['num_dent', 'formules', 'created_by', 'schema_id'];
 
-    public function coords() {
-        return $this->hasMany('App\Models\Formule' , 'teeth' , 'num_dent');
-    }
+    // public function generalCoords() {
+    //     return $this->hasMany('App\Models\Formule' , 'teeth' , 'num_dent');
+
+    // }
+    // public function coords(){
+    //     return $this->generalCoords()->where('formulas' ,$this->formules);
+    // }
 }

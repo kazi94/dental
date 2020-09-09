@@ -22,6 +22,7 @@ Route::prefix('/admin')->group(function()
     Route::resource('user','Admin\UserController')->middleware('auth');  
     Route::get('ordonnance-type/get-ordonnances-type' , 'Admin\OrdonnanceTypeController@getOrdonnancesType')->middleware('auth'); 
     Route::resource('ordonnance-type','Admin\OrdonnanceTypeController')->middleware('auth');   
+    Route::get('act/get_categories', 'Admin\ActController@getCategories')->middleware('auth');
     Route::get('act/get_acts', 'Admin\ActController@getActs')->middleware('auth');
     Route::resource('act','Admin\ActController')->middleware('auth');                                                       
     // Route::resource('profile','Admin\RoleController');                                                       

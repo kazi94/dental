@@ -58,16 +58,32 @@ class AppointementController extends Controller
      */
     public function store(Request $request)
     {
-        $d = json_decode($request->category);
+        // $d = json_decode($request->category);
         $request['start_date'] = $request->date_rdv." ".$request->start_date;
         $request['end_date']   = $request->date_rdv." ".$request->end_date;
         $request->request->add(['created_by' =>  Auth::user()->id]);
-        $request->request->add(['color' =>  $d->color]);
-        $request->request->add(['category_id' =>  $d->key]);
+        if (!isset($request->assign_to))
+            $request->request->add(['assign_to' =>  Auth::user()->id]);
+
+        $request->request->add(['color' =>  $this->getColor($request->category_id)]);
 
         $appoint = Appointement::create($request->all());
 
         return response()->json($appoint , 201);
+    }
+
+    /**
+     * get color of the category
+     *
+     * Undocumented function long description
+     *
+     * @param Type $var Description
+     * @return type
+     * @throws conditon
+     **/
+    private function getColor($cat_id)
+    {
+        return Category::find($cat_id)['color'];
     }
 
     /**
@@ -79,7 +95,7 @@ class AppointementController extends Controller
     public function show($id)
     {
         if ($id != 'null'){
-            $appointements = Appointement::where('created_by',$id)->get();
+            $appointements = Appointement::with('category')->where('created_by',$id)->get();
 
         }
         else

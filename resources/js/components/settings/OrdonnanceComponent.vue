@@ -22,7 +22,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(val, index) in ordonnances">
+                <tr v-for="(val, index) in ordonnances"
+                :key="index">
                     <th scope="row">{{ index + 1 }}</th>
                     <td>{{ val.nom }}</td>
                     <td>{{ val.imploded }}</td>

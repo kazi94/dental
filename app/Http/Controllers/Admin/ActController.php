@@ -37,6 +37,10 @@ class ActController extends Controller
     {
         return Category::with('acts')->get();
     }
+    public function getCategories()
+    {
+        return Category::all();
+    }    
     /**
      * Show the form for creating a new resource.
      *

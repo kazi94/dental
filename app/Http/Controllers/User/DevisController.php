@@ -10,6 +10,7 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Debugbar;
+use DB;
 class DevisController extends Controller
 {
     /**
@@ -41,6 +42,7 @@ class DevisController extends Controller
     public function store(Request $request)
     {
         
+        $tooth = [];
         $quotState  = (($request->total_accept-$request->total_paid) == 0 ) ? 'payer&&fait' : 'devis';
         $ligneState = ($request->rhythmTraitement == 'onDay' ) ? 'Fait' : 'En cours'; // * Traitement d'un patient qui vient en une seule journée
         
@@ -74,7 +76,19 @@ class DevisController extends Controller
         if ($request->total_paid != 0)
             $this->createPayment($request->total_paid , $quotation->id);
 
-        return response()->json(LigneDevis::whereIn('id' , $ids)->with('act:id,nom')->get() ,201);
+        $tooth[] = collect($selectedLignes)->map(function($e){
+            return $e['num_dent'];
+        });
+
+        $lignes = DB::table('lignedevis')
+            ->join('actes'  , 'lignedevis.acte_id' ,'actes.id')
+            ->join('formules' , 'actes.id' , 'formules.acte_id')
+            ->whereIn('lignedevis.id' , $ids)
+            ->whereIn('formules.teeth' , $tooth)
+            ->get();
+            
+        // return response()->json(LigneDevis::whereIn('id' , $ids)->with('act:id,nom')->get() ,201);
+        return response()->json($lignes ,201);
     }
 
     public function AddLinesQuotation(Request $req)
@@ -91,7 +105,17 @@ class DevisController extends Controller
 
         $ids = $this->storeLinesQuotation($ligne , $quotation->id , "En cours");
 
-        return response()->json(LigneDevis::where('devis_id' , $quotation->id)->with('act:id,nom')->get() ,201);
+        $tooth[] = collect($ligne)->map(function($e){
+            return $e['num_dent'];
+        });
+
+        $lignes = DB::table('lignedevis')
+            ->join('actes'  , 'lignedevis.acte_id' ,'actes.id')
+            ->join('formules' , 'actes.id' , 'formules.acte_id')
+            ->where('lignedevis.devis_id' , $quotation->id)
+            ->whereIn('formules.teeth' , $tooth)
+            ->get();
+        return response()->json($lignes ,201);
 
     }
 
@@ -107,6 +131,7 @@ class DevisController extends Controller
      **/
     public function storeLinesQuotation($lines ,$quot_id, $state)
     {
+        $coords = [];
         foreach ($lines  as $ligne) {
             $ids[] = LigneDevis::create([
                 'devis_id'  => $quot_id,
@@ -115,6 +140,7 @@ class DevisController extends Controller
                 'price'     => $ligne['prix'],
                 'state'     => $state,
             ])->id;
+
         }
 
         return $ids;
