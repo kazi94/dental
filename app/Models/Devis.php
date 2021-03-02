@@ -8,48 +8,47 @@ use Illuminate\Database\Eloquent\Model;
 
 class Devis extends Model
 {
-    public $table ="devis";
+	public $table = "devis";
 
-	protected $fillable = ['schema_id','total','discount','total_accept' ,'state'];
+	protected $fillable = ['schema_id', 'total', 'discount', 'total_accept', 'state'];
 
-	protected $appends = ['date_devis' ,'debit'];
+	protected $appends = ['date_devis', 'debit'];
 
-	public function lines()
+	public function linesInProgress()
 	{
-	    return $this->hasMany('App\Models\LigneDevis', 'devis_id');
+		return $this->hasMany('App\Models\LigneDevis', 'devis_id')->whereState('En cours');
 	}
 
-	public function versements()
+	public function payments()
 	{
-	    return $this->hasMany('App\Models\Versement', 'devis_id' ,'id');
+		return $this->hasMany('App\Models\Versement', 'devis_id', 'id');
 	}
 
 
 	public function crediteur()
 	{
-		return $this->hasOne('App\Models\Versement', 'devis_id' ,'id')
-			->select('devis_id',DB::raw('SUM(total_paid) as crediteur'))
+		return $this->hasOne('App\Models\Versement', 'devis_id', 'id')
+			->select('devis_id', DB::raw('SUM(total_paid) as crediteur'))
 			->groupBy('devis_id');
-		    // return $this->hasOne('App\Models\Bonus_Item','customer_bones_id')
-            //     ->select('customer_bones_id',DB::raw('sum(bonus_quantity) as bonusQuantity'))
-            //     ->groupBy('customer_bones_id');
+		// return $this->hasOne('App\Models\Bonus_Item','customer_bones_id')
+		//     ->select('customer_bones_id',DB::raw('sum(bonus_quantity) as bonusQuantity'))
+		//     ->groupBy('customer_bones_id');
 	}
 
-	public function lastPayment(){
-		
+	public function lastPayment()
+	{
+
 		$result = $this->hasOne('App\Models\Versement')
 			->select('paid_at')
 			->latest('paid_at')
 			->limit(1);
 
-		return $this->hasOne('App\Models\Versement')
-		->select('devis_id','paid_at')
-		->latest('paid_at')
-		->limit(1);
+		return $result;
 	}
 
-	public function getDateDevisAttribute(){
-		return date("d/m/Y" , strtotime($this->created_at));
+	public function getDateDevisAttribute()
+	{
+		return date("d/m/Y", strtotime($this->created_at));
 	}
 
 	/**

@@ -560,7 +560,7 @@
       name: "custom",
       height: 22,
       map_to: "assign_to",
-      type: "multiselect",
+      type: "select",
       options: users,
       vertical: "false"
     },
@@ -605,7 +605,7 @@
       if (event.created_by.name)
         created_by = "<b>Créer par :</b> " + event.created_by.name + " " + event.created_by.prenom + "</b><br/>";
       if (event.assign_to)
-        created_by += "<b>Assigner à :</b> " + event.assign_to.name + " " + event.assign_to.prenom;
+        created_by += "<b>Assigner à :</b> " + event.assigned_to.name + " " + event.assigned_to.prenom;
 
       return created_by;
     };

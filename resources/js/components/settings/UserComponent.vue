@@ -50,22 +50,22 @@
                     <div class="modal-body">
                         <div class="form-row">
                             <div class="col-md-4 mb-3">
-                                <label for="validationCustom01">Nom</label>
+                                <label for="validationCustom01">Nom*</label>
                                 <input v-model="form.name" type="text" class="form-control" placeholder="Nom"  required="">
                                 <div class="valid-feedback">
                                     Looks good!
                                 </div>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="validationCustom02">Prénom</label>
-                                <input v-model="form.prenom" type="text" class="form-control"  placeholder="Prénom" required="">
+                                <label for="validationCustom02">Prénom*</label>
+                                <input v-model="form.prenom" type="text" class="form-control"  placeholder="Prénom" required="" autocomplete="off">
                                 <div class="valid-feedback">
                                     Looks good!
                                 </div>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="validationCustom02">Email</label>
-                                <input v-model="form.email" type="email" class="form-control"  placeholder="Exemple : mohamed@email.com" required="">
+                                <label for="validationCustom02">Email*</label>
+                                <input v-model="form.email" type="email" class="form-control"  placeholder="Exemple : mohamed@email.com" required="" autocomplete="off">
                                 <div class="valid-feedback">
                                     Looks good!
                                 </div>
@@ -73,24 +73,24 @@
                         </div>
                         <div class="form-row">
                             <div class="col-md-6 mb-3">
-                                <label for="validationCustom03">Profession</label>
+                                <label for="validationCustom03">Profession*</label>
                                 <input v-model="form.profession" type="text" class="form-control" placeholder="profession" required="">
                                 <div class="invalid-feedback">
                                     Please provide a valid city.
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3" v-show="!editMode">
-                                <label for="validationCustom04">Mots de passe</label>
-                                <input v-model="form.password" type="password" class="form-control" placeholder="Mots de passe" required="">
+                                <label for="validationCustom04">Mots de passe*</label>
+                                <input v-model="form.password" type="password" class="form-control" placeholder="Mots de passe" required="" autocomplete="off">
                                 <div class="invalid-feedback">
                                     Please provide a valid state.
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <div class="position-relative form-group">
-                                    <label for="exampleSelect" class="">Role</label>
-                                    <select name="role"  class="form-control" v-model="form.role">
-                                        <option v-for="val in roles" :value="val.id">{{ val.nom }}</option>
+                                    <label for="exampleSelect" class="">Role*</label>
+                                    <select name="role"  class="form-control" v-model="form.role" required>
+                                        <option v-for="val in roles" :key="val.id" :value="val.id">{{ val.nom }}</option>
                                     </select>
                                 </div>
                             </div>

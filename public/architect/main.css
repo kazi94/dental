@@ -10599,7 +10599,7 @@ button,
 }
 
 .vertical-nav-menu li a:hover i.metismenu-icon {
-    opacity: .6
+    opacity: 1
 }
 
 .vertical-nav-menu li a:hover i.metismenu-state-icon {
@@ -10631,7 +10631,7 @@ button,
     top: 50%;
     margin-top: -17px;
     font-size: 1.5rem;
-    opacity: .3;
+    opacity: 1;
     transition: color 300ms
 }
 

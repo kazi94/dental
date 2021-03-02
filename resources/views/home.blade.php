@@ -13,7 +13,7 @@
         
         <div class="col-md-3 mr-3" style="cursor: pointer;">
           
-          <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
+          <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patients.index') }}'">
             
             <i class=" pe-7s-graph1 icon-gradient bg-asteroid fa-5x mb-2">
             </i>
@@ -28,7 +28,7 @@
         
         <div class="col-md-3 mr-3" style="cursor: pointer;">
           
-          <div class="mb-3 text-center card card-body card-patient" onclick="window.location.href = '{{ route('patient.index') }}'">
+          <div class="mb-3 text-center card card-body card-patient" onclick="window.location.href = '{{ route('patients.index') }}'">
             
             <i class=" pe-7s-id icon-gradient bg-happy-itmeo fa-5x mb-2">
             </i>
@@ -43,7 +43,7 @@
         
         <div class="col-md-3 mr-3" style="cursor: pointer;">
           
-          <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
+          <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patients.index') }}'">
             
             <i class=" pe-7s-note2 icon-gradient bg-happy-fisher fa-5x mb-2">
             </i>
@@ -58,7 +58,7 @@
         
         <div class="col-md-3 mr-3" style="cursor: pointer;">
           
-          <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
+          <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patients.index') }}'">
             
             <i class=" pe-7s-cash icon-gradient bg-grow-early fa-5x mb-2">
             </i>
@@ -150,7 +150,7 @@
     
     <div class="col-md-3 mr-3" style="cursor: pointer;">
       
-      <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
+      <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patients.index') }}'">
         
         <i class=" pe-7s-video icon-gradient bg-mean-fruit fa-5x mb-2">
         </i>
@@ -165,7 +165,7 @@
     
     <div class="col-md-3 mr-3" style="cursor: pointer;">
       
-      <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patient.index') }}'">
+      <div class="mb-3 text-center card card-body" onclick="window.location.href = '{{ route('patients.index') }}'">
         
         <i class=" pe-7s-photo icon-gradient bg-mean-fruit fa-5x mb-2">
         </i>

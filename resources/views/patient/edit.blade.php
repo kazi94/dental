@@ -20,7 +20,6 @@
     <meta name="msapplication-tap-highlight" content="no">
     <!-- {{-- <link href="{{ asset('plugins/bootstrap-4.4.1-dist/css/bootstrap.min.css') }}" rel="stylesheet"> --}} -->
     <!-- {{-- <link href="{{ asset('plugins/DataTables-1.10.20/css/dataTables.min.css') }}" rel="stylesheet"> --}} -->
-    <!-- <link rel="stylesheet" href="{{ asset('architect/main.css') }}" > -->
     <!-- <link rel="stylesheet" href="{{ asset('plugins/DataTables-1.10.20/css/dataTables.bootstrap4.min.css') }}" > -->
     <link rel="stylesheet" href="{{ asset('plugins/lightgallery.js-master/src/css/lightgallery.css') }}">
     <!-- <link rel="stylesheet" href="{{ asset('css/style.css') }}"> -->
@@ -84,15 +83,13 @@
                             </a>
                         </li>
                         <li class="btn-group nav-item" v-show="showPrescriptions">
-                            <prescription :patient="{{ $patient->toJson() }}" v-on:get-prescription="getPrescription"></prescription>
+                            <prescription :patient="{{ $patient->toJson() }}" @get-prescription="getPrescription">
+                            </prescription>
                         </li>
                         <li class="btn-group nav-item" v-show="showRadios">
-                            <a href="javascript:void(0);" class="nav-link" {{--
-                                data-toggle="tooltip" data-placement="bottom" --}}
-                                title="Ajouter une nouvelle ordonnance">
-                                <i class="nav-link-icon fa fa-plus icon-gradient bg-primary"></i>
-                                Radiographie
-                            </a>
+
+                            <radiographie-button :patient="{{ $patient->toJson() }}" @get-image="getImage">
+                            </radiographie-button>
                         </li>
                         <li class="btn-group nav-item" v-if="showRdv">
                             <rendez-vous-btn :patient="{{ $patient->toJson() }}"></rendez-vous-btn>
@@ -114,8 +111,7 @@
                                         <div tabindex="-1" role="menu" aria-hidden="true"
                                             class="dropdown-menu dropdown-menu-right">
                                             {{-- <button type="button" tabindex="0"
-                                                class="dropdown-item">User Account</button>
-                                            --}}
+                                                class="dropdown-item">User Account</button> --}}
                                             <button type="button" tabindex="0" class="dropdown-item">Paramètres</button>
                                             <div tabindex="-1" class="dropdown-divider"></div>
                                             <button type="button" tabindex="0"
@@ -125,7 +121,8 @@
                                 </div>
                                 <div class="widget-content-left  ml-3 header-user-info">
                                     <div class="widget-heading">
-                                        Dr. {{ strtoupper(Auth::user()->name) }} {{ strtoupper(Auth::user()->prenom) }}
+                                        Dr. {{ strtoupper(Auth::user()->name) }}
+                                        {{ strtoupper(Auth::user()->prenom) }}
 
                                     </div>
                                     <div class="widget-subheading">
@@ -187,8 +184,7 @@
                         <ul class="vertical-nav-menu">
                             <li class="app-sidebar__heading">APPLICATIONS</li>
                             <li>
-                                <a href="{{ route('user.index') }}" {{-- class="mm-active"
-                                    --}}>
+                                <a href="{{ route('user.index') }}" {{-- class="mm-active" --}}>
                                     <i class="metismenu-icon pe-7s-home"></i>
                                     Mon cabinet
                                 </a>
@@ -225,13 +221,13 @@
                             </li>
                             <li class="app-sidebar__heading">MEDIAS</li>
                             <li>
-                                <a href="{{ route('patient.create') }}" class="">
+                                <a href="{{ route('patients.create') }}" class="">
                                     <i class="metismenu-icon pe-7s-video"></i>
                                     Mes videos
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('patient.index') }}" class="">
+                                <a href="{{ route('patients.index') }}" class="">
                                     <i class="metismenu-icon pe-7s-photo"></i>
                                     Mes photos
                                 </a>
@@ -284,8 +280,8 @@
                                 {{-- :antecedents="{{ $antecedents->toJson() }}" --}}
                                 ></informations-component>     -->
 
-                            <schema-dental-component :patient="{{ $patient }}" :showschema="showSchema" ref="tabs">
-                            </schema-dental-component>
+                            <card-tabs-component :patient="{{ $patient }}" :showschema="showSchema" ref="tabs">
+                            </card-tabs-component>
                         </div>
                     </div>
                 </div>

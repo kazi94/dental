@@ -44,12 +44,15 @@
                         xmlns:xlink="http://www.w3.org/1999/xlink"
                         width="775"
                         height="314"
+                        ref="svj"
                     />
                     <img
                         src="/img/schema.png"
                         id="schema-map"
+                        ref="img"
                         width="100%"
                         usemap="#image-map"
+                        style="width : 790px; height : 319px;"
                     />
                 </div>
                 <!-- <map name="image-map">
@@ -118,11 +121,17 @@ export default {
             formulas: [
                 { text: "Absente", value: "abs" },
                 { text: "Obturer", value: "obt" },
+                { text: "Dent mortifiée", value: "d-mortif" },
                 { text: "Racines résiduelles", value: "rac-resid" },
-                { text: "Fracture radiculaire", value: "frac-rad" },
-                { text: "Fracture coronaire", value: "frac-cor" },
-                { text: "Carie-G", value: "carie-g" },
-                { text: "Carie-D", value: "carie-d" }
+                { text: "Fracture couronne", value: "frac-cour" },
+                { text: "Fracture racine", value: "frac-rac" },
+                { text: "Kyste", value: "kyste" },
+                { text: "Abcès endo", value: "abc" },
+                { text: "Courônne", value: "couronne" },
+                { text: "Carie-P", value: "carie-p" },
+                { text: "Carie-PP", value: "carie-pp" },
+                { text: "Carie-D", value: "carie-d" },
+                { text: "Carie-M", value: "carie-m" }
             ],
             selectedFormulas: [],
             buttons: [
@@ -144,6 +153,7 @@ export default {
                     state: false
                 },
                 { caption: "carie-p", nom: "P", state: false },
+                { caption: "carie-pp", nom: "PP", state: false },
                 { caption: "carie-m", nom: "M", state: false },
                 { caption: "carie-d", nom: "D", state: false }
             ],
@@ -187,7 +197,8 @@ export default {
             form: new Form(),
             disabled: true,
             selectedTeeth: "",
-            checkedTooth: []
+            checkedTooth: [],
+            img: ""
         };
     },
     methods: {
@@ -195,7 +206,7 @@ export default {
             // remove selected tooth from DB
             axios
                 .delete(
-                    "/patient/schema-dentaire/remove_tooth/" + toothToDelete
+                    "/patients/schema-dentaire/remove_tooth/" + toothToDelete
                 )
                 .then(response => {
                     // remove formulas from dental schema
@@ -227,7 +238,7 @@ export default {
             this.removeShapes();
 
             axios
-                .post("/patient/schema-dentaire", form)
+                .post("/patients/schema-dentaire", form)
                 .then(response => {
                     // Set Schema ID
                     this.schema_id = response.data.schema_id;
@@ -245,7 +256,7 @@ export default {
         getCoords(formulas, teeth) {
             axios
                 .get(
-                    "/patient/schema-dentaire/get-coords/" +
+                    "/patients/schema-dentaire/get-coords/" +
                         teeth +
                         "&&formules=" +
                         formulas
@@ -258,14 +269,18 @@ export default {
                     this.$toaster.error(exception);
                 });
         },
+        /**
+         * Remove Shapes of the selected teeth
+         */
         removeShapes() {
-            // find polygon elements by teeth attribute
-            var polygons = document.getElementsByTagName("polygon");
-            for (let index = 0; index < polygons.length; index++) {
-                const points = polygons[index].getAttribute("teeth");
+            // find shape elements by teeth attribute
+            var shapes = document.getElementById("initial_schema_canvas")
+                .childNodes;
+            for (let index = 0; index < shapes.length; index++) {
+                const points = shapes[index].getAttribute("teeth");
                 if (points == this.selectedTeeth)
                     // remove polygon node
-                    polygons[index].remove();
+                    shapes[index].remove();
             }
         },
         resetTooth() {
@@ -285,17 +300,36 @@ export default {
             let draw = SVG("#initial_schema_canvas");
             let polygonID;
             coords.forEach(c => {
-                let convertTo = this.convertCoord(c.coord); // array
-                if (c.formulas == "frac-cor" || c.formulas == "frac-rad")
+                let convertTo = this.convertCoord(c.coord);
+                if (c.formulas == "frac-cour" || c.formulas == "frac-rac")
                     polygonID = draw
-                        .polyline(convertTo)
-                        .fill("black")
-                        .stroke({ width: 1 });
-                else
+                        .polyline(convertTo.toString())
+                        .fill("none")
+                        .stroke({
+                            color: "black",
+                            width: 1,
+                            linecap: "round",
+                            linejoin: "round"
+                        });
+                else if (c.formulas == "kyste" || c.formulas == "abc") {
                     polygonID = draw
-                        .polygon(convertTo)
+                        .circle(convertTo[2] * 2)
+                        .fill(c.color)
+                        .move(convertTo[0] - 10, convertTo[1] - 10);
+                } else if (c.formulas == "abs" || c.formulas == "rac-resid") {
+                    polygonID = draw
+                        .rect(
+                            convertTo[2] - convertTo[0],
+                            convertTo[3] - convertTo[1]
+                        )
+                        .fill(c.color)
+                        .move(convertTo[0], convertTo[1]);
+                } else {
+                    polygonID = draw
+                        .polygon(convertTo.toString())
                         .fill(c.color)
                         .stroke({ width: 1 });
+                }
 
                 document
                     .getElementById(polygonID)
@@ -305,31 +339,45 @@ export default {
                     .setAttribute("title", c.formulas);
             });
         },
+        /**
+         * @param String coord
+         * @return Array
+         */
         convertCoord(coord) {
+            const orginalWidth = 790;
+            const originalHeight = 319;
             // '358,15,378,62,383,105,388,134,387,152,355,154,342,143,348,113,352,66,354,35'
-            let mediaWidth = window.innerWidth;
-            let ratioX = 1;
-            let ratioY = 1;
-            if (mediaWidth == 1440) {
-                ratioX = 1.08243;
-                ratioY = 1.078767515923566;
-            }
-            if (mediaWidth == 1440) {
-                ratioX = 1.08243;
-                ratioY = 1.078767515923566;
-            }
-            if (mediaWidth == 1024) {
-                ratioX = 1.348122867;
-                ratioY = 1.34812467;
-            }
-            if (mediaWidth == 768) {
-                ratioX = 1.685671367;
-                ratioY = 1.685743577;
-            }
-            if (mediaWidth == 320) {
-                ratioX = 2.724137931;
-                ratioY = 2.724306967;
-            }
+            let imgWidth = document.querySelector("#schema-map").width;
+            let imgHeight = document.querySelector("#schema-map").height;
+            document
+                .querySelector("#initial_schema_canvas")
+                .setAttribute("width", imgWidth);
+            document
+                .querySelector("#initial_schema_canvas")
+                .setAttribute("height", imgHeight);
+            // let mediaWidth = window.innerWidth;
+            let ratioX = orginalWidth / imgWidth;
+            let ratioY = originalHeight / imgHeight;
+            // if (mediaWidth == 1440) {
+            //     ratioX = 1.08243;
+            //     ratioY = 1.078767515923566;
+            // }
+            // if (mediaWidth == 1440) {
+            //     ratioX = 1.08243;
+            //     ratioY = 1.078767515923566;
+            // }
+            // if (mediaWidth == 1024) {
+            //     ratioX = 1.348122867;
+            //     ratioY = 1.34812467;
+            // }
+            // if (mediaWidth == 768) {
+            //     ratioX = 1.685671367;
+            //     ratioY = 1.685743577;
+            // }
+            // if (mediaWidth == 320) {
+            //     ratioX = 2.724137931;
+            //     ratioY = 2.724306967;
+            // }
             // change value of coords coordinate with the size of the actual media : laptop,tablete,mobile
             let val = coord
                 .split(",")
@@ -337,7 +385,7 @@ export default {
                     i % 2 == 0 ? parseInt(c / ratioX) : parseInt(c / ratioY)
                 );
 
-            return val.toString();
+            return val;
         },
         onShowPopover() {
             this.$root.$on("bv::popover::show", bvEventObj => {
@@ -397,6 +445,9 @@ export default {
                 }
             }
         },
+        /**
+         * @param Array newVal Array of selected formulas
+         */
         selectedFormulas: {
             handler: function(newVal) {
                 if (this.checkedTooth.length > 0) {
@@ -409,23 +460,23 @@ export default {
                             teeth: this.selectedTeeth,
                             formulas: newVal // new array
                         });
-                        // here
-                        this.sendToServer(newVal, this.selectedTeeth);
                     } else if (index != -1) {
+                        // si la dent selectionné est trouvé dans le tableau
                         // the array of num teeth exist
                         this.checkedTooth[index].formulas = newVal; // add the new selected formula
-                        // here
-                        // newVal = ['frac']; ['frac','carie']; ['frac', 'carie' , 'abs']
-                        // this.sendToServer(['frac'] , 22);
-                        // this.sendToServer(['frac','carie'] , 22);
-                        // this.sendToServer(['frac', 'carie' , 'abs']  , 22);
-                        this.sendToServer(newVal, this.selectedTeeth);
                     }
-                } else
+                } else {
                     this.checkedTooth.push({
                         teeth: this.selectedTeeth,
                         formulas: newVal
                     });
+                }
+                // et on envoi au server pour enregistrer et retourner ses coordonnées
+                // newVal = ['frac']; ['frac','carie']; ['frac', 'carie' , 'abs']
+                // this.sendToServer(['frac'] , 22);
+                // this.sendToServer(['frac','carie'] , 22);
+                // this.sendToServer(['frac', 'carie' , 'abs']  , 22);
+                this.sendToServer(newVal, this.selectedTeeth);
             }
         }
     },

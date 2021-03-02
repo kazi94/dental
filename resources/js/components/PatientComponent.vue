@@ -3,7 +3,7 @@
         class="needs-validation"
         novalidate
         method="post"
-        action="/patient"
+        action="/patients"
         enctype="multipart/form-data"
     >
         <input type="hidden" name="_token" :value="csrf" />
@@ -431,7 +431,7 @@ export default {
             // var patient = this.form;
             // console.log(patient);
             // axios
-            //   .post("/patient/", this.form)
+            //   .post("/patients/", this.form)
             //   .then((response) => {
             //     $("#patient_add_modal").modal("hide");
             //     this.$toaster.success(response.data.success);

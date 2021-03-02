@@ -6,11 +6,13 @@ use App\Models\Devis;
 use App\Models\LigneDevis;
 use App\Models\Versement;
 use App\Models\Schema;
+use App\Models\Formule;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Debugbar;
 use DB;
+
 class DevisController extends Controller
 {
     /**
@@ -41,11 +43,11 @@ class DevisController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $tooth = [];
-        $quotState  = (($request->total_accept-$request->total_paid) == 0 ) ? 'payer&&fait' : 'devis';
-        $ligneState = ($request->rhythmTraitement == 'onDay' ) ? 'Fait' : 'En cours'; // * Traitement d'un patient qui vient en une seule journée
-        
+        $quotState  = (($request->total_accept - $request->total_paid) == 0) ? 'payer&&fait' : 'devis';
+        $ligneState = ($request->rhythmTraitement == 'onDay') ? 'Fait' : 'En cours'; // * Traitement d'un patient qui vient en une seule journée
+
         //Create New Schema
         $schema = Schema::create([
             'patient_id'  => $request->patient_id,
@@ -66,57 +68,67 @@ class DevisController extends Controller
             'schema_id'    => $schema->id,
         ]);
 
-        
+
         //Store lignes quotation
         $selectedLignes = json_decode($request->selectedLignes, true);
-        $ids = $this->storeLinesQuotation($selectedLignes , $quotation->id , $ligneState);
+        $ids = $this->storeLinesQuotation($selectedLignes, $quotation->id, $ligneState);
 
 
         // Make payement if exist !
         if ($request->total_paid != 0)
-            $this->createPayment($request->total_paid , $quotation->id);
+            $this->createPayment($request->total_paid, $quotation->id);
 
-        $tooth[] = collect($selectedLignes)->map(function($e){
-            return $e['num_dent'];
-        });
+        // $tooth[] = collect($selectedLignes)->map(function ($e) {
+        //     return $e['num_dent'];
+        // });
+        // Debugbar::info($tooth[0]);
 
-        $lignes = DB::table('lignedevis')
-            ->join('actes'  , 'lignedevis.acte_id' ,'actes.id')
-            ->join('formules' , 'actes.id' , 'formules.acte_id')
-            ->whereIn('lignedevis.id' , $ids)
-            ->whereIn('formules.teeth' , $tooth)
-            ->get();
-            
+        // get devis and coords of acts for each teeth
+        // $lignes = DB::table('lignedevis')
+        //     ->join('actes', 'lignedevis.acte_id', 'actes.id')
+        //     ->join('formules', 'lignedevis.formule_id', 'formules.id')
+        //     ->whereIn('lignedevis.id', $ids)
+        //     // ->whereIn('formules.teeth', $tooth[0])
+        //     ->select('lignedevis.*', DB::raw("actes.nom as act"), 'formules.coord', 'formules.color')
+        //     ->get();
+        $lignes = LigneDevis::with('act', 'coord')->whereIn('id', $ids)->get();
         // return response()->json(LigneDevis::whereIn('id' , $ids)->with('act:id,nom')->get() ,201);
-        return response()->json($lignes ,201);
+        return response()->json($lignes, 201);
     }
 
+    /**
+     * Add new Acts To the Plan
+     *
+     * @param Request $req
+     * @author Kazi Aouel Sid Ahmed <kazi.sidou.94@gmail.com>
+     * @return void
+     **/
     public function AddLinesQuotation(Request $req)
     {
         $quotation = Devis::find($req->quot_id);
-        
+
         // add new total
         $quotation->total = $req->total;
         $quotation->save();
 
 
-        // add new lines
-        $ligne = json_decode($req->lignes , true);
+        // add new acts to the plan
+        $ligne = json_decode($req->lignes, true);
 
-        $ids = $this->storeLinesQuotation($ligne , $quotation->id , "En cours");
+        $ids = $this->storeLinesQuotation($ligne, $quotation->id, "En cours");
 
-        $tooth[] = collect($ligne)->map(function($e){
+        $tooth[] = collect($ligne)->map(function ($e) {
             return $e['num_dent'];
         });
 
-        $lignes = DB::table('lignedevis')
-            ->join('actes'  , 'lignedevis.acte_id' ,'actes.id')
-            ->join('formules' , 'actes.id' , 'formules.acte_id')
-            ->where('lignedevis.devis_id' , $quotation->id)
-            ->whereIn('formules.teeth' , $tooth)
-            ->get();
-        return response()->json($lignes ,201);
+        // get quot lines and coords of acts by tooth
+        // $lignes = DB::table('lignedevis')
+        //     ->join('formules', 'lignedevis.formule_id', 'formules.id')
+        //     ->whereIn('lignedevis.id', $ids)
+        //     ->get();
 
+        $lignes = LigneDevis::with('coord', 'act')->whereIn('id', $ids)->get();
+        return response()->json($lignes, 201);
     }
 
 
@@ -126,10 +138,10 @@ class DevisController extends Controller
      * 
      *
      * @param Type $var Description
-     * @return type
+     * @return Array id ID's of the new lines in quotation
      * @throws conditon
      **/
-    public function storeLinesQuotation($lines ,$quot_id, $state)
+    public function storeLinesQuotation($lines, $quot_id, $state)
     {
         $coords = [];
         foreach ($lines  as $ligne) {
@@ -137,13 +149,19 @@ class DevisController extends Controller
                 'devis_id'  => $quot_id,
                 'num_dent'  => $ligne['num_dent'],
                 'acte_id'   => $ligne['act_id'],
+                'formule_id'   => $this->getFormuleID($ligne['act_id'], $ligne['num_dent']),
                 'price'     => $ligne['prix'],
                 'state'     => $state,
             ])->id;
-
         }
 
         return $ids;
+    }
+
+    private function getFormuleID($act_id, $num_dent)
+    {
+        $formule = Formule::where('acte_id', $act_id)->where('teeth', $num_dent)->first();
+        return $formule->id;
     }
     /**
      * undocumented function
@@ -151,14 +169,14 @@ class DevisController extends Controller
      * @return void
      * @author 
      **/
-    private function createPayment($total_paid , $quot_id)
+    private function createPayment($total_paid, $quot_id)
     {
-        Versement::create([
-                        'total_paid' => $total_paid,
-                        'paid_by'    => Auth::id(),
-                        'devis_id'   => $quot_id,
-                        'paid_at'    => now(),
-                    ]);        
+        return Versement::create([
+            'total_paid' => $total_paid,
+            'paid_by'    => Auth::id(),
+            'devis_id'   => $quot_id,
+            'paid_at'    => now(),
+        ]);
     }
 
     /**
@@ -173,45 +191,56 @@ class DevisController extends Controller
     }
 
     /**
-     * undocumented function
+     * Create Payement by Plan
      *
-     * @return void
-     * @author 
+     * @param Request $request
+     * @return Response
+     * @author Kazi Aouel Sidou
      **/
-    public function updateDevis(Request $request)
-    {       
-        // mettre à jour les actes : en cours  à fait
-        $selectedLignes = json_decode($request->acceptedQuotation, true);
-        foreach ($selectedLignes as $value) {
-            $ligne_id = LigneDevis::where('id', $value['id'])
-                ->update([ 
-                    'state' => $value['state'], 
-                    'lock'  => $value['state'] == "Fait" ? 'true' : 'false',  // lock i.e on UI can't change state to "En cours"
-                    ]);    
-                $quot_id = LigneDevis::find($value['id']);    
-        }
-        // Make payement if exist ! (Always exist)
-        if ($request->total_paid != 0)
-            $this->createPayment($request->total_paid , $quot_id->devis_id);        
+    public function createPayementByDevis(Request $request)
+    {
 
-        // Get The Sum of Payements
-        $totalPayments = $this->getSumPayments($quot_id->devis_id);
-        // Check if Sum is equal to Accepted Total Quotation
-        if ($totalPayments->crediteur->crediteur == $totalPayments->total_accept) {
-            
-            Devis::where('id', $quot_id->devis_id)
-                ->update([ 'state' => "payer&&fait" ]);  
-
-            return response()->json("fait" , 201);
+        try {
+            if ($request->total_paid != 0)
+                $this->createPayment($request->total_paid, $request->devis_id);
+        } catch (\Throwable $th) {
+            return response()->json($th, 500);
         }
 
 
-        return response()->json([] , 201);
-
+        return response()->json("success", 201);
     }
 
+    /**
+     * Update the state of the ligne Devis
+     *
+     * @param [array] $value
+     * @author Kazi Aouel Sid Ahmed <kazi.sidou.94@gmail.com>
+     * @return LigneDevis
+     */
+    public function updateTable($value)
+    {
+        return LigneDevis::where('id', $value['id'])
+            ->update([
+                'state' => $value['state'],
+                'lock'  => $value['state'] == "Fait" ? 'true' : 'false',  // lock i.e on UI can't change state to "En cours"
+            ]);
+    }
 
-    protected function getSumPayments( $quot_id) {
+    public function updateLigne($state, $ligne_id)
+    {
+        $arr = [
+            'id' => $ligne_id,
+            'state' => $state
+        ];
+
+        $this->updateTable($arr);
+
+        return response()->json("done", 200);
+    }
+
+    protected function getSumPayments($quot_id)
+    {
         return Devis::with('crediteur')->find($quot_id);
     }
     /**

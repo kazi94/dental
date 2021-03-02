@@ -5,54 +5,74 @@ Auth::routes();
 
 
 Route::get('/', function () {
-    if(Auth::user()) return redirect('acceuil');
+    if (Auth::user()) return redirect('acceuil');
     else return view('auth.login');
 });
 
-Route::resource('/acceuil' , 'HomeController' , ['names' => 'home']);
-Route::get('test' , 'HomeController@index')->name('name');
+Route::resource('/acceuil', 'HomeController', ['names' => 'home']);
+Route::get('test', 'HomeController@index')->name('name');
 
 /*//*******************ADMINISTRATION MODULE//*******************::*/
-Route::prefix('/admin')->group(function()
-{
- 	Route::get('role/get-roles','Admin\RoleController@getRoles')->middleware('auth');
- 	Route::resource('role','Admin\RoleController')->middleware('auth');
- 	Route::get('reglages/general','Admin\SettingController@getSettings')->middleware('auth');
- 	Route::resource('reglages','Admin\SettingController', ['names' => 'setting'])->middleware('auth');
-    Route::resource('user','Admin\UserController')->middleware('auth');  
-    Route::get('ordonnance-type/get-ordonnances-type' , 'Admin\OrdonnanceTypeController@getOrdonnancesType')->middleware('auth'); 
-    Route::resource('ordonnance-type','Admin\OrdonnanceTypeController')->middleware('auth');   
-    Route::get('act/get_categories', 'Admin\ActController@getCategories')->middleware('auth');
-    Route::get('act/get_acts', 'Admin\ActController@getActs')->middleware('auth');
-    Route::resource('act','Admin\ActController')->middleware('auth');                                                       
+Route::prefix('/admin')->namespace('Admin')->group(function () {
+    Route::get('role/get-roles', 'RoleController@getRoles')->middleware('auth');
+    Route::resource('role', 'RoleController')->middleware('auth');
+    Route::get('reglages/general', 'SettingController@getSettings')->middleware('auth');
+    Route::resource('reglages', 'SettingController', ['names' => 'setting'])->middleware('auth');
+    Route::resource('user', 'UserController')->middleware('auth');
+    Route::get('ordonnance-type/get-ordonnances-type', 'OrdonnanceTypeController@getOrdonnancesType')->middleware('auth');
+    Route::resource('ordonnance-type', 'OrdonnanceTypeController')->middleware('auth');
+    Route::get('act/get_categories', 'ActController@getCategories')->middleware('auth');
+    Route::get('act/get_acts', 'ActController@getActs')->middleware('auth');
+    Route::resource('act', 'ActController')->middleware('auth');
     // Route::resource('profile','Admin\RoleController');                                                       
 
 });
 /*//*******************END ADMINISTRATION MODULE//*******************::*/
 
-//*******************APPOINTEMENT MODULE*******************************
-Route::resource('/patient/rendez-vous', 'User\AppointementController' , ['names' => 'appointement'])->middleware('auth');
-// Route::post('/appointement/storePatient', 'AppointementController@storePatient')->middleware('auth');
-//*******************END APPOINTEMENT MODULE*******************************
 
-/*//*******************PATIENT MANAGEMENT MODULE//*******************::*/
-Route::resource('/patient','User\PatientController')->middleware('auth');
-Route::get('/patients','User\PatientController@getPatients')->middleware('auth');
-Route::post('/patient/radiographie','User\PatientController@postFile')->name('upload')->middleware('auth');
-Route::get('pathologies','User\PatientController@getPathologies')->middleware('auth');
-Route::get('antecedents','User\PatientController@getAntecedents')->middleware('auth');
-Route::resource('/patient/prescription','User\PrescriptionController')->middleware('auth');
-Route::post('/patient/devis/add-acts','User\DevisController@AddLinesQuotation')->middleware('auth');
-Route::post('/patient/devis/update_devis','User\DevisController@updateDevis')->middleware('auth');
-Route::resource('/patient/devis','User\DevisController')->middleware('auth');
-Route::get('/patient/schema-dentaire/get-coords/{teeth}&&formules={formulas}','User\SchemaDentaireController@getCoords')->middleware('auth');
-Route::delete('/patient/schema-dentaire/remove_tooth/{toothToRemove}','User\SchemaDentaireController@removeTooth')->middleware('auth');
-Route::resource('/patient/schema-dentaire','User\SchemaDentaireController')->middleware('auth');
-Route::get('/patient/prescription/{id}/print','User\PrescriptionController@print')->middleware('auth');
-Route::get('/medicament/{query}','User\MedicamentController@search')->middleware('auth');
-// Route::post('/medicamentDci','User\MedicamentController@getMedicamentDci')->middleware('auth');
-/*//*******************END PATIENT MANAGEMENT MODULE//*******************::*/
+
+Route::middleware(['auth'])->namespace('User')->group(function () {
+
+    //*******************APPOINTEMENT MODULE*******************************
+    Route::resource('/patient/rendez-vous', 'AppointementController', ['names' => 'appointement']);
+    // Route::post('/appointement/storePatient', 'AppointementController@storePatient')->middleware('auth');
+    //*******************END APPOINTEMENT MODULE*******************************
+
+    //*******************PATIENT MANAGEMENT MODULE//*******************::
+    // Patient routes
+    Route::resource('/patients', 'PatientController');
+    // Radiographie routes
+    Route::resource('/patients/radiographies', 'RadiographieController');
+
+    // Utilities routes
+    Route::get('pathologies', 'PatientController@getPathologies');
+    Route::get('antecedents', 'PatientController@getAntecedents');
+
+    // Prescription routes
+    Route::resource('/patients/prescription', 'PrescriptionController');
+    Route::get('/patients/prescription/{id}/print', 'PrescriptionController@print');
+
+    // Quotation routes
+    Route::post('/patients/devis/add-acts', 'DevisController@AddLinesQuotation');
+    Route::get('/patients/devis/update-ligne/{state}&&{ligne_id}', 'DevisController@updateLigne');
+    Route::post('/patients/devis/create-payement-by-devis', 'DevisController@createPayementByDevis');
+    Route::resource('/patients/devis', 'DevisController');
+
+    // Dental schema routes
+    Route::get('/patients/acts/get-coords/act_id={act_id}&&teeth={teeth}', 'SchemaDentaireController@getCoordsByAct');
+    Route::get('/patients/schema-dentaire/get-coords/{teeth}&&formules={formulas}', 'SchemaDentaireController@getCoords');
+    Route::delete('/patients/schema-dentaire/remove_tooth/{toothToRemove}', 'SchemaDentaireController@removeTooth');
+    Route::resource('/patients/schema-dentaire', 'SchemaDentaireController');
+
+    // Line Plan routes
+    Route::post('/api/patients/plan/lines/{id}', 'LinePlanController@updatePrice');
+
+    // Drugs routes
+    Route::get('/medicament/{query}', 'MedicamentController@search');
+    // Route::post('/medicamentDci','MedicamentController@getMedicamentDci');
+
+    //*******************END PATIENT MANAGEMENT MODULE//*******************::
+});
 
 
 // Route::post('bugs_report', 'ReportController@reportBug')->name('report_bug');
-

@@ -95,12 +95,12 @@ class AppointementController extends Controller
     public function show($id)
     {
         if ($id != 'null'){
-            $appointements = Appointement::with('category')->where('created_by',$id)->get();
+            $appointements = Appointement::with('patient' , 'category' , 'assignedTo' , 'createdBy')->where('created_by',$id)->get();
 
         }
         else
             // $appointements = Appointement::where('created_by',Auth::id())->get();
-            $appointements = Appointement::with('patient' , 'category' , 'assignTo' , 'createdBy')->get();
+            $appointements = Appointement::with('patient' , 'category' , 'assignedTo' , 'createdBy')->get();
 
         //Returned Format should be : { value : '' , label : ''}
         $patients = Patient::select('id as value',DB::raw("CONCAT(nom, ' ',prenom) as label"))->get();

@@ -25,7 +25,7 @@ class Appointement extends Model
 		return $this->belongsTo('App\User', 'created_by' , 'id');
 	}
 
-	public function assignTo()
+	public function assignedTo()
 	{
 		return $this->belongsTo('App\User', 'assign_to' , 'id');
 	}

@@ -1,5 +1,5 @@
 <template>
-    <div class="col-md-8">
+    <div>
         <b-button
             :pressed.sync="sectionsBtn[0].state"
             variant="outline-primary"
@@ -48,17 +48,17 @@
             />
             <img
                 src="/img/schema.png"
-                id="schema-map"
+                id="plan-schema-map"
                 usemap="#image-map"
-                width="100%"
+                class="img-fluid"
             />
 
-            <map name="image-map">
+            <!-- <map name="image-map">
                 <area
                     coords="552,26,573,64,584,115,595,199,597,236,568,238,529,231,530,207,537,110,544,28,550,20"
                     shape="poly"
                 />
-            </map>
+            </map> -->
         </div>
         <b-button
             :pressed.sync="sectionsBtn[2].state"
@@ -151,7 +151,7 @@ export default {
             // remove selected tooth from DB
             axios
                 .delete(
-                    "/patient/schema-dentaire/remove_tooth/" + toothToDelete
+                    "/patients/schema-dentaire/remove_tooth/" + toothToDelete
                 )
                 .then(response => {
                     // remove formulas from dental schema
@@ -169,6 +169,14 @@ export default {
         resetAll() {
             this.num_tooth.map(t => t.num);
             this.removeTooth(allTooth);
+        },
+        setSvg(w, h) {
+            document
+                .querySelector("#plan_schema_canvas")
+                .setAttribute("width", w);
+            document
+                .querySelector("#initial_schema_canvas")
+                .setAttribute("height", h);
         },
         resetTooth() {
             this.selectedTooth = [];

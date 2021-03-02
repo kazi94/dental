@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Schema extends Model
 {
-    protected $fillable = ['patient_id','type','created_by'];
+	protected $fillable = ['patient_id', 'type', 'created_by'];
 
 	public function lastQuotation()
 	{
 		return $this->hasOne('App\Models\Devis', 'schema_id', 'id')
-			->where('devis.state' ,'=', 'devis')
+			->where('devis.state', '=', 'devis')
 			->latest()
 			->limit(1);
 	}
@@ -19,9 +19,11 @@ class Schema extends Model
 	{
 		return $this->hasMany('App\Models\Devis', 'schema_id', 'id');
 	}
-	
-	public function traitements () {
-		return $this->belongsToMany('App\Models\Formule' , 'traitements' ,'schema_id' , 'formule_id')
-		->withTimestamps();
+
+	public function traitements()
+	{
+		return $this->belongsToMany('App\Models\Formule', 'traitements', 'schema_id', 'formule_id')
+			->withPivot('teeth')
+			->withTimestamps();
 	}
 }

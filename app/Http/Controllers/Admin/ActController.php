@@ -25,7 +25,7 @@ class ActController extends Controller
     {
         $acts = Acte::all();
 
-        return response()->json($acts , 200);
+        return response()->json($acts, 200);
     }
     /**
      * return acts regrouped by category
@@ -40,7 +40,7 @@ class ActController extends Controller
     public function getCategories()
     {
         return Category::all();
-    }    
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -48,7 +48,6 @@ class ActController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -60,7 +59,8 @@ class ActController extends Controller
     public function store(Request $request)
     {
         $category = Category::firstOrCreate([
-            'name' => $request->category]);
+            'name' => $request->category
+        ]);
         $act = new Acte;
         $act->code_cnas    = $request->code_cnas;
         $act->nom          = $request->nom;
@@ -68,8 +68,7 @@ class ActController extends Controller
         $act->price        = $request->price;
         $act->save();
 
-        return response()->json($act , 200);
-        
+        return response()->json($act, 200);
     }
 
     /**
@@ -91,7 +90,6 @@ class ActController extends Controller
      */
     public function edit($id)
     {
-
     }
 
     /**
@@ -104,7 +102,8 @@ class ActController extends Controller
     public function update(Request $request, $id)
     {
         $category = Category::firstOrCreate([
-            'name' => $request->category]);
+            'name' => $request->category
+        ]);
 
         $act = Acte::find($id);
         $act->code_cnas = $request->code_cnas;
@@ -113,8 +112,7 @@ class ActController extends Controller
         $act->price = $request->price;
         $act->save();
 
-        return response()->json( $act, 200);
-
+        return response()->json($act, 200);
     }
 
     /**
@@ -125,9 +123,8 @@ class ActController extends Controller
      */
     public function destroy($id)
     {
-         Acte::where('id',$id)->delete();
+        Acte::where('id', $id)->delete();
 
-        return response()->json( [] , 200);
+        return response()->json([], 200);
     }
-
 }

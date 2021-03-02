@@ -17,16 +17,13 @@ use Storage;
 class PrescriptionController extends Controller
 {
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth');
-
-        
     }
 
     public function index()
     {
-
-
     }
 
     /**
@@ -36,8 +33,6 @@ class PrescriptionController extends Controller
      */
     public function create()
     {
-
-
     }
 
     /**
@@ -47,10 +42,10 @@ class PrescriptionController extends Controller
      * @author 
      **/
     public function store(Request $request)
-   {
+    {
 
         $prescription = new Prescription;
-        $prescription->type = $request->medicaments;
+        $prescription->medicaments = $request->medicaments;
         $prescription->date_prescription = today();
         $prescription->patient_id = $request->patient_id;
         $prescription->created_by = Auth::id();
@@ -61,9 +56,9 @@ class PrescriptionController extends Controller
         return response()->json([
             'prescription' => $prescription,
             'success' => 'Prescription ajoutée avec succés!'
-        ]); 
+        ]);
     }
-         
+
     /**
      * Display the specified resource.
      *
@@ -84,7 +79,6 @@ class PrescriptionController extends Controller
      */
     public function edit($id)
     {
-
     }
 
     /**
@@ -98,12 +92,11 @@ class PrescriptionController extends Controller
     public function update(Request $request, $id)
 
     {
-        Ligneprescription::where('prescription_id' , $id)->delete();
+        Ligneprescription::where('prescription_id', $id)->delete();
 
-       return 
-        $this->addLignesPrescription($id, $request->medicaments) ?
-              response()->json(['success' => 'Prescription modifiée avec succés!'] , 200) : 'Erreur dans la modification';  
-   
+        return
+            $this->addLignesPrescription($id, $request->medicaments) ?
+            response()->json(['success' => 'Prescription modifiée avec succés!'], 200) : 'Erreur dans la modification';
     }
 
     /**
@@ -114,9 +107,9 @@ class PrescriptionController extends Controller
      **/
     public function destroy($id)
     {
-        $deleted = Prescription::where('id',$id)->delete();
+        $deleted = Prescription::where('id', $id)->delete();
 
-        return $deleted ?  response()->json(['success' => 'Prescription supprimée avec succés!'] , 200) : 'Erreur dans la suppression';
+        return $deleted ?  response()->json(['success' => 'Prescription supprimée avec succés!'], 200) : 'Erreur dans la suppression';
     }
 
     /**
@@ -127,7 +120,7 @@ class PrescriptionController extends Controller
      **/
     public function print($id)
     {
-        $prescription = Prescription::with('lignes','patient','user.cabinet')->find($id);
+        $prescription = Prescription::with('lignes', 'patient', 'user.cabinet')->find($id);
 
         return view('patient.reports.prescription_report', compact('prescription'));
     }
@@ -149,5 +142,4 @@ class PrescriptionController extends Controller
 
         return true;
     }
-
 }

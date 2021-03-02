@@ -40,9 +40,34 @@
                             stacked
                         ></b-form-checkbox-group>
                     </b-form-group>
+
+                    <b-button
+                        variant="primary"
+                        squared
+                        size="sm"
+                        href="javascript:void(0);"
+                        v-b-modal.modal-add-new-medic
+                    >
+                        Ajouter un médicament
+                    </b-button>
+                    <b-modal
+                        id="modal-add-new-medic"
+                        title="Ajouter médicament"
+                        no-fade
+                        button-size="sm"
+                        ok-title="Ajouter"
+                        cancel-title="Annuler"
+                        @ok="addNewMedic"
+                        @hidden="resetModal"
+                    >
+                        <b-form-input
+                            v-model="newMedic"
+                            placeholder="Renseigner le médicament"
+                        ></b-form-input>
+                    </b-modal>
                 </b-form>
             </div>
-            <template v-slot:modal-footer="{   }">
+            <template v-slot:modal-footer="{}">
                 <!-- Emulate built in modal footer ok and cancel button actions -->
                 <b-button
                     size="sm"
@@ -51,12 +76,7 @@
                     @click="onReset()"
                     >Annuler</b-button
                 >
-                <b-button
-                    size="sm"
-                    squared
-                    variant="primary"
-                    @click="onSubmit()"
-                >
+                <b-button size="sm" squared variant="info" @click="onSubmit()">
                     <b-icon
                         icon="cloud-download"
                         variant="white"
@@ -80,7 +100,8 @@ export default {
             selected: null,
             selectedMeds: null,
             medics: [],
-            ordonnances_type: []
+            ordonnances_type: [],
+            newMedic: null
         };
     },
     methods: {
@@ -117,7 +138,7 @@ export default {
             form.set("patient_id", this.patient.id);
             // save the prescription into the db
             axios
-                .post("/patient/prescription", form)
+                .post("/patients/prescription", form)
                 .then(response => {
                     // create pdf file
                     const doc = new jsPDF();
@@ -126,15 +147,30 @@ export default {
                         doc.text(index + 1 + "- " + val, 10, y); // 2nd args : x position; 3rd args : y position
                         y += 10;
                     });
-                    vm.$emit('getPrescription' , response.data.prescription);
+                    console.log(
+                        "Prescription.vue : " +
+                            JSON.stringify(response.data.prescription)
+                    );
+                    vm.$emit("get-prescription", response.data.prescription);
                     // download pdf file
                     doc.save("ordonnance.pdf");
-                    
-                    this.$toaster.success("Ordonnance ajoutée !");
+                    Vue.toasted.success("Ordonnance ajoutée !");
                 })
                 .catch(exception => {
-                    this.$toaster.error(exception);
+                    Vue.toasted.error(exception);
                 });
+        },
+        /**
+         * Add the new drug to the list of drugs
+         */
+        addNewMedic() {
+            return this.newMedic ? this.medics.push(this.newMedic) : false;
+        },
+        /**
+         * on Hide the modal add new medic
+         */
+        resetModal() {
+            this.newMedic = "";
         }
     },
     watch: {
@@ -146,7 +182,7 @@ export default {
                 let vm = this;
                 let selectedOrdonnance = newV; // Ex : 4 or 5 , 6 , {id}
                 vm.ordonnances_type.forEach(function(value, index) {
-                    if (value.value === newV) vm.medics = value.medicaments; // show the list of medocs
+                    if (value.value === newV) vm.medics.push(value.medicaments); // show the list of medocs
                 });
                 vm.selectedMeds = vm.medics; // check all medics
             }
