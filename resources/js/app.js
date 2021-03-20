@@ -74,6 +74,7 @@ Vue.component(
     require("./components/RadiographieButton.vue").default
 );
 Vue.component("prescription", require("./components/Prescription.vue").default);
+Vue.component("appointements", require("./components/Appointements.vue").default);
 
 // const store = new Vuex.Store({
 //     state: {

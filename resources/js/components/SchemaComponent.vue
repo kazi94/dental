@@ -51,6 +51,7 @@
                 id="plan-schema-map"
                 usemap="#image-map"
                 class="img-fluid"
+                @load="onImagePlanLoad"
             />
 
             <!-- <map name="image-map">
@@ -98,11 +99,13 @@
 </template>
 
 <script>
+import { SVG } from "@svgdotjs/svg.js";
 export default {
     components: {},
     props: ["selectedTooth", "isToothVisible", "p_class"],
     data() {
         return {
+            coords: [],
             num_tooth: [
                 { num: 18, state: false },
                 { num: 17, state: false },
@@ -142,8 +145,10 @@ export default {
                 { caption: "S2", state: false },
                 { caption: "S3", state: false },
                 { caption: "S4", state: false }
-            ]
+            ],
             // selectedTooth  : new Array(),
+            planWidth: "",
+            planHeight: ""
         };
     },
     methods: {
@@ -217,9 +222,72 @@ export default {
 
             this.$emit("selectedTooth", this.selectedTooth);
         },
-        createShapes(dent, coords, context) {}
+        onImagePlanLoad(img) {
+            //this.createShapes(this.coords);
+        },
+        loadSchema() {
+            //  if (
+            //      document.querySelector("#plan_schema_canvas").childNodes
+            //          .length == 0
+            //  )
+            //this.createShapes(this.coords);
+        },
+        createShapes(coords = [], currentQuotation = "") {
+            let draw = SVG("#plan_schema_canvas");
+            let polygonID;
+            coords.forEach(c => {
+                // get the coords convert adapat to actual media
+                let convertTo = this.convertCoord(c.coord.coord); // array
+
+                polygonID = draw
+                    .polygon(convertTo.toString())
+                    .fill(c.coord.color)
+                    .stroke({ width: 1 });
+
+                document
+                    .getElementById(polygonID)
+                    .setAttribute("teeth", this.selectedTeeth);
+                document
+                    .getElementById(polygonID)
+                    .setAttribute("title", c.coord.formulas);
+
+                if (currentQuotation != "") {
+                    document
+                        .getElementById(polygonID)
+                        .setAttribute("devis", currentQuotation);
+                }
+            });
+        },
+        convertCoord(coord) {
+            const orginalWidth = 790;
+            const originalHeight = 319;
+            // '358,15,378,62,383,105,388,134,387,152,355,154,342,143,348,113,352,66,354,35'
+            let imgWidth = document.querySelector("#plan-schema-map").width;
+            let imgHeight = document.querySelector("#plan-schema-map").height;
+            this.setSvg(imgWidth, imgHeight);
+            document
+                .querySelector("#plan_schema_canvas")
+                .setAttribute("width", imgWidth);
+            document
+                .querySelector("#plan_schema_canvas")
+                .setAttribute("height", imgHeight);
+            // let mediaWidth = window.innerWidth;
+            let ratioX = orginalWidth / imgWidth;
+            let ratioY = originalHeight / imgHeight;
+
+            // change value of coords coordinate with the size of the actual media : laptop,tablete,mobile
+            let val = coord
+                .split(",")
+                .map((c, i) =>
+                    i % 2 == 0 ? parseInt(c / ratioX) : parseInt(c / ratioY)
+                );
+
+            return val;
+        }
     },
-    mounted() {}
+    mounted() {
+        this.createShapes(this.coords);
+    }
 };
 </script>
 

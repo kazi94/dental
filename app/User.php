@@ -37,6 +37,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = ['doctor'];
+
     // public function role () {
 
     //     return $this->BelongsTo('App\Models\Role');
@@ -51,5 +53,9 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo('App\Models\Role');
+    }
+    public function getDoctorAttribute()
+    {
+        return "Dr." . $this->name . " " . $this->prenom;
     }
 }

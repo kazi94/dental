@@ -23,7 +23,7 @@ class Schema extends Model
 	public function traitements()
 	{
 		return $this->belongsToMany('App\Models\Formule', 'traitements', 'schema_id', 'formule_id')
-			->withPivot('teeth')
+			//->withPivot('teeth')
 			->withTimestamps();
 	}
 }

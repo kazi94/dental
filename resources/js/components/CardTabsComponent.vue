@@ -1,103 +1,44 @@
 <template>
     <div>
-        <div class="main-card mb-3 card">
-            <div class="card-header">
-                <ul class="nav col-sm-10">
-                    <li class="nav-item">
-                        <a
-                            data-toggle="tab"
-                            href="#tab-eg1-1"
-                            :class="[
-                                isInitialActive
-                                    ? 'nav-link active'
-                                    : 'nav-link '
-                            ]"
-                            >Initiale</a
-                        >
-                    </li>
-                    <li class="nav-item">
-                        <a
-                            data-toggle="tab"
-                            href="#tab-eg1-0"
-                            class="nav-link "
-                            >{{ type }}</a
-                        >
-                    </li>
-                    <li class="nav-item">
-                        <a data-toggle="tab" href="#tab-eg1-3" class="nav-link"
-                            >Règlements</a
-                        >
-                    </li>
-                    <li class="nav-item">
-                        <a data-toggle="tab" href="#tab-eg1-4" class="nav-link"
-                            >Ordonnances</a
-                        >
-                    </li>
-                    <li class="nav-item">
-                        <a
-                            data-toggle="tab"
-                            href="#tab-eg1-5"
-                            :class="[
-                                isRadioActive ? 'nav-link active' : 'nav-link'
-                            ]"
-                            >Radiographies</a
-                        >
-                    </li>
-                </ul>
-                <div class="d-none d-sm-block">Schéma Dentaire</div>
-            </div>
-            <div class="card-body">
-                <div class="tab-content">
-                    <div
-                        :class="[
-                            isInitialActive
-                                ? 'tab-pane active show'
-                                : 'tab-pane show'
-                        ]"
-                        id="tab-eg1-1"
-                        role="tabpanel"
-                    >
-                        <initial-schema-component
-                            :patient="patient"
-                            v-if="showschema"
-                        ></initial-schema-component>
-                    </div>
-                    <div class="tab-pane  show" id="tab-eg1-0" role="tabpanel">
-                        <plan-schema-component
-                            :patient="patient"
-                            v-if="showschema"
-                            @payment-done="updatePayment"
-                        ></plan-schema-component>
-                    </div>
-                    <div class="tab-pane show" id="tab-eg1-2" role="tabpanel">
-                        <!-- <quotation :patient="patient" v-if="patient.schemas.quotations"></quotation> -->
-                    </div>
-                    <div class="tab-pane show" id="tab-eg1-3" role="tabpanel">
-                        <payment :patient="patient" ref="payment"></payment>
-                    </div>
-                    <div class="tab-pane show" id="tab-eg1-4" role="tabpanel">
-                        <prescription-tab
-                            :patient="patient"
-                            ref="prescription_tab"
-                        ></prescription-tab>
-                    </div>
-                    <div
-                        :class="[
-                            isRadioActive
-                                ? 'tab-pane show active'
-                                : 'tab-pane show'
-                        ]"
-                        id="tab-eg1-5"
-                        role="tabpanel"
-                    >
-                        <radiographie-tab
-                            ref="radiographie_tab"
-                            :patient="patient"
-                        ></radiographie-tab>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <b-card no-body class="mb-2">
+            <b-tabs card ref="tab" justified @activate-tab="getActiveTabID">
+                <!-- Render Tabs, supply a unique `key` to each tab -->
+                <b-tab
+                    :class="[isInitialActive ? 'active' : '']"
+                    title="Initial"
+                >
+                    <initial-schema-component
+                        :patient="patient"
+                    ></initial-schema-component>
+                </b-tab>
+                <b-tab title="Plan">
+                    <plan-schema-component
+                        :patient="patient"
+                        @payment-done="updatePayment"
+                        v-if="showschema"
+                        ref="plan_tab"
+                    ></plan-schema-component>
+                </b-tab>
+                <b-tab title="Règlements">
+                    <payment :patient="patient" ref="payment"></payment>
+                </b-tab>
+                <b-tab title="Prescriptions">
+                    <prescription-tab
+                        :patient="patient"
+                        ref="prescription_tab"
+                    ></prescription-tab>
+                </b-tab>
+                <b-tab
+                    :class="[isRadioActive ? 'active' : '']"
+                    title="Radiographies"
+                >
+                    <radiographie-tab
+                        ref="radiographie_tab"
+                        :patient="patient"
+                    ></radiographie-tab>
+                </b-tab>
+            </b-tabs>
+        </b-card>
     </div>
 </template>
 
@@ -122,10 +63,18 @@ export default {
         return {
             isRadioActive: false,
             isInitialActive: true,
-            isPrescriptionActive: false
+            isPrescriptionActive: false,
+            showSchema: ""
         };
     },
     methods: {
+        getActiveTabID(tabIndex) {
+            //! get the current tab index
+            if (tabIndex == 1) {
+                this.showSchema = true;
+                //this.$refs.plan_tab.loadSchema();
+            }
+        },
         getPrescription(prescription) {
             this.$refs.prescription_tab.getPrescription(prescription);
         },

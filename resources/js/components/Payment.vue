@@ -92,9 +92,13 @@ export default {
     },
     mounted() {
         console.log("Règlements Component mounted !");
-        // if (this.patient.last_schema.last_quotation.payments ?? ) {
-        this.payments = this.patient.last_schema.last_quotation.payments;
-        // }
+        if (
+            this.patient.last_schema != null &&
+            this.patient.last_schema.last_quotation != null &&
+            this.patient.last_schema.last_quotation.payments != null
+        ) {
+            this.payments = this.patient.last_schema.last_quotation.payments;
+        }
     }
 };
 </script>
