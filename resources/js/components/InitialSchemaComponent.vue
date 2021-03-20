@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-md-8">
                 <b-button
                     v-for="(btn, idx) in num_tooth"
                     :key="idx"
@@ -12,15 +12,14 @@
                     style="margin-right : 0.5rem"
                     size="sm"
                     :id="`${btn.num}`"
-                    @click="tooth(btn.num)"
                 >
                     {{ btn.num }}
-                    <b-popover
+                    <!-- <b-popover
                         :target="`${btn.num}`"
                         triggers="focus"
                         placement="bottom"
                     >
-                        <template v-slot:title>Formules</template>
+                        <template v-slot:title>Etat initial</template>
                         <b-form-group>
                             <b-form-checkbox-group
                                 v-model="selectedFormulas"
@@ -29,16 +28,16 @@
                                 stacked
                             ></b-form-checkbox-group>
                         </b-form-group>
-                    </b-popover>
+                    </b-popover> -->
                 </b-button>
 
                 <div style="position : relative">
                     <svg
                         id="initial_schema_canvas"
                         style="position: absolute; 
-            left: 0px; top: 0px; 
-            padding: 0px; 
-            border: 0px;"
+                            left: 0px; top: 0px; 
+                            padding: 0px; 
+                            border: 0px;"
                         xmlns="http://www.w3.org/2000/svg"
                         version="1.1"
                         xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -55,14 +54,7 @@
                         style="width : 790px; height : 319px;"
                     />
                 </div>
-                <!-- <map name="image-map">
-          <area
-            coords="358, 15, 378, 62, 383, 105, 388, 134, 387, 152, 355, 154, 342, 143, 348, 113, 352, 66, 354, 35"
-            style="cursor : pointer; "
-            href="#"
-            shape="poly"
-          />
-        </map>-->
+
                 <b-button
                     v-for="(btm_btn, btm_idx) in num_tooth"
                     :key="btm_idx"
@@ -72,11 +64,10 @@
                     class="ml-1 mt-1 rounded-circle"
                     style="margin-right : 0.7rem"
                     size="sm"
-                    @click="tooth(btm_btn.num)"
                     :id="`${btm_btn.num}`"
                 >
                     {{ btm_btn.num }}
-                    <b-popover
+                    <!-- <b-popover
                         :target="`${btm_btn.num}`"
                         triggers="focus"
                         placement="right"
@@ -90,23 +81,23 @@
                                 stacked
                             ></b-form-checkbox-group>
                         </b-form-group>
-                    </b-popover>
+                    </b-popover> -->
                 </b-button>
-
-                <!-- <div class="rounded-0">
-          <b-button
-            v-for="(btn, idx) in buttons"
-            :key="idx"
-            :pressed.sync="btn.state"
-            squared
-            size="sm"
-          >{{ btn.nom }}</b-button>
-           <b-button squared size="sm" :disabled="disabled" @click="reset()">Reset</b-button> 
-           <b-button squared size="sm" @click="resetAll()">Reset all</b-button> 
-          <b-button squared size="sm" variant="success" @click="save">Ajouter</b-button>
-        </div>-->
             </div>
-            <div class="col-sm-4"></div>
+            <div class="col-md-4">
+                <h4>Etat initial</h4>
+                <b-button
+                    v-for="(btn, idx) in buttons"
+                    :key="idx"
+                    :pressed.sync="btn.state"
+                    @click="sendToServer(btn.caption, btn.state)"
+                    squared
+                    size="lg"
+                    class="mr-3 mb-3"
+                    variant="outline-info"
+                    >{{ btn.nom }}</b-button
+                >
+            </div>
         </div>
     </div>
 </template>
@@ -118,44 +109,47 @@ export default {
     props: ["patient"],
     data() {
         return {
-            formulas: [
-                { text: "Absente", value: "abs" },
-                { text: "Obturer", value: "obt" },
-                { text: "Dent mortifiée", value: "d-mortif" },
-                { text: "Racines résiduelles", value: "rac-resid" },
-                { text: "Fracture couronne", value: "frac-cour" },
-                { text: "Fracture racine", value: "frac-rac" },
-                { text: "Kyste", value: "kyste" },
-                { text: "Abcès endo", value: "abc" },
-                { text: "Courônne", value: "couronne" },
-                { text: "Carie-P", value: "carie-p" },
-                { text: "Carie-PP", value: "carie-pp" },
-                { text: "Carie-D", value: "carie-d" },
-                { text: "Carie-M", value: "carie-m" }
-            ],
+            // formulas: [
+            //     { text: "Absente (a)", value: "abs", title: "(a)" },
+            //     { text: "Obturer (o)", value: "obt" },
+            //     { text: "Dent mortifiée", value: "d-mortif" },
+            //     { text: "Racines résiduelles", value: "rac-resid" },
+            //     { text: "Fracture couronne (c)", value: "frac-cour" },
+            //     { text: "Fracture racine (r)", value: "frac-rac" },
+            //     { text: "Kyste", value: "kyste" },
+            //     { text: "Abcès endo", value: "abc" },
+            //     { text: "Courônne", value: "couronne" },
+            //     { text: "Carie prof.", value: "carie-p" },
+            //     { text: "Carie sup.", value: "carie-pp" },
+            //     { text: "Carie-D", value: "carie-d" },
+            //     { text: "Carie-M", value: "carie-m" }
+            // ],
             selectedFormulas: [],
             buttons: [
-                { caption: "abs", nom: "Absente", state: false },
-                { caption: "obt", nom: "Obturer", state: false },
+                { caption: "abs", nom: "Absente (a)", state: false },
+                { caption: "obt", nom: "Obturer (o)", state: false },
+                { caption: "d-mortif", nom: "Dent mortifiée", state: false },
+                { caption: "kyste", nom: "Kyste", state: false },
+                { caption: "couronne", nom: "Courônne", state: false },
+                { caption: "carie-p", nom: "Carie prof.", state: false },
+                { caption: "carie-pp", nom: "Carie sup.", state: false },
+                { caption: "carie-d", nom: "Carie-D", state: false },
+                { caption: "carie-m", nom: "Carie-M", state: false },
                 {
                     caption: "rac-resid",
                     nom: "Racines résiduelles",
                     state: false
                 },
                 {
-                    caption: "frac-rad",
-                    nom: "Fracture radiculaire",
+                    caption: "frac-rac",
+                    nom: "Fracture racine (r)",
                     state: false
                 },
                 {
-                    caption: "frac-cor",
-                    nom: "Fracture coronaire",
+                    caption: "frac-cour",
+                    nom: "Fracture couronne (c)",
                     state: false
-                },
-                { caption: "carie-p", nom: "P", state: false },
-                { caption: "carie-pp", nom: "PP", state: false },
-                { caption: "carie-m", nom: "M", state: false },
-                { caption: "carie-d", nom: "D", state: false }
+                }
             ],
             num_tooth: [
                 { num: 18, state: false },
@@ -202,72 +196,78 @@ export default {
         };
     },
     methods: {
-        removeTooth(toothToDelete) {
-            // remove selected tooth from DB
-            axios
-                .delete(
-                    "/patients/schema-dentaire/remove_tooth/" + toothToDelete
-                )
-                .then(response => {
-                    // remove formulas from dental schema
-                    //
-                    // Deselect selected tooth
-                    this.resetTooth();
-                })
-                .catch(exception => {
-                    this.$toaster.error(exception);
-                });
+        /**
+         * Send list of selected tooth with the clikced formulas to the server
+         * @param {String} formula - Caption of The clicked formula
+         */
+        sendToServer(formula, state) {
+            // detach formula from seletected tooth if button is unchecked
+            if (state == false) {
+                this.detachFormula(formula);
+            } else {
+                // attach formula with the selected tooth
+                this.attachFormula(formula);
+            }
         },
-        reset() {
-            this.removeTooth(this.selectedTooth);
-        },
-        resetAll() {
-            let allTooth = this.num_tooth.map(t => t.num);
-            this.removeTooth(allTooth);
-        },
-        tooth: function(num) {
-            let index = this.num_tooth.map(t => t.num).indexOf(num);
-            let state = this.num_tooth[index].state;
-            if (state) this.selectedTooth.push(num);
-            else this.selectedTooth.splice(this.selectedTooth.indexOf(num), 1);
-        },
-        sendToServer(formulas, teeth) {
-            let form = this.createFormData(formulas, teeth);
-
+        /**
+         * attach formula to the selected tooth
+         */
+        attachFormula(formula) {
+            let form = this.createFormData(formula, this.selectedTooth);
             // remove all the drawing shapes of the selected teeth before redraw new shapes
             this.removeShapes();
 
             axios
                 .post("/patients/schema-dentaire", form)
                 .then(response => {
+                    var traitements = response.data.coords;
                     // Set Schema ID
-                    this.schema_id = response.data.schema_id;
+                    //this.schema_id = response.data.schema_id;
 
                     // Create shapes
-                    this.createShapes(response.data.coords);
+                    traitements.forEach(traitement => {
+                        this.createShapes(traitement, traitement.teeth);
+                    });
                 })
                 .catch(exception => {
-                    this.$toaster.error(exception);
+                    if (exception.response)
+                        this.$toaster.error(exception.response.data);
+                    else this.$toaster.error(exception);
                 });
         },
-        /*
-         * Retourner les coords pour une dent et son ensemble de formules
+        /**
+         * Detach formula from the selected tooth
          */
-        getCoords(formulas, teeth) {
+        detachFormula(formula) {
+            // Create a Form with formula and selected tooth
+            let form = this.createFormData(formula, this.selectedTooth);
+            // Send to Server
             axios
-                .get(
-                    "/patients/schema-dentaire/get-coords/" +
-                        teeth +
-                        "&&formules=" +
-                        formulas
-                )
-                .then(response => {
-                    // Create shapes
-                    this.createShapes(response.data);
+                .delete("/patients/schema-dentaire/" + this.schema_id, {
+                    data: {
+                        formula: formula,
+                        tooth: JSON.stringify(this.selectedTooth)
+                    }
                 })
-                .catch(exception => {
-                    this.$toaster.error(exception);
-                });
+                .then(response => {
+                    // Remove the shapes of formula and selected tooth
+                    var shapes = document.getElementById(
+                        "initial_schema_canvas"
+                    ).childNodes;
+                    this.selectedTooth.forEach(teeth => {
+                        for (let index = 0; index < shapes.length; index++) {
+                            const points = shapes[index].getAttribute("teeth");
+                            const title = shapes[index].getAttribute("title");
+
+                            if (points == teeth && title == formula) {
+                                // remove polygon node
+                                shapes[index].remove();
+                                if (title == "abs") index--;
+                            }
+                        }
+                    });
+                })
+                .catch(exception => {});
         },
         /**
          * Remove Shapes of the selected teeth
@@ -283,61 +283,56 @@ export default {
                     shapes[index].remove();
             }
         },
-        resetTooth() {
-            this.selectedTooth = [];
-            this.num_tooth.map(t => (t.state = false));
-        },
-        createFormData: function(formulas, teeth) {
+
+        createFormData: function(formula, tooth) {
             let formData = new FormData();
-            formData.append("teeth", teeth);
-            formData.append("formulas", formulas); //array
+            formData.append("tooth", JSON.stringify(tooth));
+            formData.append("formula", formula); //array
             formData.append("patient_id", this.patient.id);
             formData.append("schema_id", this.schema_id);
             formData.append("type", "initial");
             return formData;
         },
-        createShapes(coords = []) {
+
+        createShapes(c, teeth) {
             let draw = SVG("#initial_schema_canvas");
             let polygonID;
-            coords.forEach(c => {
-                let convertTo = this.convertCoord(c.coord);
-                if (c.formulas == "frac-cour" || c.formulas == "frac-rac")
-                    polygonID = draw
-                        .polyline(convertTo.toString())
-                        .fill("none")
-                        .stroke({
-                            color: "black",
-                            width: 1,
-                            linecap: "round",
-                            linejoin: "round"
-                        });
-                else if (c.formulas == "kyste" || c.formulas == "abc") {
-                    polygonID = draw
-                        .circle(convertTo[2] * 2)
-                        .fill(c.color)
-                        .move(convertTo[0] - 10, convertTo[1] - 10);
-                } else if (c.formulas == "abs" || c.formulas == "rac-resid") {
-                    polygonID = draw
-                        .rect(
-                            convertTo[2] - convertTo[0],
-                            convertTo[3] - convertTo[1]
-                        )
-                        .fill(c.color)
-                        .move(convertTo[0], convertTo[1]);
-                } else {
-                    polygonID = draw
-                        .polygon(convertTo.toString())
-                        .fill(c.color)
-                        .stroke({ width: 1 });
-                }
 
-                document
-                    .getElementById(polygonID)
-                    .setAttribute("teeth", this.selectedTeeth);
-                document
-                    .getElementById(polygonID)
-                    .setAttribute("title", c.formulas);
-            });
+            let convertTo = this.convertCoord(c.coord);
+            if (c.formulas == "frac-cour" || c.formulas == "frac-rac")
+                polygonID = draw
+                    .polyline(convertTo.toString())
+                    .fill("none")
+                    .stroke({
+                        color: "black",
+                        width: 1,
+                        linecap: "round",
+                        linejoin: "round"
+                    });
+            else if (c.formulas == "kyste" || c.formulas == "abc") {
+                polygonID = draw
+                    .circle(convertTo[2] * 2)
+                    .fill(c.color)
+                    .move(convertTo[0] - 10, convertTo[1] - 10);
+            } else if (c.formulas == "abs" || c.formulas == "rac-resid") {
+                polygonID = draw
+                    .rect(
+                        convertTo[2] - convertTo[0],
+                        convertTo[3] - convertTo[1]
+                    )
+                    .fill(c.color)
+                    .move(convertTo[0], convertTo[1]);
+            } else {
+                polygonID = draw
+                    .polygon(convertTo.toString())
+                    .fill(c.color)
+                    .stroke({ width: 1 });
+            }
+
+            document.getElementById(polygonID).setAttribute("teeth", teeth);
+            document
+                .getElementById(polygonID)
+                .setAttribute("title", c.formulas);
         },
         /**
          * @param String coord
@@ -387,104 +382,206 @@ export default {
 
             return val;
         },
-        onShowPopover() {
-            this.$root.$on("bv::popover::show", bvEventObj => {
-                this.selectedFormulas = [];
-                this.selectedTeeth = bvEventObj.target.id;
-
-                // return the formulas of the hovered teeth
-                for (let i = 0; i < this.checkedTooth.length; i++)
-                    if (this.checkedTooth[i].teeth == this.selectedTeeth) {
-                        this.selectedFormulas = this.checkedTooth[i].formulas;
-                        break;
-                    }
-            });
-        },
         /*
          * Remplir le graphe du schema dentaire des données du patient
          */
         mountSchema() {
+            // document.querySelector("#schema-map").width = document.querySelector("#schema-map").parentElement('row').offsetWidth;
+            // document.querySelector("#schema-map").height = document.querySelector("#schema-map").parentElement('row').offsetHeight;
+
             // set formules in schema
             if (
                 this.patient.initial_schema != undefined &&
                 this.patient.initial_schema.traitements != undefined
             ) {
                 // ajouter les traitements au tableau checkedTooth qui sert de source pour les checkbox
-                this.patient.initial_schema.traitements.forEach(e => {
-                    let tmpFormulas = [];
-                    this.patient.initial_schema.traitements.forEach(e1 => {
-                        if (e1.teeth == e.teeth) {
-                            tmpFormulas.push(e1.formulas);
-                        }
-                    });
-
-                    // verifier si le num de la dent exist dans le tableau checkedTooth
-                    const found = this.checkedTooth.some(
-                        el => el.teeth === e.teeth
-                    );
-                    if (!found) {
-                        this.checkedTooth.push({
-                            teeth: e.teeth,
-                            formulas: tmpFormulas // array of formulas for each teeth
-                        });
-                        this.getCoords(tmpFormulas, e.teeth);
+                let draw = SVG("#initial_schema_canvas");
+                let polygonID;
+                this.patient.initial_schema.traitements.forEach(c => {
+                    let convertTo = this.convertCoord(c.coord);
+                    if (c.formulas == "frac-cour" || c.formulas == "frac-rac")
+                        polygonID = draw
+                            .polyline(convertTo.toString())
+                            .fill("none")
+                            .stroke({
+                                color: "black",
+                                width: 1,
+                                linecap: "round",
+                                linejoin: "round"
+                            });
+                    else if (c.formulas == "kyste" || c.formulas == "abc") {
+                        polygonID = draw
+                            .circle(convertTo[2] * 2)
+                            .fill(c.color)
+                            .move(convertTo[0] - 10, convertTo[1] - 10);
+                    } else if (
+                        c.formulas == "abs" ||
+                        c.formulas == "rac-resid"
+                    ) {
+                        polygonID = draw
+                            .rect(
+                                convertTo[2] - convertTo[0],
+                                convertTo[3] - convertTo[1]
+                            )
+                            .fill(c.color)
+                            .move(convertTo[0], convertTo[1]);
+                    } else {
+                        polygonID = draw
+                            .polygon(convertTo.toString())
+                            .fill(c.color)
+                            .stroke({ width: 1 });
                     }
+
+                    document
+                        .getElementById(polygonID)
+                        .setAttribute("teeth", c.teeth);
+                    document
+                        .getElementById(polygonID)
+                        .setAttribute("title", c.formulas);
                 });
                 this.schema_id = this.patient.initial_schema.id;
             }
+        },
+
+        /**
+         * Listen to keyboard shortcut for:
+         * Dent obturer , absente, couronne, and racine
+         * @param
+         */
+        onKeyDown(e) {
+            var state = true;
+            switch (e.keyCode) {
+                case 65: // 'a' key
+                    // Handle for the keyboard shortcut of 'Absente' teeth
+                    this.buttons.forEach(formulaBtn => {
+                        if (formulaBtn.caption == "abs") {
+                            state = formulaBtn.state;
+                            formulaBtn.state = !state;
+                        }
+                    });
+                    this.sendToServer("abs", !state);
+
+                    break;
+                case 79: // 'o' key
+                    // Handle for the keyboard shortcut of 'Obturer' teeth
+                    this.buttons.forEach(formulaBtn => {
+                        if (formulaBtn.caption == "obt") {
+                            state = formulaBtn.state;
+                            formulaBtn.state = !state;
+                        }
+                    });
+                    this.sendToServer("obt", !state);
+                    break;
+                case 67: // 'c' key
+                    // Handle for the keyboard shortcut of 'Couronne' teeth
+                    this.buttons.forEach(formulaBtn => {
+                        if (formulaBtn.caption == "frac-cour") {
+                            state = formulaBtn.state;
+                            formulaBtn.state = !state;
+                        }
+                    });
+                    this.sendToServer("frac-cour", !state);
+                    break;
+                case 82: // 'r' key
+                    // Handle for the keyboard shortcut of 'Racine' teeth
+                    this.buttons.forEach(formulaBtn => {
+                        if (formulaBtn.caption == "frac-rac") {
+                            state = formulaBtn.state;
+                            formulaBtn.state = !state;
+                        }
+                    });
+                    this.sendToServer("frac-rac", !state);
+                    break;
+            }
+            //TODO Handle keyboards tape when it pressed 2nd time
         }
     },
     watch: {
-        selectedTooth: {
-            handler: function(newVal) {
-                let length = newVal.length;
-                if (length > 0) {
-                    this.disabled = false;
-                } else {
-                    this.disabled = true;
-                }
-            }
-        },
         /**
-         * @param Array newVal Array of selected formulas
+         * Listen to click on teeth number
+         * @param {Object[]} newVal - The new list of tooth
          */
-        selectedFormulas: {
-            handler: function(newVal) {
-                if (this.checkedTooth.length > 0) {
-                    let index = this.checkedTooth.findIndex(
-                        p => p.teeth == this.selectedTeeth
-                    ); // o or -1
-                    if (index == -1 && newVal.length != 0) {
-                        // si la dent est introuvable on l'ajoute au tableau
-                        this.checkedTooth.push({
-                            teeth: this.selectedTeeth,
-                            formulas: newVal // new array
-                        });
-                    } else if (index != -1) {
-                        // si la dent selectionné est trouvé dans le tableau
-                        // the array of num teeth exist
-                        this.checkedTooth[index].formulas = newVal; // add the new selected formula
+        num_tooth: {
+            handler: function(newTooth) {
+                newTooth.forEach(newTeeth => {
+                    const idx = this.selectedTooth.findIndex(
+                        e => e == newTeeth.num
+                    );
+                    if (idx == -1 && newTeeth.state) {
+                        // teeth is checked
+                        this.selectedTooth.push(newTeeth.num); // add to the list
+                    } else if (idx != -1 && !newTeeth.state) {
+                        // teeth is unchecked
+                        // remove from the list
+                        this.selectedTooth.splice(idx); // remove the unchecked teeth from the selected tooth
                     }
+                });
+            },
+            deep: true
+        },
+        selectedTooth: {
+            handler: function(newSelectedTooth) {
+                //TODO Check/Uncheck the formula(s) button(s) depending on the selected teeth
+                /**
+                 * @description When the teeth is check we get the formulas from server
+                 * get all the selected tooth and send to the server
+                 * if no teeth is check then uncheck all formulas
+                 */
+                if (newSelectedTooth.length != 0) {
+                    axios
+                        .get(
+                            `/patients/schema-dentaire/${this.schema_id}/teeth/${newSelectedTooth}/get-formulas`
+                        )
+                        .then(response => {
+                            if (response.data.length != 0) {
+                                const formulas = response.data;
+                                this.buttons.map(formula => {
+                                    formulas.map(formule => {
+                                        if (
+                                            formula.caption == formule.formulas
+                                        ) {
+                                            formula.state = true;
+                                        }
+                                    });
+                                });
+                            }
+                        });
                 } else {
-                    this.checkedTooth.push({
-                        teeth: this.selectedTeeth,
-                        formulas: newVal
+                    this.buttons.map(formula => {
+                        formula.state = false;
                     });
                 }
-                // et on envoi au server pour enregistrer et retourner ses coordonnées
-                // newVal = ['frac']; ['frac','carie']; ['frac', 'carie' , 'abs']
-                // this.sendToServer(['frac'] , 22);
-                // this.sendToServer(['frac','carie'] , 22);
-                // this.sendToServer(['frac', 'carie' , 'abs']  , 22);
-                this.sendToServer(newVal, this.selectedTeeth);
-            }
+            },
+            deep: true
         }
     },
+    created() {},
+    updated: function() {
+        // this.$nextTick(function() {
+        //     //SVG DIMENSIONS
+        //     document
+        //         .querySelector("#initial_schema_canvas")
+        //         .setAttribute(
+        //             "width",
+        //             document.querySelector("#schema-map").width
+        //         );
+        //     document
+        //         .querySelector("#initial_schema_canvas")
+        //         .setAttribute(
+        //             "height",
+        //             document.querySelector("#schema-map").height
+        //         );
+        // });
+    },
     mounted() {
-        this.onShowPopover();
+        //this.onShowPopover();
 
         // mount initial schema
         this.mountSchema();
+
+        // register keydown event to vue object
+        this.onKeyDown = this.onKeyDown.bind(this);
+        document.addEventListener("keydown", this.onKeyDown);
     }
 };
 </script>
