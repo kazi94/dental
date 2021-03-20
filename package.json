@@ -1,0 +1,45 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "watch": "npm run development -- --watch",
+        "watch-poll": "npm run watch -- --watch-poll",
+        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "prod": "npm run production",
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    },
+    "devDependencies": {
+        "axios": "^0.19.2",
+        "bootstrap": "^4.5.0",
+        "browser-sync": "^2.26.12",
+        "browser-sync-webpack-plugin": "^2.2.2",
+        "cross-env": "^5.1",
+        "jquery": "^3.5.1",
+        "laravel-mix": "^4.0.7",
+        "lodash": "^4.17.19",
+        "resolve-url-loader": "^3.1.1",
+        "sass": "^1.26.8",
+        "sass-loader": "^7.3.1",
+        "vue": "^2.6.11",
+        "vue-template-compiler": "^2.6.11"
+    },
+    "dependencies": {
+        "@svgdotjs/svg.js": "^3.0.16",
+        "bootstrap-vue": "^2.15.0",
+        "gentelella": "^1.4.0",
+        "jspdf": "^2.1.0",
+        "pkg.json": "^2.0.1",
+        "select2": "^4.0.13",
+        "v-toaster": "^1.0.3",
+        "vform": "^1.0.1",
+        "vue-datatables-net": "git+https://github.com/niiknow/vue-datatables-net.git",
+        "vue-form-generator": "^2.3.4",
+        "vue-form-wizard": "^0.8.4",
+        "vue-multiselect": "^2.1.6",
+        "vue-select": "^3.10.3",
+        "vue-select2": "^0.2.6",
+        "vue-toasted": "^1.1.28",
+        "vuejs-auto-complete": "^0.9.0"
+    }
+}
