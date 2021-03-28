@@ -5,60 +5,21 @@
  */
 
 require("./bootstrap");
-
-window.Vue = require("vue");
-
-//VueFormWizard Registration
-// import VueFormWizard from 'vue-form-wizard'
-// import 'vue-form-wizard/dist/vue-form-wizard.min.css'
-// Vue.use(VueFormWizard)
-
-//vForm Registration
-import Vue from "vue";
-
+import Vue from "vue"
+// import Vuex from 'vuex'
 import {
     Form,
     HasError,
     AlertError
-} from "vform";
-window.Form = Form;
-Vue.component(HasError.name, HasError);
-Vue.component(AlertError.name, AlertError);
-
-//V-toasrze Registration
+} from "vform"
 import Toaster from "v-toaster";
 import "v-toaster/dist/v-toaster.css";
-/// for notifications
-Vue.use(Toaster, {
-    timeout: 5000
-});
-// register the plugin on vue
 import Toasted from 'vue-toasted';
-
-const options = {
-    position: "bottom-center",
-    duration: 1000
-};
-// you can also pass options, check options reference below
-Vue.use(Toasted, options)
-// vue-select Registration
-// import vSelect from 'vue-select'
-// Vue.component('v-select', vSelect)
-// import 'vue-select/dist/vue-select.css';
-
-//Vue-MultipleSelect Regsitration
 import Multiselect from "vue-multiselect";
-Vue.component("multiselect", Multiselect);
 import {
     BootstrapVue,
     IconsPlugin
 } from "bootstrap-vue";
-
-// Install BootstrapVue
-Vue.use(BootstrapVue);
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin);
-
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "./style.css";

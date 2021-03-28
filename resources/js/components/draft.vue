@@ -57,7 +57,7 @@ export default {
             } else if (index != -1) {
                 // si la dent selectionné est trouvé dans le tableau
                 // the array of num teeth exist
-                this.checkedTooth[index].formulas = formulas; // add the new selected formula
+                ].formulas = formulas; // add the new selected formula
             }
         } else {
             this.checkedTooth.push({

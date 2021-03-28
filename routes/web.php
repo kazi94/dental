@@ -62,6 +62,7 @@ Route::middleware(['auth'])->namespace('User')->group(function () {
     Route::get('/patients/acts/get-coords/act_id={act_id}&&teeth={teeth}', 'SchemaDentaireController@getCoordsByAct');
     Route::get('/patients/schema-dentaire/get-coords/{teeth}&&formules={formulas}', 'SchemaDentaireController@getCoords');
     Route::delete('/patients/schema-dentaire/remove_tooth/{toothToRemove}', 'SchemaDentaireController@removeTooth');
+    Route::get('/patients/schema-dentaire/{id}/teeth/{teeth}/get-formulas', 'SchemaDentaireController@getFormulasOfTeeth');
     Route::resource('/patients/schema-dentaire', 'SchemaDentaireController');
 
     // Line Plan routes

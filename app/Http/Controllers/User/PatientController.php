@@ -9,6 +9,7 @@ use Illuminate\Database\Query\Builder;
 use App\Models\Patient;
 use App\Models\Pathologie;
 use App\Models\Antecedent;
+use App\Models\Schema;
 use DB;
 use Auth;
 use Storage;
@@ -105,6 +106,13 @@ class PatientController extends Controller
         });
         //associate patient with allergie
         $patient->antecedents()->sync($antecedents);
+
+        $schema = Schema::create(
+            [
+                'patient_id' => $patient->id,
+                'type'  => 'initial',
+            ]
+        );
         return redirect("patients/" . $patient->id . "/edit");
 
 
@@ -239,8 +247,8 @@ class PatientController extends Controller
             'antecedents',
             'radios',
             'pathologies',
-            'lastSchema.lastQuotation.lines.act',
-            'lastSchema.lastQuotation.lines.coord',
+            'lastSchema.lastQuotation.linesInProgress.act',
+            'lastSchema.lastQuotation.linesInProgress.coord',
             'lastSchema.lastQuotation.crediteur',
             'lastSchema.lastQuotation.lastPayment',
             'lastSchema.lastQuotation.payments',

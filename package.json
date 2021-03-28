@@ -40,6 +40,7 @@
         "vue-select": "^3.10.3",
         "vue-select2": "^0.2.6",
         "vue-toasted": "^1.1.28",
-        "vuejs-auto-complete": "^0.9.0"
+        "vuejs-auto-complete": "^0.9.0",
+        "vuex": "^3.6.2"
     }
 }

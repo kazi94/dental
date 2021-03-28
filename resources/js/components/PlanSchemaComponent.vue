@@ -576,6 +576,17 @@ export default {
                 .then(response => {
                     this.$toaster.success("Versement fait !");
                     this.$bvModal.hide("cach-modal");
+                    var today = new Date();
+                    var dd = String(today.getDate()).padStart(2, "0");
+                    var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = yyyy + "-" + mm + "-" + dd;
+                    let payment = {
+                        total_paid: this.total_paid,
+                        paid_at: today
+                    };
+                    this.$emit("payment-done", payment);
                 })
                 .catch(exception => {
                     this.$toaster.error(exception);
@@ -793,6 +804,9 @@ export default {
 
             this.total = total;
         },
+        /**
+        
+        */
         handlePriceOnKeyUpEnterEvent($event, data) {
             const line_id = data.item.id;
             const newPrice = parseInt($event.target.value);
@@ -886,7 +900,8 @@ export default {
             this.isActVisible = true;
 
             // Display the Dental Schema, with the tooth updated
-            let lines = this.patient.last_schema.last_quotation.lines;
+            let lines = this.patient.last_schema.last_quotation
+                .lines_in_progress;
             // create shapes
             this.createShapes(lines);
         } else Object.assign(this.$data, initialState());

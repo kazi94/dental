@@ -41,25 +41,30 @@
                         ></b-form-checkbox-group>
                     </b-form-group>
 
-                    <!-- <b-button
-                        class="btn btn-primary"
-                        @click="modifyPrescription"
+                    <b-button
+                        variant="primary"
+                        squared
+                        size="sm"
                         href="javascript:void(0);"
-                        v-b-modal.modal-update-prescription
-                        >
-                    Modifier</b-button>
+                        v-b-modal.modal-add-new-medic
+                    >
+                        Ajouter un médicament
+                    </b-button>
                     <b-modal
-                        id="modal-update-prescription"
-                        title="Modifier l'ordonnance"
+                        id="modal-add-new-medic"
+                        title="Ajouter médicament"
                         no-fade
                         button-size="sm"
-                        ok-title="Modifier"
+                        ok-title="Ajouter"
                         cancel-title="Annuler"
+                        @ok="addNewMedic"
+                        @hidden="resetModal"
                     >
-                    <b-form>
-                        <b-input
-                            v-for=""
-                        ></b-input>-->
+                        <b-form-input
+                            v-model="newMedic"
+                            placeholder="Renseigner le médicament"
+                        ></b-form-input>
+                    </b-modal>
                 </b-form>
             </div>
             <template v-slot:modal-footer="{}">

@@ -16,7 +16,7 @@ class Devis extends Model
 
 	public function linesInProgress()
 	{
-		return $this->hasMany('App\Models\LigneDevis', 'devis_id');
+		return $this->hasMany('App\Models\LigneDevis', 'devis_id')->whereState('En cours');
 	}
 
 	public function payments()
@@ -43,10 +43,7 @@ class Devis extends Model
 			->latest('paid_at')
 			->limit(1);
 
-		return $this->hasOne('App\Models\Versement')
-			->select('devis_id', 'paid_at')
-			->latest('paid_at')
-			->limit(1);
+		return $result;
 	}
 
 	public function getDateDevisAttribute()

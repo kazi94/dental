@@ -16,8 +16,11 @@
                         >
                     </li>
                     <li class="nav-item">
-                        <a data-toggle="tab" href="#tab-eg1-0" class="nav-link "
-                            >Devis</a
+                        <a
+                            data-toggle="tab"
+                            href="#tab-eg1-0"
+                            class="nav-link "
+                            >{{ type }}</a
                         >
                     </li>
                     <li class="nav-item">
@@ -126,12 +129,18 @@ export default {
         getPrescription(prescription) {
             this.$refs.prescription_tab.getPrescription(prescription);
         },
+        updatePayment(payment) {}
 
         // getImage(url) {
         //     this.isRadioActive = true; // show Radio tab
         //     this.isInitialActive = false; // hide initial tab
         //     this.$refs.radiographie_tab.addToGallery(url);
         // }
+    },
+    computed: {
+        type() {
+            return this.patient.last_schema ? "Plan" : "Devis";
+        }
     },
     mounted() {}
 };

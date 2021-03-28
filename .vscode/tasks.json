@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build",
+			"path": "public/plugins/lightgallery.js/",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build - public/plugins/lightgallery.js",
+			"detail": "npm run copyfiles && npm run css && npm run build-debug && npm run build-min"
+		}
+	]
+}
