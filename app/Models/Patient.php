@@ -40,4 +40,9 @@ class Patient extends Model
 	{
 		return $this->hasMany('App\Models\Prescription');
 	}
+
+	public function appointements()
+	{
+		return $this->hasMany('App\Models\Appointement')->orderBy('start_date', 'asc');
+	}
 }

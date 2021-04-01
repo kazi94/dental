@@ -10,6 +10,7 @@ class LigneDevis extends Model
 
     protected $fillable = ['num_dent', 'price', 'acte_id', 'devis_id', 'state', 'formule_id'];
 
+    protected $appends = ['date_done'];
 
     public function act()
     {
@@ -19,5 +20,10 @@ class LigneDevis extends Model
     public function coord()
     {
         return $this->hasOne('App\Models\Formule', 'id', 'formule_id');
+    }
+
+    public function getDateDoneAttribute()
+    {
+        return date("d/m/Y", strtotime($this->updated_at));
     }
 }

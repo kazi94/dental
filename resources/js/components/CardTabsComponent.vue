@@ -65,7 +65,6 @@
                     <div class="tab-pane  show" id="tab-eg1-0" role="tabpanel">
                         <plan-schema-component
                             :patient="patient"
-                            v-if="showschema"
                             @payment-done="updatePayment"
                         ></plan-schema-component>
                     </div>

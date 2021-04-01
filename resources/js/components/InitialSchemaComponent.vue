@@ -32,14 +32,6 @@
                 </b-button>
 
                 <div style="position : relative">
-                    <img
-                        src="/img/schema.png"
-                        id="schema-map"
-                        ref="img"
-                        width="100%"
-                        usemap="#image-map"
-                        
-                    />
                     <svg
                         id="initial_schema_canvas"
                         style="position: absolute; 
@@ -49,7 +41,17 @@
                         xmlns="http://www.w3.org/2000/svg"
                         version="1.1"
                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="775"
+                        height="314"
                         ref="svj"
+                    />
+                    <img
+                        src="/img/schema.png"
+                        id="schema-map"
+                        ref="img"
+                        width="100%"
+                        usemap="#image-map"
+                        style="width : 790px; height : 319px;"
                     />
                 </div>
 
@@ -218,13 +220,13 @@ export default {
             axios
                 .post("/patients/schema-dentaire", form)
                 .then(response => {
-                    var coords = response.data.coords;
+                    var traitements = response.data.coords;
                     // Set Schema ID
                     //this.schema_id = response.data.schema_id;
 
                     // Create shapes
-                    this.selectedTooth.forEach(teeth => {
-                        this.createShapes(coords, teeth);
+                    traitements.forEach(traitement => {
+                        this.createShapes(traitement, traitement.teeth);
                     });
                 })
                 .catch(exception => {
@@ -243,47 +245,29 @@ export default {
             axios
                 .delete("/patients/schema-dentaire/" + this.schema_id, {
                     data: {
-                        formula : formula,
-                        tooth : JSON.stringify(this.selectedTooth)
+                        formula: formula,
+                        tooth: JSON.stringify(this.selectedTooth)
                     }
                 })
                 .then(response => {
                     // Remove the shapes of formula and selected tooth
-                    var shapes = document.getElementById("initial_schema_canvas").childNodes;
+                    var shapes = document.getElementById(
+                        "initial_schema_canvas"
+                    ).childNodes;
                     this.selectedTooth.forEach(teeth => {
-                    for (let index = 0; index < shapes.length; index++) {
-                        const points = shapes[index].getAttribute("teeth");
-                        const title = shapes[index].getAttribute("title");
-                        
-                            if (points == teeth && title == formula){
+                        for (let index = 0; index < shapes.length; index++) {
+                            const points = shapes[index].getAttribute("teeth");
+                            const title = shapes[index].getAttribute("title");
+
+                            if (points == teeth && title == formula) {
                                 // remove polygon node
                                 shapes[index].remove();
-                                if (title == "abs")
-                                    index--;
+                                if (title == "abs") index--;
                             }
-                    }
+                        }
                     });
                 })
                 .catch(exception => {});
-        },
-        /*
-         * Retourner les coords pour une dent et son ensemble de formules
-         */
-        getCoords(formulas, teeth) {
-            axios
-                .get(
-                    "/patients/schema-dentaire/get-coords/" +
-                        teeth +
-                        "&&formules=" +
-                        formulas
-                )
-                .then(response => {
-                    // Create shapes
-                    this.createShapes(response.data, teeth);
-                })
-                .catch(exception => {
-                    this.$toaster.error(exception);
-                });
         },
         /**
          * Remove Shapes of the selected teeth
@@ -310,46 +294,45 @@ export default {
             return formData;
         },
 
-        createShapes(coords = [], teeth) {
+        createShapes(c, teeth) {
             let draw = SVG("#initial_schema_canvas");
             let polygonID;
-            coords.forEach(c => {
-                let convertTo = this.convertCoord(c.coord);
-                if (c.formulas == "frac-cour" || c.formulas == "frac-rac")
-                    polygonID = draw
-                        .polyline(convertTo.toString())
-                        .fill("none")
-                        .stroke({
-                            color: "black",
-                            width: 1,
-                            linecap: "round",
-                            linejoin: "round"
-                        });
-                else if (c.formulas == "kyste" || c.formulas == "abc") {
-                    polygonID = draw
-                        .circle(convertTo[2] * 2)
-                        .fill(c.color)
-                        .move(convertTo[0] - 10, convertTo[1] - 10);
-                } else if (c.formulas == "abs" || c.formulas == "rac-resid") {
-                    polygonID = draw
-                        .rect(
-                            convertTo[2] - convertTo[0],
-                            convertTo[3] - convertTo[1]
-                        )
-                        .fill(c.color)
-                        .move(convertTo[0], convertTo[1]);
-                } else {
-                    polygonID = draw
-                        .polygon(convertTo.toString())
-                        .fill(c.color)
-                        .stroke({ width: 1 });
-                }
 
-                document.getElementById(polygonID).setAttribute("teeth", teeth);
-                document
-                    .getElementById(polygonID)
-                    .setAttribute("title", c.formulas);
-            });
+            let convertTo = this.convertCoord(c.coord);
+            if (c.formulas == "frac-cour" || c.formulas == "frac-rac")
+                polygonID = draw
+                    .polyline(convertTo.toString())
+                    .fill("none")
+                    .stroke({
+                        color: "black",
+                        width: 1,
+                        linecap: "round",
+                        linejoin: "round"
+                    });
+            else if (c.formulas == "kyste" || c.formulas == "abc") {
+                polygonID = draw
+                    .circle(convertTo[2] * 2)
+                    .fill(c.color)
+                    .move(convertTo[0] - 10, convertTo[1] - 10);
+            } else if (c.formulas == "abs" || c.formulas == "rac-resid") {
+                polygonID = draw
+                    .rect(
+                        convertTo[2] - convertTo[0],
+                        convertTo[3] - convertTo[1]
+                    )
+                    .fill(c.color)
+                    .move(convertTo[0], convertTo[1]);
+            } else {
+                polygonID = draw
+                    .polygon(convertTo.toString())
+                    .fill(c.color)
+                    .stroke({ width: 1 });
+            }
+
+            document.getElementById(polygonID).setAttribute("teeth", teeth);
+            document
+                .getElementById(polygonID)
+                .setAttribute("title", c.formulas);
         },
         /**
          * @param String coord
@@ -405,8 +388,8 @@ export default {
         mountSchema() {
             // document.querySelector("#schema-map").width = document.querySelector("#schema-map").parentElement('row').offsetWidth;
             // document.querySelector("#schema-map").height = document.querySelector("#schema-map").parentElement('row').offsetHeight;
-            
-// set formules in schema
+
+            // set formules in schema
             if (
                 this.patient.initial_schema != undefined &&
                 this.patient.initial_schema.traitements != undefined
@@ -466,23 +449,48 @@ export default {
          * @param
          */
         onKeyDown(e) {
+            var state = true;
             switch (e.keyCode) {
                 case 65: // 'a' key
                     // Handle for the keyboard shortcut of 'Absente' teeth
-                    this.handleSelectedFormulas(["abs"]);
+                    this.buttons.forEach(formulaBtn => {
+                        if (formulaBtn.caption == "abs") {
+                            state = formulaBtn.state;
+                            formulaBtn.state = !state;
+                        }
+                    });
+                    this.sendToServer("abs", !state);
 
                     break;
                 case 79: // 'o' key
                     // Handle for the keyboard shortcut of 'Obturer' teeth
-                    this.handleSelectedFormulas(["obt"]);
+                    this.buttons.forEach(formulaBtn => {
+                        if (formulaBtn.caption == "obt") {
+                            state = formulaBtn.state;
+                            formulaBtn.state = !state;
+                        }
+                    });
+                    this.sendToServer("obt", !state);
                     break;
                 case 67: // 'c' key
                     // Handle for the keyboard shortcut of 'Couronne' teeth
-                    this.handleSelectedFormulas("frac-cour");
+                    this.buttons.forEach(formulaBtn => {
+                        if (formulaBtn.caption == "frac-cour") {
+                            state = formulaBtn.state;
+                            formulaBtn.state = !state;
+                        }
+                    });
+                    this.sendToServer("frac-cour", !state);
                     break;
                 case 82: // 'r' key
                     // Handle for the keyboard shortcut of 'Racine' teeth
-                    this.handleSelectedFormulas("frac-rac");
+                    this.buttons.forEach(formulaBtn => {
+                        if (formulaBtn.caption == "frac-rac") {
+                            state = formulaBtn.state;
+                            formulaBtn.state = !state;
+                        }
+                    });
+                    this.sendToServer("frac-rac", !state);
                     break;
             }
             //TODO Handle keyboards tape when it pressed 2nd time
@@ -547,18 +555,24 @@ export default {
             deep: true
         }
     },
-    created()
-    {
-
+    created() {},
+    updated: function() {
+        // this.$nextTick(function() {
+        //     //SVG DIMENSIONS
+        //     document
+        //         .querySelector("#initial_schema_canvas")
+        //         .setAttribute(
+        //             "width",
+        //             document.querySelector("#schema-map").width
+        //         );
+        //     document
+        //         .querySelector("#initial_schema_canvas")
+        //         .setAttribute(
+        //             "height",
+        //             document.querySelector("#schema-map").height
+        //         );
+        // });
     },
-    updated: function () {
-        this.$nextTick(function () {
-                    //SVG DIMENSIONS
-            document.querySelector("#initial_schema_canvas").setAttribute('width' , document.querySelector("#schema-map").width);
-            document.querySelector("#initial_schema_canvas").setAttribute('height' , document.querySelector("#schema-map").height);
-            
-  });
-},
     mounted() {
         //this.onShowPopover();
 
@@ -568,7 +582,6 @@ export default {
         // register keydown event to vue object
         this.onKeyDown = this.onKeyDown.bind(this);
         document.addEventListener("keydown", this.onKeyDown);
-
     }
 };
 </script>

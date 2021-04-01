@@ -34,7 +34,9 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
 Route::middleware(['auth'])->namespace('User')->group(function () {
 
     //*******************APPOINTEMENT MODULE*******************************
-    Route::resource('/patient/rendez-vous', 'AppointementController', ['names' => 'appointement']);
+
+    Route::resource('/rendez-vous', 'AppointementController', ['names' => 'appointement']);
+
     // Route::post('/appointement/storePatient', 'AppointementController@storePatient')->middleware('auth');
     //*******************END APPOINTEMENT MODULE*******************************
 

@@ -110,6 +110,52 @@
                     </div> -->
                 <!-- End State of Quotation -->
 
+                <!-- "Actes fait" Section -->
+                <b-button
+                    size="sm"
+                    variant="success"
+                    squared
+                    :hidden="btnDone"
+                    class="pull-right mb-1"
+                    v-b-modal.modal-acts-done
+                >
+                    <b-icon
+                        icon="check-circle-fill"
+                        aria-hidden="true"
+                    ></b-icon>
+                    Actes fait
+                </b-button>
+                <!-- Acts done Model -->
+                <b-modal
+                    id="modal-acts-done"
+                    title="Liste des Actes fait"
+                    size="lg"
+                    ok-title="Fermer"
+                    :ok-only="onlyOk"
+                    header-bg-variant="success"
+                    header-text-variant="white"
+                >
+                    <b-table
+                        bordered
+                        responsive="sm"
+                        small
+                        head-variant="light"
+                        :items="actsDoneItems"
+                        :fields="actsDoneFields"
+                    >
+                        <template v-slot:cell(index)="data">
+                            <!-- data = acceptedQuotation -->
+                            {{ data.index + 1 }}
+                        </template>
+                        <template v-slot:cell(act)="data">{{
+                            data.value.nom
+                        }}</template>
+                    </b-table>
+                </b-modal>
+                <!-- END Acts done Model -->
+
+                <!-- "End Actes fait" Section -->
+
                 <!-- PLan table -->
                 <div>
                     <b-table
@@ -265,7 +311,6 @@
                 >
             </div>
         </div>
-        <b-row> </b-row>
         <div>
             <b-modal
                 id="cach-modal"
@@ -306,10 +351,18 @@
 import SchemaComponent from "./SchemaComponent.vue";
 import Category from "./plan-schema/Category.vue";
 import QuotationTable from "./plan-schema/QuotationTable.vue";
-import { SVG } from "@svgdotjs/svg.js";
+
 // outside of the component:
 function initialState() {
     return {
+        onlyOk: true,
+        actsDoneFields: [
+            { key: "index", sortable: true, label: "#" },
+            { key: "num_dent", sortable: true, label: "Dent" },
+            { key: "act", sortable: true, label: "Acte" },
+            { key: "date_done", sortable: true, label: "Date de réalisation" }
+        ],
+        actsDoneItems: [],
         tabs: [0],
         tabCounter: 1,
         quotStates: [
@@ -352,7 +405,8 @@ function initialState() {
         sortDesc: false,
         edit: false,
         tabIndex: 0,
-        copyQuotation: null
+        copyQuotation: null,
+        btnDone: true
     };
 }
 
@@ -420,7 +474,7 @@ export default {
                     //this.resetSchema();
 
                     //* create new shapes
-                    this.createShapes(response.data);
+                    this.$refs.schema.createShapes(response.data);
                     response.data.forEach(row => {
                         this.acceptedQuotation.push(row);
                     });
@@ -503,7 +557,10 @@ export default {
                         teeth
                 )
                 .then(response => {
-                    this.createShapes(response.data, currentQuotation);
+                    this.$refs.schema.createShapes(
+                        response.data,
+                        currentQuotation
+                    );
                 });
         },
         resetSchema() {
@@ -685,60 +742,9 @@ export default {
             this.total_accept = 0;
 
             //* create shapes
-            this.createShapes(response.data);
+            this.$refs.schema.createShapes(response.data);
         },
-        createShapes(coords = [], currentQuotation = "") {
-            let draw = SVG("#plan_schema_canvas");
-            let polygonID;
-            coords.forEach(c => {
-                // get the coords convert adapat to actual media
-                let convertTo = this.convertCoord(c.coord.coord); // array
 
-                polygonID = draw
-                    .polygon(convertTo.toString())
-                    .fill(c.coord.color)
-                    .stroke({ width: 1 });
-
-                document
-                    .getElementById(polygonID)
-                    .setAttribute("teeth", this.selectedTeeth);
-                document
-                    .getElementById(polygonID)
-                    .setAttribute("title", c.coord.formulas);
-
-                if (currentQuotation != "") {
-                    document
-                        .getElementById(polygonID)
-                        .setAttribute("devis", currentQuotation);
-                }
-            });
-        },
-        convertCoord(coord) {
-            const orginalWidth = 790;
-            const originalHeight = 319;
-            // '358,15,378,62,383,105,388,134,387,152,355,154,342,143,348,113,352,66,354,35'
-            let imgWidth = document.querySelector("#plan-schema-map").width;
-            let imgHeight = document.querySelector("#plan-schema-map").height;
-            this.$refs.schema.setSvg(imgWidth, imgHeight);
-            document
-                .querySelector("#plan_schema_canvas")
-                .setAttribute("width", imgWidth);
-            document
-                .querySelector("#plan_schema_canvas")
-                .setAttribute("height", imgHeight);
-            // let mediaWidth = window.innerWidth;
-            let ratioX = orginalWidth / imgWidth;
-            let ratioY = originalHeight / imgHeight;
-
-            // change value of coords coordinate with the size of the actual media : laptop,tablete,mobile
-            let val = coord
-                .split(",")
-                .map((c, i) =>
-                    i % 2 == 0 ? parseInt(c / ratioX) : parseInt(c / ratioY)
-                );
-
-            return val;
-        },
         handleState(row) {
             // update the state of the act
             if (row.state == "En cours") {
@@ -771,7 +777,6 @@ export default {
                 this.validatePayements();
             else this.validateCach();
         },
-
         /**
          * Remove all shapes from plan schema
          * @return void
@@ -804,9 +809,6 @@ export default {
 
             this.total = total;
         },
-        /**
-        
-        */
         handlePriceOnKeyUpEnterEvent($event, data) {
             const line_id = data.item.id;
             const newPrice = parseInt($event.target.value);
@@ -902,8 +904,15 @@ export default {
             // Display the Dental Schema, with the tooth updated
             let lines = this.patient.last_schema.last_quotation
                 .lines_in_progress;
+            if (
+                this.patient.last_schema.last_quotation.lines_done != null &&
+                this.patient.last_schema.last_quotation.lines_done.length != 0
+            ) {
+                this.btnDone = false;
+                this.actsDoneItems = this.patient.last_schema.last_quotation.lines_done;
+            }
             // create shapes
-            this.createShapes(lines);
+            this.$refs.schema.coords = lines;
         } else Object.assign(this.$data, initialState());
     }
 };

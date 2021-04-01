@@ -244,10 +244,13 @@ class PatientController extends Controller
     {
         return Patient::with(
             'prescriptions',
+            'appointements.assignedTo',
+            'appointements.category',
             'antecedents',
             'radios',
             'pathologies',
             'lastSchema.lastQuotation.linesInProgress.act',
+            'lastSchema.lastQuotation.linesDone.act',
             'lastSchema.lastQuotation.linesInProgress.coord',
             'lastSchema.lastQuotation.crediteur',
             'lastSchema.lastQuotation.lastPayment',

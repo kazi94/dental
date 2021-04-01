@@ -18,7 +18,10 @@ class Devis extends Model
 	{
 		return $this->hasMany('App\Models\LigneDevis', 'devis_id')->whereState('En cours');
 	}
-
+	public function linesDone()
+	{
+		return $this->hasMany('App\Models\LigneDevis', 'devis_id')->whereState('fait');
+	}
 	public function payments()
 	{
 		return $this->hasMany('App\Models\Versement', 'devis_id', 'id');
