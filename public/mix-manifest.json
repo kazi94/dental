@@ -1,5 +1,7 @@
 {
     "/js/admin_app.js": "/js/admin_app.js",
     "/js/app.js": "/js/app.js",
-    "/js/liste-patients.js": "/js/liste-patients.js"
+    "/js/liste-patients.js": "/js/liste-patients.js",
+    "/js/liste-payments.js": "/js/liste-payments.js",
+    "/js/liste-prescriptions.js": "/js/liste-prescriptions.js"
 }

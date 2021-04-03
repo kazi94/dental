@@ -11,7 +11,11 @@ window.Vue = require("vue");
 //vForm Registration
 import Vue from "vue";
 
-import { Form, HasError, AlertError } from "vform";
+import {
+    Form,
+    HasError,
+    AlertError
+} from "vform";
 window.Form = Form;
 Vue.component(HasError.name, HasError);
 Vue.component(AlertError.name, AlertError);
@@ -20,13 +24,19 @@ Vue.component(AlertError.name, AlertError);
 import Toaster from "v-toaster";
 import "v-toaster/dist/v-toaster.css";
 /// for notifications
-Vue.use(Toaster, { timeout: 5000 });
-import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
+Vue.use(Toaster, {
+    timeout: 5000
+});
+import {
+    BootstrapVue,
+    IconsPlugin
+} from "bootstrap-vue";
 
 // Install BootstrapVue
 Vue.use(BootstrapVue);
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin);
+
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
@@ -46,6 +56,10 @@ Vue.component(
     require("./components/settings/OrdonnanceComponent.vue").default
 );
 Vue.component(
+    "category-component",
+    require("./components/settings/CategoryComponent.vue").default
+);
+Vue.component(
     "act-component",
     require("./components/settings/ActComponent.vue").default
 );
@@ -61,7 +75,5 @@ const app = new Vue({
 
     data: {},
     methods: {},
-    mounted() {
-        // on mounted page, display all patients
-    }
+    mounted() {}
 });

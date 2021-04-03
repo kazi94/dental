@@ -223,8 +223,13 @@ export default {
             this.$emit("selectedTooth", this.selectedTooth);
         },
         onImagePlanLoad(img) {
+            if (
+                 document.querySelector("#plan_schema_canvas").childNodes
+                     .length == 0
+             )
             this.createShapes(this.coords);
         },
+
         createShapes(coords = [], currentQuotation = "") {
             let draw = SVG("#plan_schema_canvas");
             let polygonID;
@@ -278,7 +283,9 @@ export default {
             return val;
         }
     },
-    mounted() {}
+    mounted() {
+        //this.createShapes(this.coords);
+    }
 };
 </script>
 

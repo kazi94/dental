@@ -25,7 +25,26 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import "./style.css";
 import "./custom.css";
 import VdtnetTable from "vue-datatables-net";
+import VueHtmlToPaper from 'vue-html-to-paper';
 
+const options1 = {
+    name: '_blank',
+    specs: [
+        'fullscreen=yes',
+        'titlebar=yes',
+        'scrollbars=yes',
+
+    ],
+    styles: [
+        '/plugins/bootstrap-4.4.1-dist/css/bootstrap.min.css'
+
+    ]
+}
+
+Vue.use(VueHtmlToPaper, options1);
+
+// or, using the defaults with no stylesheet
+// Vue.use(VueHtmlToPaper);
 window.Vue = require("vue");
 window.Form = Form;
 

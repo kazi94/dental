@@ -26,16 +26,21 @@ class Devis extends Model
 	{
 		return $this->hasMany('App\Models\Versement', 'devis_id', 'id');
 	}
-
+	/**
+	 * Return the Schema where the quote is created for
+	 *
+	 * @return App\Models\Schema
+	 */
+	public function schema()
+	{
+		return $this->belongsTo('App\Models\Schema');
+	}
 
 	public function crediteur()
 	{
 		return $this->hasOne('App\Models\Versement', 'devis_id', 'id')
 			->select('devis_id', DB::raw('SUM(total_paid) as crediteur'))
 			->groupBy('devis_id');
-		// return $this->hasOne('App\Models\Bonus_Item','customer_bones_id')
-		//     ->select('customer_bones_id',DB::raw('sum(bonus_quantity) as bonusQuantity'))
-		//     ->groupBy('customer_bones_id');
 	}
 
 	public function lastPayment()

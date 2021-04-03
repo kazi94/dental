@@ -24,6 +24,8 @@ class PrescriptionController extends Controller
 
     public function index()
     {
+
+        return view('prescriptions.show');
     }
 
     /**
@@ -54,7 +56,7 @@ class PrescriptionController extends Controller
         // $this->addLignesPrescription($prescription->id, $request->medicaments);
 
         return response()->json([
-            'prescription' => $prescription,
+            'prescription' => $prescription->load('prescribedTo'),
             'success' => 'Prescription ajoutée avec succés!'
         ]);
     }

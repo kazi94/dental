@@ -26,4 +26,13 @@ class Schema extends Model
 			//->withPivot('teeth')
 			->withTimestamps();
 	}
+	/**
+	 * Return the Patient where the schema is created for
+	 *
+	 * @return App\Models\Patient
+	 */
+	public function createdTo()
+	{
+		return $this->belongsTo('App\Models\Patient', 'patient_id', 'id');
+	}
 }

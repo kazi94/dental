@@ -83,16 +83,19 @@
                             </a>
                         </li>
                         <li class="btn-group nav-item" v-show="showPrescriptions">
-                            <prescription :patient="{{ $patient->toJson() }}" @get-prescription="getPrescription">
+                            <prescription :patient="{{ $patient->toJson() }}"
+                                :user="{{ Auth::user()->load('cabinet') }}" @get-prescription="getPrescription">
                             </prescription>
                         </li>
                         <li class="btn-group nav-item" v-show="showRadios">
 
-                            <radiographie-button :patient="{{ $patient->toJson() }}" @get-image="getImage">
+                            <radiographie-button :patient="{{ $patient->toJson() }}" @get-image="getImage"
+                                :user="{{ Auth::user() }}">
                             </radiographie-button>
                         </li>
                         <li class="btn-group nav-item" v-if="showRdv">
-                            <rendez-vous-btn :patient="{{ $patient->toJson() }}"></rendez-vous-btn>
+                            <rendez-vous-btn :patient="{{ $patient->toJson() }}" :user="{{ Auth::user() }}">
+                            </rendez-vous-btn>
                         </li>
                     </ul>
                 </div>
@@ -237,7 +240,7 @@
 
             <!-- CONTENT -->
             <div class="app-main__outer">
-                <div class="app-main__inner">
+                <div class="app-main__inner" style="padding : 15px 15px 0">
 
                     <!-- 
                             <div class="app-page-title">
@@ -269,15 +272,13 @@
                         </div>
 
                         <div class="col-md-12">
-                            <!-- <informations-component 
-                                :patient="patient"
-                                :showinfos="showInfos"
-                                v-on:updated-patient="regeneratePatient"
-                                {{-- :pathologies="{{ $pathologies->toJson() }}" --}}
-                                {{-- :antecedents="{{ $antecedents->toJson() }}" --}}
-                                ></informations-component>     -->
+                            <informations-component :patient="{{ $patient }}" :showinfos="showInfos"
+                                v-on:updated-patient="regeneratePatient" :pathologies="{{ $pats->toJson() }}"
+                                :antecedents="{{ $ant->toJson() }}">
+                            </informations-component>
 
-                            <card-tabs-component :patient="{{ $patient }}" :showschema="showSchema" ref="tabs">
+                            <card-tabs-component :patient="{{ $patient }}" :user="{{ Auth::user() }}"
+                                :showschema="showSchema" ref="tabs">
                             </card-tabs-component>
                         </div>
                     </div>

@@ -22,17 +22,38 @@
         </div>
         <div class="card-body p-1 pl-3">
             <div class="row" v-if="showinfos">
-                <div class="col-sm-8">
-                    <p>
-                        <strong>Patient :</strong>
-                        <span>{{ patient.nom }} {{ patient.prenom }}</span>
-                    </p>
-                    <dd></dd>
-                    <p>
+                <div class="col-sm-4">
+                    <dd v-if="patient.age">
+                        <strong>Age :</strong>
+                        <span>{{ patient.age }}
+                        </span>
+                    </dd>
+                    <dd v-if="patient.adresse">
+                        <strong>Adresse :</strong>
+                        <span>{{ patient.adresse }}
+                        </span>
+                    </dd>                    
+                    <dd v-if="patient.num_tel">
                         <strong>Téléphone :</strong>
                         <span>{{ patient.num_tel }}</span>
-                    </p>
+                    </dd>
                 </div>
+                <div class="col-sm-4">
+                    <dd v-if="patient.profession">
+                        <strong>Profession :</strong>
+                        <span>{{ patient.profession }}
+                        </span>
+                    </dd>
+                    <dd v-if="patient.fumeur">
+                        <strong>Fumeur :</strong>
+                        <span>{{ patient.fumeur }}
+                        </span>
+                    </dd>                    
+                    <dd v-if="patient.medecin_externe">
+                        <strong>Chirurgien référent :</strong>
+                        <span>{{ patient.medecin_externe }}</span>
+                    </dd>
+                </div>                
                 <div class="col-sm-4">
                     <dt
                         class="text-success"

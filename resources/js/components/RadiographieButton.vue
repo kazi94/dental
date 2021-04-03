@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="user.role_id == 1 || user.role_id == 2">
         <input
             id="radioFile"
             type="file"
@@ -24,7 +24,7 @@
 
 <script>
 export default {
-    props: ["patient"],
+    props: ["patient", "user"],
     data() {
         return {};
     },

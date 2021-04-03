@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="user.role_id == 1 || user.role_id == 2">
         <a
             href="javascript:void(0);"
             v-b-modal.modal-prescription
@@ -76,24 +76,78 @@
                     @click="onReset()"
                     >Annuler</b-button
                 >
-                <b-button size="sm" squared variant="info" @click="onSubmit()">
+                <b-button
+                    size="sm"
+                    squared
+                    variant="success"
+                    @click="onSubmit()"
+                >
+                    Validez
                     <b-icon
-                        icon="cloud-download"
+                        icon="check-circle-fill"
                         variant="white"
                         class="mr-1"
-                    ></b-icon
-                    >Imprimer
+                    ></b-icon>
                 </b-button>
             </template>
         </b-modal>
+
+        <!-- Print Model -->
+        <b-container fluid id="printMe" style="display : none">
+            <b-row align-h="center">
+                <b-img
+                    width="150"
+                    height="150"
+                    :src="user.cabinet.logo"
+                    rounded="circle"
+                    alt="Logo cabinet dentaire"
+                ></b-img>
+            </b-row>
+            <b-row class=" mb-2 mt-1 ml-2">
+                <b-col>
+                    <p>
+                        <strong>Patient :</strong> {{ patient.nom }}
+                        {{ patient.prenom }}
+                    </p>
+                    <p><strong>Age :</strong> {{ patient.age }} ans</p>
+                    <p><strong>Téléphone :</strong> {{ patient.num_tel }}</p>
+                </b-col>
+                <b-col class="border-left">
+                    <p>
+                        <strong>Chirurgien :</strong> Dr.{{ user.name }}
+                        {{ user.prenom }}
+                    </p>
+                </b-col>
+                <b-col class="border-left">
+                    <p><strong>Le :</strong> {{ today }}</p>
+                </b-col>
+            </b-row>
+
+            <div>
+                <h3 class="ml-2">Liste des médicaments</h3>
+                <div class="d-block">
+                    <ul v-for="med in selectedMeds">
+                        <li>{{ med }}</li>
+                    </ul>
+                </div>
+            </div>
+        </b-container>
+        <!-- END Print Model -->
     </div>
 </template>
 
 <script>
-import { jsPDF } from "jspdf";
+// import { jsPDF } from "jspdf";
 
 export default {
-    props: ["patient"],
+    props: {
+        patient: {
+            type: Object
+        },
+        user: {
+            type: Object
+        }
+    },
     components: {},
     data() {
         return {
@@ -101,7 +155,9 @@ export default {
             selectedMeds: null,
             medics: [],
             ordonnances_type: [],
-            newMedic: null
+            newMedic: null,
+            createdPrescription: "",
+            today: ""
         };
     },
     methods: {
@@ -127,9 +183,10 @@ export default {
             if (this.selectedMeds.length != 0) {
                 // save prescription to db
                 this.savePrescription();
-                // close the modal
-                this.onReset();
             } else alert("Veuillez sélectionner un médicament");
+        },
+        printPrescription() {
+            this.$htmlToPaper("printMe");
         },
         savePrescription() {
             let form = new FormData();
@@ -140,20 +197,13 @@ export default {
             axios
                 .post("/patients/prescription", form)
                 .then(response => {
-                    // create pdf file
-                    const doc = new jsPDF();
-                    let y = 10;
-                    this.selectedMeds.forEach((val, index) => {
-                        doc.text(index + 1 + "- " + val, 10, y); // 2nd args : x position; 3rd args : y position
-                        y += 10;
-                    });
-                    console.log(
-                        "Prescription.vue : " +
-                            JSON.stringify(response.data.prescription)
-                    );
+                    this.createdPrescription = response.data.prescription;
+                    if (confirm("voulez vous imprimer la prescription ?")) {
+                        this.printPrescription();
+                    }
+                    // close the modal
+                    this.onReset();
                     vm.$emit("get-prescription", response.data.prescription);
-                    // download pdf file
-                    doc.save("ordonnance.pdf");
                     Vue.toasted.success("Ordonnance ajoutée !");
                 })
                 .catch(exception => {
@@ -180,16 +230,26 @@ export default {
         selected: {
             handler: function(newV) {
                 let vm = this;
+                console.log(newV);
                 let selectedOrdonnance = newV; // Ex : 4 or 5 , 6 , {id}
                 vm.ordonnances_type.forEach(function(value, index) {
-                    if (value.value === newV) vm.medics.push(value.medicaments); // show the list of medocs
+                    if (value.value === newV) {
+                        value.medicaments.forEach(med => {
+                            vm.medics.push(med); // show the list of medocs
+                        });
+                    }
                 });
                 vm.selectedMeds = vm.medics; // check all medics
             }
         }
     },
     mounted() {
-        console.log("Prescriptions Component mounted");
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, "0");
+        var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+        var yyyy = today.getFullYear();
+
+        this.today = mm + "/" + dd + "/" + yyyy;
         this.fetchOrdonnancesType();
     }
 };

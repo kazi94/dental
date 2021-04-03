@@ -34,12 +34,14 @@
         <div class="app-sidebar__inner">
             <ul class="vertical-nav-menu">
                 <li class="app-sidebar__heading">APPLICATIONS</li>
-                <li>
-                    <a href="{{ route('user.index') }}" {{-- class="mm-active" --}}>
-                        <i class="metismenu-icon pe-7s-home"></i>
-                        Mon cabinet
-                    </a>
-                </li>
+                @canany(['isAdmin', 'isDentist'], Auth::user())
+                    <li>
+                        <a href="{{ route('user.index') }}" {{-- class="mm-active" --}}>
+                            <i class="metismenu-icon pe-7s-home"></i>
+                            Mon cabinet
+                        </a>
+                    </li>
+                @endcanany
                 <li>
                     <a href="{{ route('patients.index') }}" class="">
                         <i class="metismenu-icon pe-7s-id"></i>
@@ -52,37 +54,43 @@
                         Mes honoraires
                     </a>
                 </li>
-                <li>
-                    <a href="{{ route('act.index') }}" class="">
-                        <i class="metismenu-icon pe-7s-note2"></i>
-                        Mes ordonnances
-                    </a>
-                </li>
+                @canany(['isAdmin', 'isDentist'], Auth::user())
+                    <li>
+                        <a href="{{ route('act.index') }}" class="">
+                            <i class="metismenu-icon pe-7s-note2"></i>
+                            Mes ordonnances
+                        </a>
+                    </li>
+                @endcanany
                 <li>
                     <a href="{{ route('appointement.index') }}" class="">
                         <i class="metismenu-icon pe-7s-date"></i>
                         Mon agenda
                     </a>
                 </li>
-                <li>
-                    <a href="{{ route('setting.index') }}" class="">
-                        <i class="metismenu-icon pe-7s-config"></i>
-                        Réglages
-                    </a>
-                </li>
-                <li class="app-sidebar__heading">MEDIAS</li>
-                <li>
-                    <a href="{{ route('patients.create') }}" class="">
-                        <i class="metismenu-icon pe-7s-video"></i>
-                        Mes videos
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('patients.index') }}" class="">
-                        <i class="metismenu-icon pe-7s-photo"></i>
-                        Mes photos
-                    </a>
-                </li>
+                @can('isAdmin', Auth::user())
+                    <li>
+                        <a href="{{ route('setting.index') }}" class="">
+                            <i class="metismenu-icon pe-7s-config"></i>
+                            Réglages
+                        </a>
+                    </li>
+                @endcan
+                @canany(['isAdmin', 'isDentist'], Auth::user())
+                    <li class="app-sidebar__heading">MEDIAS</li>
+                    <li>
+                        <a href="{{ route('patients.create') }}" class="">
+                            <i class="metismenu-icon pe-7s-video"></i>
+                            Mes videos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('patients.index') }}" class="">
+                            <i class="metismenu-icon pe-7s-photo"></i>
+                            Mes photos
+                        </a>
+                    </li>
+                @endcanany
             </ul>
         </div>
     </div>

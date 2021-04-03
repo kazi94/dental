@@ -9,6 +9,8 @@ use DB;
 class Patient extends Model
 {
 
+	protected $appends = ['age'];
+
 	//associate patient to pathologies
 	public function pathologies()
 	{
@@ -43,6 +45,13 @@ class Patient extends Model
 
 	public function appointements()
 	{
-		return $this->hasMany('App\Models\Appointement')->orderBy('start_date', 'asc');
+		return $this->hasMany('App\Models\Appointement')
+			->where('start_date', '>=', date('Y-m-d'))
+			->orderBy('start_date', 'asc');
+	}
+
+	public function getAgeAttribute()
+	{
+		return intval(date('Y/m/d', strtotime('now'))) - intval(date('Y/m/d', strtotime($this->date_naissance)));
 	}
 }

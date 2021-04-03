@@ -125,7 +125,7 @@ export default {
         removePatient(index, id) {
             this.boxOne = "";
             this.$bvModal
-                .msgBoxOk("Voulez vous supprimer le patient?", {
+                .msgBoxConfirm("Voulez vous supprimer le patient?", {
                     title: "Confirmer la suppresion",
                     size: "sm",
                     buttonSize: "sm",
@@ -137,22 +137,20 @@ export default {
                     centered: true
                 })
                 .then(value => {
-                    this.boxOne = value;
+                    if (this.boxOne == true)
+                        axios
+                            .delete("/patients/" + id)
+                            .then(response => {
+                                this.patients.splice(index, 1);
+                                this.$toaster.success(response.data.success);
+                            })
+                            .catch(exception => {
+                                this.$toaster.error(exception);
+                            });
                 })
                 .catch(err => {
                     console.log(err);
                 });
-
-            if (this.boxOne)
-                axios
-                    .delete("/patients/" + id)
-                    .then(response => {
-                        this.patients.splice(index, 1);
-                        this.$toaster.success(response.data.success);
-                    })
-                    .catch(exception => {
-                        this.$toaster.error(exception);
-                    });
         },
         fetchPatients() {
             this.isBusy = true;

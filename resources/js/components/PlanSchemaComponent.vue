@@ -822,6 +822,9 @@ export default {
 
             axios.post("/api/patients/plan/lines/" + line_id, formData);
         },
+        loadSchema() {
+            this.$refs.schema.loadSchema();
+        },
         mountSchema() {}
     },
 
@@ -882,11 +885,7 @@ export default {
         //  Display the current quotation of the patient in the table with the current state of each acts
         //  Display the versement btn
         //  Display the print btn
-        if (
-            this.patient.last_schema != null &&
-            this.patient.last_schema.last_quotation != null &&
-            this.patient.last_schema.last_quotation.lines_in_progress != null
-        ) {
+        if (this.patient.last_schema?.last_quotation?.lines_in_progress != undefined) {
             this.isQuotation = false;
             // Display lines Quotation in Plan Table
             this.acceptedQuotation = this.patient.last_schema.last_quotation.lines_in_progress;

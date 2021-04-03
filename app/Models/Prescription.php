@@ -11,14 +11,23 @@ class Prescription extends Model
         return $this->hasMany('App\Models\Ligneprescription');
     }
 
-    public function patient()
+    public function prescribedTo()
     {
-        return $this->belongsTo('App\Models\Patient');
+        return $this->belongsTo('App\Models\Patient', 'patient_id');
     }
 
     public function user()
     {
         return $this->belongsTo('App\User', 'created_by');
+    }
+    /**
+     * return user whom update the prescription
+     *
+     * @return User
+     */
+    public function updatedBy()
+    {
+        return $this->belongsTo('App\User', 'updated_by');
     }
 
     /**
@@ -32,6 +41,5 @@ class Prescription extends Model
         $tims = explode(' ', $this->created_at);
         $date = $tims[0];
         return $date;
-    }    
-
+    }
 }
